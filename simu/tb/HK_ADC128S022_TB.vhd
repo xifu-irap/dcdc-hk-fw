@@ -85,18 +85,18 @@ architecture behavior of HK_ADC128S022_TB is
 
 
   --Inputs
-  signal Reset_n         : std_logic                    := '0';
+  signal reset_n         : std_logic                    := '0';
   signal clk             : std_logic                    := '0';
   signal channel_address : std_logic_vector(2 downto 0) := (others => '0');
-  signal Start           : std_logic                    := '0';
-  signal ADC_Dout        : std_logic                    := '0';
+  signal start           : std_logic                    := '0';
+  signal adc_dout        : std_logic                    := '0';
 
   --Outputs
-  signal Output_value : std_logic_vector(11 downto 0);
-  signal Done         : std_logic;
-  signal ADC_Sclk     : std_logic;
-  signal ADC_Din      : std_logic;
-  signal ADC_Cs_n     : std_logic;
+  signal output_value : std_logic_vector(11 downto 0);
+  signal done         : std_logic;
+  signal adc_sclk     : std_logic;
+  signal adc_din      : std_logic;
+  signal adc_cs_n     : std_logic;
 
   -- Clock period definitions
   constant clk_period : time := 312.5 ns;  --3.2MHz
@@ -105,24 +105,24 @@ begin
 
   -- Instantiate the Unit Under Test (UUT)
   uut : ADC128Sxxx port map (
-    Reset_n         => Reset_n,
+    Reset_n         => reset_n,
     clk             => clk,
     channel_address => channel_address,
-    Output_value    => Output_value,
-    Start           => Start,
-    Done            => Done,
-    ADC_Sclk        => ADC_Sclk,
-    ADC_Dout        => ADC_Dout,
-    ADC_Din         => ADC_Din,
-    ADC_Cs_n        => ADC_Cs_n
+    Output_value    => output_value,
+    Start           => start,
+    Done            => done,
+    ADC_Sclk        => adc_sclk,
+    ADC_Dout        => adc_dout,
+    ADC_Din         => adc_din,
+    ADC_Cs_n        => adc_cs_n
     );
 
 
   ADC_Component : adc128s102
     port map(
-      SCLK  => ADC_Sclk,
-      CSNeg => ADC_Cs_n,
-      DIN   => ADC_Din,
+      SCLK  => adc_sclk,
+      CSNeg => adc_cs_n,
+      DIN   => adc_din,
       VA    => 5.0,
       IN0   => 0.1,
       IN1   => 1.0,
@@ -132,11 +132,11 @@ begin
       IN5   => 5.0,
       IN6   => 1.2,
       IN7   => 2.5,
-      DOUT  => ADC_Dout
+      DOUT  => adc_dout
       );
 
   -- Clock process definitions
-  clk_process : process
+  p_clk : process
   begin
     clk <= '0';
     wait for clk_period/2;
@@ -147,12 +147,12 @@ begin
 
 
   -- Stimulus process
-  stim_proc : process
+  p_stim : process
   begin
     -- hold reset state for 100 ns.
     wait for 100 ns;
 
-    Reset_n <= '1';
+    reset_n <= '1';
 
     wait for clk_period*10;
 
@@ -174,4 +174,6 @@ begin
     wait;
   end process;
 
+
 end;
+
