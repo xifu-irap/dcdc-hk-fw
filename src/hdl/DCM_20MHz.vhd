@@ -37,34 +37,36 @@ use UNISIM.Vcomponents.all;
 
 entity DCM_20MHz is
   port (
-    CLKIN_IN        : in  std_logic;
-    CLKIN_IBUFG_OUT : out std_logic;
-    CLK0_OUT        : out std_logic;
-    LOCKED_OUT      : out std_logic
+    i_clk_in       : in  std_logic;
+    o_clk_in_ibufg : out std_logic;
+    o_clkK0        : out std_logic;
+    o_locked       : out std_logic
     );
 end DCM_20MHz;
 
 architecture BEHAVIORAL of DCM_20MHz is
-  signal CLKFB_IN    : std_logic;
-  signal CLKIN_IBUFG : std_logic;
-  signal CLK0_BUF    : std_logic;
-  signal GND_BIT     : std_logic;
+
+  signal clkfb_in     : std_logic;
+  signal clk_in_ibufg : std_logic;
+  signal clk0_buf     : std_logic;
+  signal gnd          : std_logic;
 
 begin
-  GND_BIT         <= '0';
-  CLKIN_IBUFG_OUT <= CLKIN_IBUFG;
-  CLK0_OUT        <= CLKFB_IN;
+
+  gnd            <= '0';
+  o_clk_in_ibufg <= clk_in_ibufg;
+  o_clkK0        <= clkfb_in;
 
   CLKIN_IBUFG_INST : IBUFG
     port map (
-      I => CLKIN_IN,
-      O => CLKIN_IBUFG
+      I => i_clk_in,
+      O => clk_in_ibufg
       );
 
   CLK0_BUFG_INST : BUFG
     port map (
-      I => CLK0_BUF,
-      O => CLKFB_IN
+      I => clk0_buf,
+      O => clkfb_in
       );
 
   DCM_INST : DCM
@@ -85,23 +87,23 @@ begin
       STARTUP_WAIT          => false
       )
     port map (
-      CLKFB    => CLKFB_IN,
-      CLKIN    => CLKIN_IBUFG,
-      DSSEN    => GND_BIT,
-      PSCLK    => GND_BIT,
-      PSEN     => GND_BIT,
-      PSINCDEC => GND_BIT,
-      RST      => GND_BIT,
+      CLKFB    => clkfb_in,
+      CLKIN    => clk_in_ibufg,
+      DSSEN    => gnd,
+      PSCLK    => gnd,
+      PSEN     => gnd,
+      PSINCDEC => gnd,
+      RST      => gnd,
       CLKDV    => open,
       CLKFX    => open,
       CLKFX180 => open,
-      CLK0     => CLK0_BUF,
+      CLK0     => clk0_buf,
       CLK2X    => open,
       CLK2X180 => open,
       CLK90    => open,
       CLK180   => open,
       CLK270   => open,
-      LOCKED   => LOCKED_OUT,
+      LOCKED   => o_locked,
       PSDONE   => open,
       STATUS   => open
       );

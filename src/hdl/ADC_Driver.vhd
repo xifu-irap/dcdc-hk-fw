@@ -26,9 +26,9 @@
 --!   @details
 --
 --      the controller for adc128S102
---       La datasheet indique que le premier echantillonage est IN0 et après on a les valeurs programmées
+--       La datasheet indique que le premier echantillonage est IN0 et aprÃ¨s on a les valeurs programmÃ©es
 --       tant que CS est actif
---      Quand Start passe à 1, l'ADC échantillonne les 8 voies et stocke le resultat dans output register.
+--      Quand Start passe Ã  1, l'ADC Ã©chantillonne les 8 voies et stocke le resultat dans output register.
 --      Output_register(0) <= IN0
 --      Output_register(1) <= IN1
 --      Output_register(2) <= IN2
@@ -40,7 +40,6 @@
 --
 -- -------------------------------------------------------------------------------------------------------------
 
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -48,21 +47,21 @@ use work.ADC128S102_pkg.all;
 
 entity ADC128S102_Driver is
   port (
-    Reset_n   : in std_logic;
-    clk_20MHz : in std_logic;
+    i_reset_n   : in std_logic;
+    i_clk_20MHz : in std_logic;
 
     -- Control
 
-    Output_register : out register_ADC;  -- array de 8 std_logic_vector (max de channel qu'on peut acquérir)
-    Start           : in  std_logic;
-    Done            : out std_logic;  -- indique que le registre est à  jour (toutes les valeurs demandées sont updatées)
+    o_output_register : out register_ADC;  -- array de 8 std_logic_vector (max de channel qu'on peut acquï¿½rir)
+    i_start           : in  std_logic;
+    o_one             : out std_logic;  -- indique que le registre est Ã  jour (toutes les valeurs demandÃ©es sont updatï¿½es)
 
     -- ADC
 
-    ADC_Sclk : out std_logic;
-    ADC_Dout : in  std_logic;
-    ADC_Din  : out std_logic;
-    ADC_Cs_n : out std_logic
+    o_adc_sclk : out std_logic;
+    i_adc_dout : in  std_logic;
+    o_adc_din  : out std_logic;
+    o_adc_cs_n : out std_logic
 
     );
 end ADC128S102_Driver;
@@ -70,191 +69,191 @@ end ADC128S102_Driver;
 architecture A1 of ADC128S102_Driver is
 
 
---Déclaration des signaux internes
+--DÃ©claration des signaux internes
 
 --ADC control register
-  signal i_ADC_control_register : std_logic_vector(15 downto 0);
-  alias i_channel_address       : std_logic_vector(2 downto 0) is i_ADC_control_register (13 downto 11);
+  signal adc_control_r1    : std_logic_vector(15 downto 0);
+  alias channel_address_r1 : std_logic_vector(2 downto 0) is adc_control_r1 (13 downto 11);
 
 --indices de tableaux
-  signal i_channel_val    : unsigned(2 downto 0);
-  signal i_output_reg_ind : unsigned(2 downto 0);
-  signal i_din_ind        : unsigned(3 downto 0);
+  signal channel_val    : unsigned(2 downto 0);
+  signal output_reg_ind : unsigned(2 downto 0);
+  signal din_ind        : unsigned(3 downto 0);
 
---Machine à  état
-  type FSM_state is (waiting, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10);
-  signal state : FSM_state;
+--Machine Ã Â Ã©tat
+  type t_state is (E_WAITING, E_S1, E_S2, E_S3, E_S4, E_S5, E_S6, E_S7, E_S8, E_S9, E_S10);
+  signal sm_state_r1 : t_state;
 
 --Generation Sclk
-  signal i_Sclk : std_logic;
+  signal sclk_r1 : std_logic;
 
 --Compteur
-  signal i_count_Dout_Din : unsigned(3 downto 0);
-  signal i_count_nb_acq   : unsigned(2 downto 0);
+  signal count_dout_din_r1 : unsigned(3 downto 0);
+  signal count_nb_acq_r1   : unsigned(2 downto 0);
 
 --Autres
-  signal i_Dout      : std_logic_vector (15 downto 0);
-  alias i_Dout_utile : std_logic_vector (11 downto 0) is i_Dout(11 downto 0);
-  signal s5_flag     : std_logic;
+  signal dout_r1    : std_logic_vector(15 downto 0);
+  alias dout_utile  : std_logic_vector(11 downto 0) is dout_r1(11 downto 0);
+  signal s5_flag_r1 : std_logic;
 
 
 
 begin
 
 --Combinatoire
-  i_channel_val    <= i_count_nb_acq +2;
-  i_output_reg_ind <= i_count_nb_acq -1;
-  i_din_ind        <= i_count_Dout_Din +1;
+  channel_val    <= count_nb_acq_r1 +2;
+  output_reg_ind <= count_nb_acq_r1 -1;
+  din_ind        <= count_dout_din_r1 +1;
 
-  ADC_Sclk <= i_Sclk;
+  o_adc_sclk <= sclk_r1;
 
---Machine à état ADC
-  Change_state_process : process(clk_20MHz, Reset_n)
+--Machine Ã  Ã©tat ADC
+  p_change_state : process(i_clk_20MHz, i_reset_n)
   begin
--- partie clockée
-    if Reset_n = '0' then
-      --init des états
-      state <= waiting;
-    elsif rising_edge(clk_20MHz) then
-      case state is
+-- partie clockÃ©e
+    if i_reset_n = '0' then
+      --init des etats
+      sm_state_r1 <= E_WAITING;
+    elsif rising_edge(i_clk_20MHz) then
+      case sm_state_r1 is
 
-        when waiting =>
+        when E_WAITING =>
 
           --On est dans le cas ou on reset tout
           --init des signaux internes
-          i_Sclk                 <= '1';
-          i_count_Dout_Din       <= to_unsigned(15, 4);  --(others =>'1');
-          i_count_nb_acq         <= (others => '0');
-          i_Dout                 <= (others => '0');
-          i_ADC_control_register <= (others => '0');
+          sclk_r1           <= '1';
+          count_dout_din_r1 <= to_unsigned(15, 4);  --(others =>'1');
+          count_nb_acq_r1   <= (others => '0');
+          dout_r1           <= (others => '0');
+          adc_control_r1    <= (others => '0');
           --init des sorties
-          Done                   <= '0';
-          ADC_Cs_n               <= '1';
-          ADC_Din                <= '0';
+          o_one             <= '0';
+          o_adc_cs_n        <= '1';
+          o_adc_din         <= '0';
 
-          --Flag pour l'actualisation première valeur après un start
-          s5_flag <= '0';
+          --Flag pour l'actualisation premiÃ¨re valeur aprÃ¨s un start
+          s5_flag_r1 <= '0';
 
-          --L'état suivant n'est atteint que si le start passe à  1
-          if Start = '1' then
-            state <= s1;
+          --L'Ã©tat suivant n'est atteint que si le start passe Ã Â  1
+          if i_start = '1' then
+            sm_state_r1 <= E_S1;
           else
-            state <= waiting;
+            sm_state_r1 <= E_WAITING;
           end if;
 
-        when s1 =>
+        when E_S1 =>
 
           --On prepare le registre de control
-          i_channel_address <= "001";
-          state             <= s2;
+          channel_address_r1 <= "001";
+          sm_state_r1        <= E_S2;
 
-        when s2 =>
+        when E_S2 =>
           --On active l'ADC en on commence l'envoi du registre de control
-          i_Sclk   <= '0';
-          ADC_Cs_n <= '0';
-          ADC_Din  <= i_ADC_control_register(15);
+          sclk_r1    <= '0';
+          o_adc_cs_n <= '0';
+          o_adc_din  <= adc_control_r1(15);
 
-          state <= s3;
+          sm_state_r1 <= E_S3;
 
-        when s3 =>
-          --Changement état SClk
-          i_Sclk <= '1';                --not i_Sclk; --(Sclk passe à 1)
+        when E_S3 =>
+          --Changement etat SClk
+          sclk_r1 <= '1';               --not i_Sclk; --(Sclk passe Ã  1)
 
-          --On décrémente le compteur de Dout
-          i_count_Dout_Din <= i_count_Dout_Din -1;
+          --On dÃ©crÃ©mente le compteur de Dout
+          count_dout_din_r1 <= count_dout_din_r1 -1;
 
-          state <= s4;
+          sm_state_r1 <= E_S4;
 
-        when s4 =>
+        when E_S4 =>
 
-          --Changement état SClk
-          i_Sclk <= '0';                --not i_Sclk; --(Sclk passe à 0)
+          --Changement Ã©tat SClk
+          sclk_r1 <= '0';               --not i_Sclk; --(Sclk passe a 0)
 
           --on envoie le registre
-          ADC_Din <= i_ADC_control_register(to_integer(i_count_Dout_Din));
+          o_adc_din <= adc_control_r1(to_integer(count_dout_din_r1));
 
           --on lit Dout
-          i_Dout(to_integer(i_din_ind)) <= ADC_Dout;
+          dout_r1(to_integer(din_ind)) <= i_adc_dout;
 
 
           --On stocke dans le registre Dout qui est complet
-          if (i_count_Dout_Din = to_unsigned(14, 4) and s5_flag = '1') then  --on a capturé un mot en entier donc on peut le mettre en registre
-            Output_register(to_integer(i_output_reg_ind)) <= i_Dout_utile;
+          if (count_dout_din_r1 = to_unsigned(14, 4) and s5_flag_r1 = '1') then  --on a capturÃ© un mot en entier donc on peut le mettre en registre
+            o_output_register(to_integer(output_reg_ind)) <= dout_utile;
           end if;
           --On regarde si on doit recevoir d'autres dout
-          if i_count_Dout_Din = 1 then
-            state <= s5;
+          if count_dout_din_r1 = 1 then
+            sm_state_r1 <= E_S5;
           else
-            state <= s3;
+            sm_state_r1 <= E_S3;
           end if;
 
-        when s5 =>
-          --On est passé par s5 on met le flag à 1
-          s5_flag <= '1';
+        when E_S5 =>
+          --On est passÃ© par s5 on met le flag Ã  1
+          s5_flag_r1 <= '1';
 
-          --Changement état SClk
-          i_Sclk <= '1';                --not i_Sclk; --(Sclk passe à 1)
+          --Changement Ã©tat SClk
+          sclk_r1 <= '1';               --not i_Sclk; --(Sclk passe a 1)
 
-          --On décrémente le compteur de Dout
-          i_count_Dout_Din <= i_count_Dout_Din -1;
+          --On dÃ©crÃ©mente le compteur de Dout
+          count_dout_din_r1 <= count_dout_din_r1 -1;
 
-          --On incrémente le compteur de channel
-          i_count_nb_acq <= i_count_nb_acq +1;
+          --On incrÃ©mente le compteur de channel
+          count_nb_acq_r1 <= count_nb_acq_r1 +1;
 
           --On prepare le registre de control
-          i_channel_address <= std_logic_vector(i_channel_val);
+          channel_address_r1 <= std_logic_vector(channel_val);
 
-          state <= s6;
+          sm_state_r1 <= E_S6;
 
-        when s6 =>
+        when E_S6 =>
 
-          --Changement état SClk
-          i_Sclk <= '0';                --(Sclk passe à 0)
+          --Changement Ã©tat SClk
+          sclk_r1 <= '0';               --(Sclk passe a 0)
 
           --on envoie le registre
-          ADC_Din <= i_ADC_control_register(to_integer(i_count_Dout_Din));
+          o_adc_din <= adc_control_r1(to_integer(count_dout_din_r1));
 
           --on lit Dout
-          i_Dout(to_integer(i_din_ind)) <= ADC_Dout;
+          dout_r1(to_integer(din_ind)) <= i_adc_dout;
 
           --On regarde si on boucle
-          if i_count_nb_acq = 0 then
-            state <= s7;
+          if count_nb_acq_r1 = 0 then
+            sm_state_r1 <= E_S7;
           else
-            state <= s3;
+            sm_state_r1 <= E_S3;
           end if;
 
-        when s7 =>
+        when E_S7 =>
 
-          --Changement état SClk
-          i_Sclk <= '1';                --(Sclk passe à 1)
+          --Changement Ã©tat SClk
+          sclk_r1 <= '1';               --(Sclk passe a 1)
 
-          --On décrémente le compteur de Dout
-          i_count_Dout_Din <= i_count_Dout_Din -1;
+          --On dÃ©crÃ©mente le compteur de Dout
+          count_dout_din_r1 <= count_dout_din_r1 -1;
 
-          state <= s8;
+          sm_state_r1 <= E_S8;
 
-        when s8 =>
+        when E_S8 =>
           --on lit Dout
-          i_Dout(to_integer(i_din_ind)) <= ADC_Dout;
+          dout_r1(to_integer(din_ind)) <= i_adc_dout;
 
-          state <= s9;
+          sm_state_r1 <= E_S9;
 
-        when s9 =>
+        when E_S9 =>
           --On a fini
-          Done                                          <= '1';
-          Output_register(to_integer(i_output_reg_ind)) <= i_Dout_utile;
+          o_one                                         <= '1';
+          o_output_register(to_integer(output_reg_ind)) <= dout_utile;
 
-          state <= s10;
+          sm_state_r1 <= E_S10;
 
-        when s10 =>
+        when E_S10 =>
           --On a fini
-          Done <= '1';
+          o_one <= '1';
 
-          state <= waiting;
+          sm_state_r1 <= E_WAITING;
 
         when others =>
-          state <= waiting;
+          sm_state_r1 <= E_WAITING;
 
       end case;
 
@@ -263,6 +262,5 @@ begin
   end process;
 
 
-
-
 end A1;
+

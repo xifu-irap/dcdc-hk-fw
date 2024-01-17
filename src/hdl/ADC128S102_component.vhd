@@ -24,6 +24,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.VITAL_timing.all;
 use IEEE.VITAL_primitives.all;
+
 library work;
 use work.gen_utils.all;
 
@@ -322,4 +323,6 @@ begin  -- ARCHITECTURE vhdl_behavioral
         )
       );
   end process func;
+
 end architecture vhdl_behavioral;
+
