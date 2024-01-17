@@ -1,0 +1,56 @@
+#############################################################################
+# Argument definition
+#  "-vhdl": compilation of vhdl file
+#  "-sv": compilation of verilog/system_verilog file
+#  "-lib": process the file as black box
+#############################################################################
+
+#############################################################################
+# Add Vivado library
+#  Those files can be found in the Vivado installation directory (2022.1)
+#############################################################################
+# XPM library: partial
+verific -work xpm -vhdl -lib ./third-party-libraries/ip/vivado/2022.1/data/ip/xpm/xpm_VCOMP.vhd
+
+# UNISIM library: partial
+verific -work unisim -vhdl ./third-party-libraries/ip/vivado/2022.1/data/vhdl/src/unisims/unisim_VCOMP.vhd
+verific -work unisim -vhdl ./third-party-libraries/ip/vivado/2022.1/data/vhdl/src/unisims/unisim_VPKG.vhd
+
+#############################################################################
+# Third party library (from GitHub)
+# Add FrontPanelUSB library from Opal Kelly Vendor (black box for the Linty tool)
+#############################################################################
+#    module component declaration
+verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7310-A75/syn/okLibrary.vhd
+
+##############################################################################
+# The list of source files was generated from Vivado by a TCL command
+#  report_compile_order -used_in synthesis -verbose   -file D:/compilation_order_synthesis.txt
+# Note:
+#   The output file was manually edited in order to be compatible with the Linty tools.
+##############################################################################
+
+
+# Xilinx IP
+#    Top level module (black box for the Linty tool)
+
+
+# VHDL
+#    Source files
+
+# package
+verific -vhdl ./src/hdl/ADC128S102_pkg.vhd
+
+# others
+verific -vhdl ./src/hdl/ADC_Driver.vhd
+verific -vhdl ./src/hdl/DCM_20MHz.vhd
+verific -vhdl ./src/hdl/HK_Module.vhd
+verific -vhdl ./src/hdl/OK-AF.vhd
+
+# utils
+
+
+# xpm
+
+
+# system_dcdc (top_level)
