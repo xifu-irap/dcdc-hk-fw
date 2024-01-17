@@ -36,9 +36,9 @@ use IEEE.STD_LOGIC_1164.all;
 package ADC128S102_pkg is
 
 
-type register_ADC is array (0 to 7) of std_logic_vector (11 downto 0);
+  type register_ADC is array (0 to 7) of std_logic_vector (11 downto 0);
 
-type register_ADC16 is array (0 to 7) of std_logic_vector (15 downto 0);
+  type register_ADC16 is array (0 to 7) of std_logic_vector (15 downto 0);
 
 -- type <new_type> is
 --  record

@@ -30,69 +30,81 @@
 -- -------------------------------------------------------------------------------------------------------------
 
 library ieee;
-use ieee.std_logic_1164.ALL;
-use ieee.numeric_std.ALL;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 library UNISIM;
-use UNISIM.Vcomponents.ALL;
+use UNISIM.Vcomponents.all;
 
 entity DCM_20MHz is
-   port ( CLKIN_IN        : in    std_logic;
-          CLKIN_IBUFG_OUT : out   std_logic;
-          CLK0_OUT        : out   std_logic;
-          LOCKED_OUT      : out   std_logic);
+  port (
+    CLKIN_IN        : in  std_logic;
+    CLKIN_IBUFG_OUT : out std_logic;
+    CLK0_OUT        : out std_logic;
+    LOCKED_OUT      : out std_logic
+    );
 end DCM_20MHz;
 
 architecture BEHAVIORAL of DCM_20MHz is
-   signal CLKFB_IN        : std_logic;
-   signal CLKIN_IBUFG     : std_logic;
-   signal CLK0_BUF        : std_logic;
-   signal GND_BIT         : std_logic;
+  signal CLKFB_IN    : std_logic;
+  signal CLKIN_IBUFG : std_logic;
+  signal CLK0_BUF    : std_logic;
+  signal GND_BIT     : std_logic;
+
 begin
-   GND_BIT <= '0';
-   CLKIN_IBUFG_OUT <= CLKIN_IBUFG;
-   CLK0_OUT <= CLKFB_IN;
-   CLKIN_IBUFG_INST : IBUFG
-      port map (I=>CLKIN_IN,
-                O=>CLKIN_IBUFG);
+  GND_BIT         <= '0';
+  CLKIN_IBUFG_OUT <= CLKIN_IBUFG;
+  CLK0_OUT        <= CLKFB_IN;
 
-   CLK0_BUFG_INST : BUFG
-      port map (I=>CLK0_BUF,
-                O=>CLKFB_IN);
+  CLKIN_IBUFG_INST : IBUFG
+    port map (
+      I => CLKIN_IN,
+      O => CLKIN_IBUFG
+      );
 
-   DCM_INST : DCM
-   generic map( CLK_FEEDBACK => "1X",
-            CLKDV_DIVIDE => 2.0,
-            CLKFX_DIVIDE => 1,
-            CLKFX_MULTIPLY => 4,
-            CLKIN_DIVIDE_BY_2 => FALSE,
-            CLKIN_PERIOD => 25.000,
-            CLKOUT_PHASE_SHIFT => "NONE",
-            DESKEW_ADJUST => "SYSTEM_SYNCHRONOUS",
-            DFS_FREQUENCY_MODE => "LOW",
-            DLL_FREQUENCY_MODE => "LOW",
-            DUTY_CYCLE_CORRECTION => TRUE,
-            FACTORY_JF => x"8080",
-            PHASE_SHIFT => 0,
-            STARTUP_WAIT => FALSE)
-      port map (CLKFB=>CLKFB_IN,
-                CLKIN=>CLKIN_IBUFG,
-                DSSEN=>GND_BIT,
-                PSCLK=>GND_BIT,
-                PSEN=>GND_BIT,
-                PSINCDEC=>GND_BIT,
-                RST=>GND_BIT,
-                CLKDV=>open,
-                CLKFX=>open,
-                CLKFX180=>open,
-                CLK0=>CLK0_BUF,
-                CLK2X=>open,
-                CLK2X180=>open,
-                CLK90=>open,
-                CLK180=>open,
-                CLK270=>open,
-                LOCKED=>LOCKED_OUT,
-                PSDONE=>open,
-                STATUS=>open);
+  CLK0_BUFG_INST : BUFG
+    port map (
+      I => CLK0_BUF,
+      O => CLKFB_IN
+      );
+
+  DCM_INST : DCM
+    generic map(
+      CLK_FEEDBACK          => "1X",
+      CLKDV_DIVIDE          => 2.0,
+      CLKFX_DIVIDE          => 1,
+      CLKFX_MULTIPLY        => 4,
+      CLKIN_DIVIDE_BY_2     => false,
+      CLKIN_PERIOD          => 25.000,
+      CLKOUT_PHASE_SHIFT    => "NONE",
+      DESKEW_ADJUST         => "SYSTEM_SYNCHRONOUS",
+      DFS_FREQUENCY_MODE    => "LOW",
+      DLL_FREQUENCY_MODE    => "LOW",
+      DUTY_CYCLE_CORRECTION => true,
+      FACTORY_JF            => x"8080",
+      PHASE_SHIFT           => 0,
+      STARTUP_WAIT          => false
+      )
+    port map (
+      CLKFB    => CLKFB_IN,
+      CLKIN    => CLKIN_IBUFG,
+      DSSEN    => GND_BIT,
+      PSCLK    => GND_BIT,
+      PSEN     => GND_BIT,
+      PSINCDEC => GND_BIT,
+      RST      => GND_BIT,
+      CLKDV    => open,
+      CLKFX    => open,
+      CLKFX180 => open,
+      CLK0     => CLK0_BUF,
+      CLK2X    => open,
+      CLK2X180 => open,
+      CLK90    => open,
+      CLK180   => open,
+      CLK270   => open,
+      LOCKED   => LOCKED_OUT,
+      PSDONE   => open,
+      STATUS   => open
+      );
 
 end BEHAVIORAL;
 
