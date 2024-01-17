@@ -54,7 +54,7 @@ entity ADC128S102_Driver is
 
     o_output_register : out register_ADC;  -- array de 8 std_logic_vector (max de channel qu'on peut acqu�rir)
     i_start           : in  std_logic;
-    o_one             : out std_logic;  -- indique que le registre est à jour (toutes les valeurs demandées sont updat�es)
+    o_done            : out std_logic;  -- indique que le registre est à jour (toutes les valeurs demandées sont updat�es)
 
     -- ADC
 
@@ -127,7 +127,7 @@ begin
           dout_r1           <= (others => '0');
           adc_control_r1    <= (others => '0');
           --init des sorties
-          o_one             <= '0';
+          o_done             <= '0';
           o_adc_cs_n        <= '1';
           o_adc_din         <= '0';
 
@@ -241,14 +241,14 @@ begin
 
         when E_S9 =>
           --On a fini
-          o_one                                         <= '1';
+          o_done                                         <= '1';
           o_output_register(to_integer(output_reg_ind)) <= dout_utile;
 
           sm_state_r1 <= E_S10;
 
         when E_S10 =>
           --On a fini
-          o_one <= '1';
+          o_done <= '1';
 
           sm_state_r1 <= E_WAITING;
 

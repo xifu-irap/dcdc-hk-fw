@@ -404,8 +404,8 @@ begin
 
   p_disable_motor : process(reset_n, clk_20MHz)
   begin
-    if reset_n = '0'
-    then o_L6258_i1 <= (others => '1');   --"1111" = 0 courant
+    if reset_n = '0' then
+         o_L6258_i1  <= (others => '1');  --"1111" = 0 courant
          o_L6258_i2  <= (others => '1');  --"1111" = 0 courant
          o_L6258_ph1 <= '1';            --'1' = sens + (arbitraire)
          o_L6258_ph2 <= '1';            --'1' = sens + (arbitraire)
@@ -414,12 +414,10 @@ begin
          o_duplicate <= "111";
 
     else
-      if clk_20MHz = '1'and clk_20MHz'event
-      then
+      if rising_edge(clk_20MHz) then
         o_L6258_dis <= L6258_dis_r1(0);
 
-        if L6258_dis_r1(1) = '1'  --Si le driver est désactivé, on met tous les signaux en mode reset (0 courant et sens positif)
-        then
+        if L6258_dis_r1(1) = '1' then  --Si le driver est désactivé, on met tous les signaux en mode reset (0 courant et sens positif)
           o_L6258_i1  <= (others => '1');
           o_L6258_i2  <= (others => '1');
           o_L6258_ph1 <= '1';
@@ -427,8 +425,8 @@ begin
           --signaux moteurs dupliqués
           o_duplicate <= "111";
         else  --Sinon on reprend les valeurs normales (celle de la table et donc du dernier déplacement)
-          if (not i_sw_forced) = '0'
-          then
+
+          if (not i_sw_forced) = '0' then
             o_L6258_i1     <= L6258_i1;
             o_L6258_i2     <= L6258_i2;
             o_L6258_ph1    <= L6258_ph1;
@@ -506,7 +504,7 @@ begin
 
   inst_module_gestion_hk : entity work.HK_Module
     port map(
-      -- Clk et Rst � 0
+      -- Clk et Rst à 0
       i_clk_20MHz => clk_20MHz,
       i_reset_n   => reset_n,
 

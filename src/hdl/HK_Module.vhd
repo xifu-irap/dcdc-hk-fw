@@ -52,7 +52,7 @@ entity HK_Module is
     o_adc_sclk  : out std_logic;
     i_adc_dout  : in  std_logic;
     o_adc_din   : out std_logic;
-    o_adc_css_n : out std_logic;
+    o_adc_cs_n  : out std_logic;
 
     --AD7809
     o_addr_mux : out std_logic_vector(2 downto 0);
@@ -66,7 +66,7 @@ entity HK_Module is
     o_pwrd     : out std_logic;
 
     --Host Interface
-    i_hk_addr             : in  std_logic_vector(2 downto 0);  --Adresse de la HK � prendre
+    i_hk_addr             : in  std_logic_vector(2 downto 0);  --Adresse de la HK à prendre
     i_hk_trig             : in  std_logic_vector(3 downto 0);  --Trigger venant du PC pour dire ce que l'on veut faire
     o_hk_trig             : out std_logic_vector(3 downto 0);  --Annonce au PC de ce qui est dispo
     -- Pipe sortie AF
@@ -138,7 +138,7 @@ architecture Arch of HK_Module is
 --Compteur pour les AF
   signal af_count_r1 : integer range 0 to 363;
 
---Declaration Machine � �tat prise HK
+--Declaration Machine d'état prise HK
   type t_state is (E_INIT, E_WAITING, E_MIC1, E_MIC2, E_MIC20, E_MIC3, E_AF1, E_AF2, E_AF20, E_AF3, E_HK1, E_HK2);
   signal sm_state_r1 : t_state;
 
@@ -170,7 +170,7 @@ begin
       ADC_Sclk        => o_adc_sclk,
       ADC_Dout        => i_adc_dout,
       ADC_Din         => o_adc_din,
-      ADC_Cs_n        => o_adc_css_n
+      ADC_Cs_n        => o_adc_cs_n
       );
 
 --Port Map ADC lent
@@ -388,10 +388,10 @@ begin
               hk_value_12bit_r1 <= adc_value;
               hk_value_high_r1  <= (others => '0');
             else                        --c'est du AD7809 en 16 bits
-              --HK_Addr 2= CWL power => ADDR 0 MUX AD7809
-              --HK_Addr 3= Mic temp => ADDR 1 MUX AD7809
-              --HK_Addr 5= CWL temp => ADDR 2 MUX AD7809
-              --HK_Addr 6= temp MP => ADDR 4 MUX AD7809
+              --HK_Addr 2= CWL power   => ADDR 0 MUX AD7809
+              --HK_Addr 3= Mic temp    => ADDR 1 MUX AD7809
+              --HK_Addr 5= CWL temp    => ADDR 2 MUX AD7809
+              --HK_Addr 6= temp MP     => ADDR 4 MUX AD7809
               --HK_Addr 7= moteor temp => ADDR 3 MUX AD7809
               if i_hk_addr = "010" then
                 o_hk_value <= data_AD7809(0);
