@@ -155,12 +155,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../ip/opal_kelly/XEM7310-A75/syn/okLibrary.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-        </FileInfo>
-      </File>
       <File Path="$PPRDIR/../../src/hdl/ADC128S102_component.vhd">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
