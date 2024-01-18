@@ -17,7 +17,7 @@
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -- -------------------------------------------------------------------------------------------------------------
 --    email                   kenji.delarosa@alten.com
---    @file                   OK-AF.vhd
+--    @file                   system_dcdc_top.vhd
 --    reference design        Yann PAROT (IRAP Toulouse)
 -- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
@@ -30,14 +30,12 @@
 -- -------------------------------------------------------------------------------------------------------------
 
 
-library IEEE;
-use IEEE.std_logic_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.FRONTPANEL.all;
-use work.ADC128S102_pkg.all;
 
-entity OK_AF is
+entity system_dcdc_top is
   port (
     --  Opal Kelly inouts --
     -- usb interface signal
@@ -60,9 +58,9 @@ entity OK_AF is
 
 
     );
-end OK_AF;
+end system_dcdc_top;
 
-architecture arch of OK_AF is
+architecture arch of system_dcdc_top is
 
 
 

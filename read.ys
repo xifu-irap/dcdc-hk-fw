@@ -39,13 +39,10 @@ verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7
 #    Source files
 
 # package
-verific -vhdl ./src/hdl/ADC128S102_pkg.vhd
+verific -vhdl ./src/hdl/pkg_system_dcdc.vhd
 
 # others
-verific -vhdl ./src/hdl/ADC_Driver.vhd
-verific -vhdl ./src/hdl/DCM_20MHz.vhd
-verific -vhdl ./src/hdl/HK_Module.vhd
-verific -vhdl ./src/hdl/OK-AF.vhd
+
 
 # utils
 
@@ -54,3 +51,4 @@ verific -vhdl ./src/hdl/OK-AF.vhd
 
 
 # system_dcdc (top_level)
+verific -vhdl ./src/hdl/system_dcdc_top.vhd
