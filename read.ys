@@ -43,6 +43,7 @@ verific -vhdl ./src/hdl/pkg_utils.vhd
 verific -vhdl ./src/hdl/pkg_regdecode.vhd
 verific -vhdl ./src/hdl/pkg_system_dcdc.vhd
 verific -vhdl ./src/hdl/pkg_system_dcdc_debug.vhd
+verific -vhdl ./src/hdl/dcdc/core/pkg_spi.vhd
 
 # utils
 verific -vhdl ./src/hdl/utils/others/pipeliner_with_init.vhd
@@ -61,6 +62,8 @@ verific -vhdl ./src/hdl/io/io_top.vhd
 
 
 # dcdc
+verific -vhdl ./src/hdl/dcdc/core/spi_master_clock_gen.vhd
+verific -vhdl ./src/hdl/dcdc/core/spi_master_clock.vhd
 verific -vhdl ./src/hdl/dcdc/dcdc_top.vhd
 
 
