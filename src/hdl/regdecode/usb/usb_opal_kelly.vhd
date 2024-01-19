@@ -24,7 +24,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
---    This module instanciates the necessary different opal kelly component
+--    This module instanciates the necessary different opal kelly components
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -37,53 +37,53 @@ entity usb_opal_kelly is
   port(
     --  Opal Kelly inouts --
     -- usb interface signal
-    i_okUH                              : in    std_logic_vector(4 downto 0);
+    i_okUH                   : in    std_logic_vector(4 downto 0);
     -- usb interface signal
-    o_okHU                              : out   std_logic_vector(2 downto 0);
+    o_okHU                   : out   std_logic_vector(2 downto 0);
     -- usb interface signal
-    b_okUHU                             : inout std_logic_vector(31 downto 0);
+    b_okUHU                  : inout std_logic_vector(31 downto 0);
     -- usb interface signal
-    b_okAA                              : inout std_logic;
+    b_okAA                   : inout std_logic;
     ---------------------------------------------------------------------
     -- from the user @o_usb_clk
     ---------------------------------------------------------------------
     -- wire_out
     -- ctrl register (reading)
-    i_usb_wireout_ctrl                  : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_ctrl       : in    std_logic_vector(31 downto 0);
     -- power_ctrl register (reading)
-    i_usb_wireout_power_ctrl            : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_power_ctrl : in    std_logic_vector(31 downto 0);
 
     -- ADC
     ---------------------------------------------------------------------
     -- adc_ctrl register (reading)
-    i_usb_wireout_adc_ctrl              : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc_ctrl   : in std_logic_vector(31 downto 0);
     -- adc_status register (reading)
-    i_usb_wireout_adc_status     : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc_status : in std_logic_vector(31 downto 0);
 
     -- adc0 register (reading)
-    i_usb_wireout_adc0         : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc0 : in std_logic_vector(31 downto 0);
     -- adc1 register (reading)
-    i_usb_wireout_adc1      : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc1 : in std_logic_vector(31 downto 0);
     -- adc2 register (reading)
-    i_usb_wireout_adc2      : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc2 : in std_logic_vector(31 downto 0);
     -- adc3 register (reading)
-    i_usb_wireout_adc3      : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc3 : in std_logic_vector(31 downto 0);
     -- adc4 register (reading)
-    i_usb_wireout_adc4      : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc4 : in std_logic_vector(31 downto 0);
     -- adc5 register (reading)
-    i_usb_wireout_adc5      : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc5 : in std_logic_vector(31 downto 0);
     -- adc6 register (reading)
-    i_usb_wireout_adc6      : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc6 : in std_logic_vector(31 downto 0);
     -- adc7 register (reading)
-    i_usb_wireout_adc7      : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_adc7 : in std_logic_vector(31 downto 0);
 
 
     -- hardware id register (reading)
-    i_usb_wireout_hardware_id           : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_hardware_id   : in std_logic_vector(31 downto 0);
     -- firmware_name register (reading)
-    i_usb_wireout_firmware_name         : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_firmware_name : in std_logic_vector(31 downto 0);
     -- firmware_id register (reading)
-    i_usb_wireout_firmware_id           : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_firmware_id   : in std_logic_vector(31 downto 0);
 
     -- errors/status
     -- debug_ctrl register (reading)
@@ -99,7 +99,7 @@ entity usb_opal_kelly is
     -- to the user @o_usb_clk
     ---------------------------------------------------------------------
     -- usb clock
-    o_usb_clk                 : out std_logic;
+    o_usb_clk : out std_logic;
 
 
     -- wire
@@ -140,7 +140,7 @@ architecture RTL of usb_opal_kelly is
   signal ep01_wire : std_logic_vector(31 downto 0);  -- wire in01
   --signal ep02_wire : std_logic_vector(31 downto 0);  -- wire in02
   --signal ep03_wire : std_logic_vector(31 downto 0);-- wire in03
-  signal ep04_wire : std_logic_vector(31 downto 0);-- wire in04
+  signal ep04_wire : std_logic_vector(31 downto 0);  -- wire in04
   --signal ep05_wire : std_logic_vector(31 downto 0);-- wire in05
   --signal ep06_wire : std_logic_vector(31 downto 0);-- wire in06
   --signal ep07_wire : std_logic_vector(31 downto 0);-- wire in07
@@ -170,7 +170,7 @@ architecture RTL of usb_opal_kelly is
   --signal ep1F_wire : std_logic_vector(31 downto 0);-- wire in31
 
   -- wires out
-  signal ep20_wire : std_logic_vector(31 downto 0); -- wire out00
+  signal ep20_wire : std_logic_vector(31 downto 0);  -- wire out00
   signal ep21_wire : std_logic_vector(31 downto 0);  -- wire out01
   --signal ep22_wire : std_logic_vector(31 downto 0);  -- wire out02
   --signal ep23_wire : std_logic_vector(31 downto 0);  -- wire out03
@@ -186,14 +186,14 @@ architecture RTL of usb_opal_kelly is
   --signal ep2D_wire : std_logic_vector(31 downto 0); -- wire out13
   --signal ep2E_wire : std_logic_vector(31 downto 0); -- wire out14
   --signal ep2F_wire : std_logic_vector(31 downto 0); -- wire out15
-  signal ep30_wire : std_logic_vector(31 downto 0); -- wire out16
-  signal ep31_wire : std_logic_vector(31 downto 0); -- wire out17
-  signal ep32_wire : std_logic_vector(31 downto 0); -- wire out18
-  signal ep33_wire : std_logic_vector(31 downto 0); -- wire out19
-  signal ep34_wire : std_logic_vector(31 downto 0); -- wire out20
-  signal ep35_wire : std_logic_vector(31 downto 0); -- wire out21
-  signal ep36_wire : std_logic_vector(31 downto 0); -- wire out22
-  signal ep37_wire : std_logic_vector(31 downto 0); -- wire out23
+  signal ep30_wire : std_logic_vector(31 downto 0);  -- wire out16
+  signal ep31_wire : std_logic_vector(31 downto 0);  -- wire out17
+  signal ep32_wire : std_logic_vector(31 downto 0);  -- wire out18
+  signal ep33_wire : std_logic_vector(31 downto 0);  -- wire out19
+  signal ep34_wire : std_logic_vector(31 downto 0);  -- wire out20
+  signal ep35_wire : std_logic_vector(31 downto 0);  -- wire out21
+  signal ep36_wire : std_logic_vector(31 downto 0);  -- wire out22
+  signal ep37_wire : std_logic_vector(31 downto 0);  -- wire out23
   signal ep38_wire : std_logic_vector(31 downto 0);  -- wire out24
   signal ep39_wire : std_logic_vector(31 downto 0);  -- wire out25
   signal ep3A_wire : std_logic_vector(31 downto 0);  -- wire out26
@@ -315,7 +315,7 @@ begin
       ep_datain => ep20_wire            -- Endpoint data out 32 bits
       );
 
-inst_okwireout_ep21 : okWireOut
+  inst_okwireout_ep21 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(1),
@@ -323,7 +323,7 @@ inst_okwireout_ep21 : okWireOut
       ep_datain => ep21_wire            -- Endpoint data out 32 bits
       );
 
-inst_okwireout_ep24 : okWireOut
+  inst_okwireout_ep24 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(2),
@@ -340,7 +340,7 @@ inst_okwireout_ep24 : okWireOut
       );
 
 
-    inst_okwireout_ep30 : okWireOut
+  inst_okwireout_ep30 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(4),
@@ -348,7 +348,7 @@ inst_okwireout_ep24 : okWireOut
       ep_datain => ep30_wire            -- Endpoint data out 32 bits
       );
 
-    inst_okwireout_ep31 : okWireOut
+  inst_okwireout_ep31 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(5),
@@ -356,7 +356,7 @@ inst_okwireout_ep24 : okWireOut
       ep_datain => ep31_wire            -- Endpoint data out 32 bits
       );
 
-    inst_okwireout_ep32 : okWireOut
+  inst_okwireout_ep32 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(6),
@@ -364,7 +364,7 @@ inst_okwireout_ep24 : okWireOut
       ep_datain => ep32_wire            -- Endpoint data out 32 bits
       );
 
-    inst_okwireout_ep33 : okWireOut
+  inst_okwireout_ep33 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(7),
@@ -372,7 +372,7 @@ inst_okwireout_ep24 : okWireOut
       ep_datain => ep33_wire            -- Endpoint data out 32 bits
       );
 
-    inst_okwireout_ep34 : okWireOut
+  inst_okwireout_ep34 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(8),
@@ -388,7 +388,7 @@ inst_okwireout_ep24 : okWireOut
       ep_datain => ep35_wire            -- Endpoint data out 32 bits
       );
 
-    inst_okwireout_ep36 : okWireOut
+  inst_okwireout_ep36 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(10),
@@ -396,7 +396,7 @@ inst_okwireout_ep24 : okWireOut
       ep_datain => ep36_wire            -- Endpoint data out 32 bits
       );
 
-    inst_okwireout_ep37 : okWireOut
+  inst_okwireout_ep37 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(11),
@@ -469,7 +469,7 @@ inst_okwireout_ep24 : okWireOut
   -- output
   ---------------------------------------------------------------------
   -- from okhost
-  o_usb_clk             <= okClk;
+  o_usb_clk <= okClk;
 
 
   -- from wire in
