@@ -105,8 +105,10 @@ package pkg_regdecode is
 
   -- ADC_CTRL register
   ---------------------------------------------------------------------
-  -- user-defined: adc_start (bit index)
-  constant pkg_ADC_CTRL_START_IDX_H : integer := 0;
+  -- user-defined: default value of the ADC_CTRL register
+  constant pkg_ADC_CTRL_DEFAULT : integer := x"0";
+  -- user-defined: adc_spi_start (bit index)
+  constant pkg_ADC_CTRL_ADC_SPI_START_IDX_H : integer := 0;
 
 
   -- error_sel register

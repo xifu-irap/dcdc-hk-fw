@@ -59,8 +59,6 @@ entity regdecode_top is
     ---------------------------------------------------------------------
     -- usb clock
     o_usb_clk : out std_logic;
-    -- reset @usb_clk
-    o_usb_rst : out std_logic;
 
     -- wire
     -- ctrl register (writting)
@@ -68,10 +66,12 @@ entity regdecode_top is
     -- power_ctrl register (writting)
     o_reg_power_ctrl : out std_logic_vector(31 downto 0);
 
-    -- ADC
+    -- ADC @o_usb_clk
     ---------------------------------------------------------------------
+    -- adc_ctrl valid
+    o_reg_adc_ctrl_valid : out std_logic;
     -- adc_ctrl register (reading)
-    o_reg_adc_ctrl : out std_logic_vector(31 downto 0);
+    o_reg_adc_ctrl       : out std_logic_vector(31 downto 0);
 
     -- adc_status register (reading)
     i_reg_adc_status : in std_logic_vector(31 downto 0);
@@ -92,7 +92,7 @@ entity regdecode_top is
     -- adc7 register (reading)
     i_reg_adc7       : in std_logic_vector(31 downto 0);
 
-    -- debug_ctrl
+    -- debug_ctrl @o_usb_clk
     ---------------------------------------------------------------------
     -- debug_ctrl data valid
     o_reg_debug_ctrl_valid : out std_logic;
@@ -115,45 +115,40 @@ end entity regdecode_top;
 
 architecture RTL of regdecode_top is
 
--- define an array of 32 bit words
-  type t_array32 is array (natural range <>) of std_logic_vector(31 downto 0);
--- define an array of 16 bit words
-  type t_array16 is array (natural range <>) of std_logic_vector(15 downto 0);
--- define an array of 8 bit words
-  type t_array8 is array (natural range <>) of std_logic_vector(7 downto 0);
----------------------------------------------------------------------
--- usb_opal_kelly
----------------------------------------------------------------------
 
--- Common Register configuration
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- usb_opal_kelly
+  ---------------------------------------------------------------------
 
--- adc_status register value
+  -- Common Register configuration
+  ---------------------------------------------------------------------
+
+  -- adc_status register value
   signal usb_wireout_adc_status : std_logic_vector(31 downto 0);
 
--- ctrl register value
+  -- ctrl register value
   signal usb_wireout_ctrl : std_logic_vector(31 downto 0);
 
--- adc_ctrl register value
+  -- adc_ctrl register value
   signal usb_wireout_adc_ctrl : std_logic_vector(31 downto 0);
 
--- power_ctrl register value
+  -- power_ctrl register value
   signal usb_wireout_power_ctrl : std_logic_vector(31 downto 0);
 
 
--- firmware_id register value
+  -- firmware_id register value
   signal usb_wireout_firmware_id : std_logic_vector(31 downto 0);
 
--- hardware_id register value
+  -- hardware_id register value
   signal usb_wireout_hardware_id : std_logic_vector(31 downto 0);
 
 
--- firmware_name register value
+  -- firmware_name register value
   signal usb_wireout_firmware_name : std_logic_vector(31 downto 0);
 
--- Debugging Registers
----------------------------------------------------------------------
--- debug_ctrl register value
+  -- Debugging Registers
+  ---------------------------------------------------------------------
+  -- debug_ctrl register value
   signal usb_wireout_debug_ctrl : std_logic_vector(31 downto 0);
   -- sel_errors register value
   signal usb_wireout_sel_errors : std_logic_vector(31 downto 0);
@@ -163,19 +158,20 @@ architecture RTL of regdecode_top is
   signal usb_wireout_status     : std_logic_vector(31 downto 0);
 
 
--- Common Register configuration
----------------------------------------------------------------------
--- ctrl register value
+  -- Common Register configuration
+  ---------------------------------------------------------------------
+  -- ctrl register value
   signal usb_wirein_ctrl       : std_logic_vector(31 downto 0);
--- tc_hk_conf register value
+  -- power_ctrl register value
   signal usb_wirein_power_ctrl : std_logic_vector(31 downto 0);
--- icu_conf register value
+  -- adc_ctrl register value
   signal usb_wirein_adc_ctrl   : std_logic_vector(31 downto 0);
--- Debugging Registers
----------------------------------------------------------------------
--- debug_ctrl register value
+
+  -- Debugging Registers
+  ---------------------------------------------------------------------
+  -- debug_ctrl register value
   signal usb_wirein_debug_ctrl : std_logic_vector(31 downto 0);
--- sel_errors register value
+  -- sel_errors register value
   signal usb_wirein_sel_errors : std_logic_vector(31 downto 0);
 
 
@@ -198,6 +194,14 @@ architecture RTL of regdecode_top is
   signal power_ctrl_valid : std_logic;
   -- power_ctrl value
   signal power_ctrl       : std_logic_vector(o_reg_power_ctrl'range);
+
+  ---------------------------------------------------------------------
+  -- inst_regdecode_reg_with_default_value_adc_ctrl
+  ---------------------------------------------------------------------
+  -- adc_ctrl valid
+  signal adc_ctrl_valid : std_logic;
+  -- adc_ctrl value
+  signal adc_ctrl       : std_logic_vector(o_reg_adc_ctrl'range);
 
   ---------------------------------------------------------------------
   -- debug_ctrl regdecode_register_to_user
@@ -226,13 +230,14 @@ architecture RTL of regdecode_top is
   signal usb_wire_status1 : std_logic_vector(31 downto 0);
   -- status0
   signal usb_wire_status0 : std_logic_vector(31 downto 0);
+
   ---------------------------------------------------------------------
   -- regdecode_wire_errors
   ---------------------------------------------------------------------
   -- selected wire
-  signal wire_errors      : std_logic_vector(31 downto 0);
+  signal wire_errors : std_logic_vector(31 downto 0);
   -- selected status
-  signal wire_status      : std_logic_vector(31 downto 0);
+  signal wire_status : std_logic_vector(31 downto 0);
 
 begin
 
@@ -301,10 +306,10 @@ begin
   -- output @usb_clk
   ---------------------------------------------------------------------
 
-  o_reg_ctrl     <= usb_wirein_ctrl;
-  o_reg_adc_ctrl <= usb_wirein_adc_ctrl;
+  o_reg_ctrl <= usb_wirein_ctrl;
 
-  o_usb_rst <= usb_rst;
+
+
   o_usb_clk <= usb_clk;
 
 ---------------------------------------------------------------------
@@ -400,6 +405,37 @@ begin
 
   o_reg_power_ctrl <= power_ctrl;
 
+
+  ---------------------------------------------------------------------
+-- adc_ctrl register
+---------------------------------------------------------------------
+  inst_regdecode_reg_with_default_value_adc_ctrl : entity work.regdecode_reg_with_default_value
+    generic map(
+      g_DATA_DEFAULT => pkg_ADC_CTRL_DEFAULT,
+      g_DATA_WIDTH   => usb_wirein_adc_ctrl'length
+      )
+    port map(
+      -- input clock
+      i_clk        => usb_clk,
+      -- input reset
+      i_rst        => usb_rst,
+      ---------------------------------------------------------------------
+      -- input register
+      ---------------------------------------------------------------------
+      i_data       => usb_wirein_adc_ctrl,
+      ---------------------------------------------------------------------
+      -- output
+      ---------------------------------------------------------------------
+      -- data valid
+      o_data_valid => adc_ctrl_valid,
+      -- data
+      o_data       => adc_ctrl
+      );
+
+  o_reg_adc_ctrl_valid <= adc_ctrl_valid;
+  o_reg_adc_ctrl       <= adc_ctrl;
+
+
   ---------------------------------------------------------------------
   -- debug_ctrl register
   --   cross clock domain: @i_clk -> @i_out_clk
@@ -492,21 +528,26 @@ begin
       port map (
         clk => usb_clk,
 
+        probe0(63 downto 32)   => adc_ctrl,
+        probe0(31 downto 0)    => power_ctrl,
         -- probe1
         probe1(255 downto 224) => i_reg_adc7,
         probe1(223 downto 192) => i_reg_adc6,
         probe1(191 downto 160) => i_reg_adc5,
         probe1(159 downto 128) => i_reg_adc4,
-        probe1(127 downto 96) => i_reg_adc3,
-        probe1(95 downto 64) => i_reg_adc2,
-        probe1(63 downto 32) => i_reg_adc1,
-        probe1(31 downto 0)  => i_reg_adc0,
+        probe1(127 downto 96)  => i_reg_adc3,
+        probe1(95 downto 64)   => i_reg_adc2,
+        probe1(63 downto 32)   => i_reg_adc1,
+        probe1(31 downto 0)    => i_reg_adc0,
 
         -- probe2
         probe2(127 downto 96) => usb_wireout_adc_status,
         probe2(95 downto 64)  => usb_wire_errors2,
         probe2(63 downto 32)  => usb_wire_errors1,
-        probe2(31 downto 0)   => usb_wire_errors0
+        probe2(31 downto 0)   => usb_wire_errors0,
+
+        probe3(1) => adc_ctrl_valid,
+        probe3(0) => power_ctrl_valid
         );
 
 
