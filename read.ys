@@ -52,9 +52,16 @@ verific -vhdl ./src/hdl/utils/error/one_error_latch.vhd
 # regdecode
 verific -vhdl ./src/hdl/regdecode/usb/usb_opal_kelly.vhd
 verific -vhdl ./src/hdl/regdecode/core/regdecode_reg_with_default_value.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_wire_errors.vhd
 verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
 
-# xpm
+#IO
+verific -vhdl ./src/hdl/io/core/io_spi.vhd
+verific -vhdl ./src/hdl/io/io_top.vhd
+
+
+# dcdc
+verific -vhdl ./src/hdl/dcdc/dcdc_top.vhd
 
 
 # system_dcdc (top_level)
