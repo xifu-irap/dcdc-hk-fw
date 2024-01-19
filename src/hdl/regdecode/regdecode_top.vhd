@@ -35,6 +35,7 @@ use work.pkg_regdecode.all;
 
 entity regdecode_top is
   generic (
+    -- enable the DEBUG by ILA
     g_DEBUG : boolean := false
     );
   port (
@@ -101,12 +102,8 @@ entity regdecode_top is
 
     -- errors/status
     ---------------------------------------------------------------------
-    -- status register: errors1
-    i_reg_wire_errors1 : in std_logic_vector(31 downto 0);
     -- status register: errors0
     i_reg_wire_errors0 : in std_logic_vector(31 downto 0);
-    -- status register: status1
-    i_reg_wire_status1 : in std_logic_vector(31 downto 0);
     -- status register: status0
     i_reg_wire_status0 : in std_logic_vector(31 downto 0)
 
@@ -485,33 +482,19 @@ begin
       )
     port map(
       ---------------------------------------------------------------------
-      -- input @i_out_clk
-      ---------------------------------------------------------------------
-      i_out_clk          => i_out_clk,  -- clock
-      -- errors
-      i_reg_wire_errors1 => i_reg_wire_errors1,  -- errors value
-      i_reg_wire_errors0 => i_reg_wire_errors0,  -- errors value
-      -- status
-      i_reg_wire_status1 => i_reg_wire_status1,  -- status value
-      i_reg_wire_status0 => i_reg_wire_status0,  -- status value
-      ---------------------------------------------------------------------
       -- input @i_clk
       ---------------------------------------------------------------------
-      i_clk              => usb_clk,    -- clock
-      i_error_sel        => sel_errors,  -- select the errors/status to output
+      i_clk             => usb_clk,     -- clock
+      i_error_sel       => sel_errors,  -- select the errors/status to output
       -- errors
-      i_usb_reg_errors2  => usb_wire_errors2,    -- errors value
-      i_usb_reg_errors1  => usb_wire_errors1,    -- errors value
-      i_usb_reg_errors0  => usb_wire_errors0,    -- errors value
+      i_usb_reg_errors0 => i_reg_wire_errors0,  -- errors value
       -- status
-      i_usb_reg_status2  => usb_wire_status2,    -- status value
-      i_usb_reg_status1  => usb_wire_status1,    -- status value
-      i_usb_reg_status0  => usb_wire_status0,    -- status value
+      i_usb_reg_status0 => i_reg_wire_status0,  -- status value
       ---------------------------------------------------------------------
       -- output @ i_clk
       ---------------------------------------------------------------------
-      o_wire_errors      => wire_errors,      -- output errors
-      o_wire_status      => wire_status  -- output status
+      o_wire_errors     => wire_errors,       -- output errors
+      o_wire_status     => wire_status  -- output status
       );
 
   usb_wireout_errors <= wire_errors;

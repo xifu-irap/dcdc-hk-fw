@@ -95,18 +95,18 @@ package pkg_regdecode is
   -- POWER_CTRL register
   ---------------------------------------------------------------------
   -- user-defined: default value of the POWER_CTRL register
-  constant pkg_POWER_CTRL_DEFAULT : integer := x"F";
+  constant pkg_POWER_CTRL_DEFAULT     : integer := x"F";
   -- user-defined: index high
   constant pkg_POWER_CTRL_POWER_IDX_H : integer := 3;
   -- user-defined: index low
   constant pkg_POWER_CTRL_POWER_IDX_L : integer := 0;
   -- auto-computed: power_ctrl width
-  constant pkg_POWER_CTRL_WIDTH : integer := work.pkg_utils.pkg_width_from_indexes(i_idx_high => pkg_POWER_CTRL_POWER_IDX_H, i_idx_low => pkg_POWER_CTRL_POWER_IDX_L);
+  constant pkg_POWER_CTRL_WIDTH       : integer := work.pkg_utils.pkg_width_from_indexes(i_idx_high => pkg_POWER_CTRL_POWER_IDX_H, i_idx_low => pkg_POWER_CTRL_POWER_IDX_L);
 
   -- ADC_CTRL register
   ---------------------------------------------------------------------
   -- user-defined: default value of the ADC_CTRL register
-  constant pkg_ADC_CTRL_DEFAULT : integer := x"0";
+  constant pkg_ADC_CTRL_DEFAULT             : integer := x"0";
   -- user-defined: adc_spi_start (bit index)
   constant pkg_ADC_CTRL_ADC_SPI_START_IDX_H : integer := 0;
 
@@ -114,7 +114,7 @@ package pkg_regdecode is
   -- error_sel register
   ---------------------------------------------------------------------
   -- user-defined: error_sel (bit index high)
-  constant pkg_ERROR_SEL_IDX_H : integer := 2;
+  constant pkg_ERROR_SEL_IDX_H : integer := 0;
   -- user-defined: error_sel (bit index low)
   constant pkg_ERROR_SEL_IDX_L : integer := 0;
   -- auto-computed: error_sel width
