@@ -39,13 +39,20 @@ verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7
 #    Source files
 
 # package
+verific -vhdl ./src/hdl/pkg_utils.vhd
+verific -vhdl ./src/hdl/pkg_regdecode.vhd
 verific -vhdl ./src/hdl/pkg_system_dcdc.vhd
-
-# others
-
+verific -vhdl ./src/hdl/pkg_system_dcdc_debug.vhd
 
 # utils
+verific -vhdl ./src/hdl/utils/others/pipeliner_with_init.vhd
+verific -vhdl ./src/hdl/utils/error/one_error_latch.vhd
 
+
+# regdecode
+verific -vhdl ./src/hdl/regdecode/usb/usb_opal_kelly.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_reg_with_default_value.vhd
+verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
 
 # xpm
 
