@@ -33,8 +33,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use pkg_regdecode.all;
-use pkg_system_dcdc_debug.all;
+use work.pkg_regdecode.all;
+use work.pkg_system_dcdc_debug.all;
 
 entity system_dcdc_top is
   port (
@@ -88,55 +88,58 @@ architecture RTL of system_dcdc_top is
   -- regdecode_top
   ---------------------------------------------------------------------
   -- hardware id register (reading)
-  signal hardware_id : std_logic_vector(i_hardware_id'range);
+  -- signal hardware_id : std_logic_vector(i_hardware_id'range);
+  signal hardware_id : std_logic_vector(7 downto 0);
 
   -- usb clock
   signal usb_clk : std_logic;
-  -- reset @usb_clk
-  signal usb_rst : std_logic;
 
   -- ctrl register (writting)
-  signal reg_ctrl             : std_logic_vector(31 downto 0);
+  signal reg_ctrl           : std_logic_vector(31 downto 0);
   -- power_ctrl register (writting)
-  signal reg_power_ctrl       : std_logic_vector(31 downto 0);
+  signal reg_power_ctrl     : std_logic_vector(31 downto 0);
   -- adc_ctrl valid
-  signal reg_adc_ctrl_valid   : std_logic;
+  signal reg_adc_ctrl_valid : std_logic;
   -- adc_ctrl register (reading)
-  signal reg_adc_ctrl         : std_logic_vector(31 downto 0);
+  signal reg_adc_ctrl       : std_logic_vector(31 downto 0);
   -- adc_status register (reading)
-  signal reg_adc_status       : std_logic_vector(31 downto 0);
+  signal reg_adc_status     : std_logic_vector(31 downto 0);
   -- adc0 register (reading)
-  signal reg_adc0             : std_logic_vector(31 downto 0);
+  signal reg_adc0           : std_logic_vector(31 downto 0);
   -- adc1 register (reading)
-  signal reg_adc1             : std_logic_vector(31 downto 0);
+  signal reg_adc1           : std_logic_vector(31 downto 0);
   -- adc2 register (reading)
-  signal reg_adc2             : std_logic_vector(31 downto 0);
+  signal reg_adc2           : std_logic_vector(31 downto 0);
   -- adc3 register (reading)
-  signal reg_adc3             : std_logic_vector(31 downto 0);
+  signal reg_adc3           : std_logic_vector(31 downto 0);
   -- adc4 register (reading)
-  signal reg_adc4             : std_logic_vector(31 downto 0);
+  signal reg_adc4           : std_logic_vector(31 downto 0);
   -- adc5 register (reading)
-  signal reg_adc5             : std_logic_vector(31 downto 0);
+  signal reg_adc5           : std_logic_vector(31 downto 0);
   -- adc6 register (reading)
-  signal reg_adc6             : std_logic_vector(31 downto 0);
+  signal reg_adc6           : std_logic_vector(31 downto 0);
   -- adc7 register (reading)
-  signal reg_adc7             : std_logic_vector(31 downto 0);
+  signal reg_adc7           : std_logic_vector(31 downto 0);
   -- debug_ctrl data valid
-  signal reg_debug_ctrl_valid : std_logic;
+  -- signal reg_debug_ctrl_valid : std_logic;
   -- debug_ctrl register value
-  signal reg_debug_ctrl       : std_logic_vector(31 downto 0);
+  signal reg_debug_ctrl     : std_logic_vector(31 downto 0);
 
   -- status register: errors1
-  signal reg_wire_errors1 : std_logic_vector(31 downto 0);
+  -- signal reg_wire_errors1 : std_logic_vector(31 downto 0);
   -- status register: errors0
   signal reg_wire_errors0 : std_logic_vector(31 downto 0);
   -- status register: status1
-  signal reg_wire_status1 : std_logic_vector(31 downto 0);
+  -- signal reg_wire_status1 : std_logic_vector(31 downto 0);
   -- status register: status0
   signal reg_wire_status0 : std_logic_vector(31 downto 0);
 
   -- software reset @usb_clk
   signal rst             : std_logic;
+  -- reset error flag(s)
+  signal rst_status      : std_logic;
+  -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
+  signal debug_pulse     : std_logic;
   -- adc_start valid
   signal adc_start_valid : std_logic;
   -- adc_start (start ADCs' acquisition)
@@ -152,28 +155,28 @@ architecture RTL of system_dcdc_top is
   -- adcs' value valid
   signal adc_valid : std_logic;
   -- adc7 value
-  signal adc7      : std_logic_vector(11 downto 0);
+  signal adc7      : std_logic_vector(15 downto 0);
   -- adc6 value
-  signal adc6      : std_logic_vector(11 downto 0);
+  signal adc6      : std_logic_vector(15 downto 0);
   -- adc5 value
-  signal adc5      : std_logic_vector(11 downto 0);
+  signal adc5      : std_logic_vector(15 downto 0);
   -- adc4 value
-  signal adc4      : std_logic_vector(11 downto 0);
+  signal adc4      : std_logic_vector(15 downto 0);
   -- adc3 value
-  signal adc3      : std_logic_vector(11 downto 0);
+  signal adc3      : std_logic_vector(15 downto 0);
   -- adc2 value
-  signal adc2      : std_logic_vector(11 downto 0);
+  signal adc2      : std_logic_vector(15 downto 0);
   -- adc1 value
-  signal adc1      : std_logic_vector(11 downto 0);
+  signal adc1      : std_logic_vector(15 downto 0);
   -- adc0 value
-  signal adc0      : std_logic_vector(11 downto 0);
+  signal adc0      : std_logic_vector(15 downto 0);
 
   -- adc SPI MISO
   signal adc_spi_miso : std_logic;
   -- adc SPI MOSI
   signal adc_spi_mosi : std_logic;
   -- adc SPI CLK
-  signal adc_spi_clk  : std_logic;
+  signal adc_spi_sclk : std_logic;
   -- adc SPI Chip Select
   signal adc_spi_cs_n : std_logic;
 
@@ -211,7 +214,7 @@ begin
       -- to the user @o_usb_clk
       ---------------------------------------------------------------------
       -- usb clock
-      o_usb_clk     => o_usb_clk,
+      o_usb_clk     => usb_clk,
 
       -- wire
       -- ctrl register (writting)
@@ -313,60 +316,61 @@ begin
       )
     port map(
       -- clock
-      i_clk             => i_clk,
+      i_clk             => usb_clk,
       -- reset
-      i_rst             => i_rst,
+      i_rst             => rst,
       -- reset error flag(s)
-      i_rst_status      => i_rst_status,
+      i_rst_status      => rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
-      i_debug_pulse     => i_debug_pulse,
+      i_debug_pulse     => debug_pulse,
       -- Valid start ADCs' acquisition
       i_adc_start_valid => adc_start_valid,
       -- start ADCs' acquisition
       i_adc_start       => adc_start,
       -- '1': ready to start an acquisition, '0': busy
-      o_ready           => adc_ready,
+      o_adc_ready       => adc_ready,
       -- ADC values valid
-      o_adc_valid       => o_adc_valid,
-      -- ADC0 value
-      o_adc0            => o_adc0,
-      -- ADC1 value
-      o_adc1            => o_adc1,
-      -- ADC2 value
-      o_adc2            => o_adc2,
-      -- ADC3 value
-      o_adc3            => o_adc3,
-      -- ADC4 value
-      o_adc4            => o_adc4,
-      -- ADC5 value
-      o_adc5            => o_adc5,
-      -- ADC6 value
-      o_adc6            => o_adc6,
+      o_adc_valid       => adc_valid,
       -- ADC7 value
-      o_adc7            => o_adc7,
+      o_adc7            => adc7,
+      -- ADC6 value
+      o_adc6            => adc6,
+      -- ADC5 value
+      o_adc5            => adc5,
+      -- ADC4 value
+      o_adc4            => adc4,
+      -- ADC3 value
+      o_adc3            => adc3,
+      -- ADC2 value
+      o_adc2            => adc2,
+      -- ADC1 value
+      o_adc1            => adc1,
+      -- ADC0 value
+      o_adc0            => adc0,
       ---------------------------------------------------------------------
       -- spi interface
       ---------------------------------------------------------------------
       -- SPI MISO
-      i_spi_miso        => adc_spi_miso,
+      i_adc_spi_miso    => adc_spi_miso,
       -- SPI MOSI
-      o_spi_mosi        => adc_spi_mosi,
+      o_adc_spi_mosi    => adc_spi_mosi,
       -- SPI clock
-      o_spi_sclk        => adc_spi_sclk,
+      o_adc_spi_sclk    => adc_spi_sclk,
       -- SPI chip select
-      o_spi_cs_n        => adc_spi_cs_n,
+      o_adc_spi_cs_n    => adc_spi_cs_n,
       ---------------------------------------------------------------------
       -- Status/errors
       ---------------------------------------------------------------------
-      o_errors          => adc_errors,
-      o_status          => adc_status
+      o_adc_errors      => adc_errors,
+      o_adc_status      => adc_status
       );
+
 
   ---------------------------------------------------------------------
   -- io_top
   ---------------------------------------------------------------------
 
-    inst_io_top : entity work.io_top
+  inst_io_top : entity work.io_top
     port map(
       ---------------------------------------------------------------------
       -- from/to FPGA io: spi @i_sys_spi_clk
@@ -395,6 +399,33 @@ begin
       -- SPI chip select
       i_ui_spi_cs_n => adc_spi_cs_n
       );
+
+---------------------------------------------------------------------
+-- leds
+---------------------------------------------------------------------
+  inst_leds_top : entity work.leds_top
+    port map(
+      ---------------------------------------------------------------------
+      -- input @i_clk
+      ---------------------------------------------------------------------
+      -- clock
+      i_clk             => usb_clk,
+      -- reset  @i_clk
+      i_rst             => rst,
+      ---------------------------------------------------------------------
+      -- from science @i_clk
+      ---------------------------------------------------------------------
+      -- -- Valid start ADCs' acquisition
+      i_adc_start_valid => adc_start_valid,
+      -- start ADCs' acquisition
+      i_adc_start       => adc_start,
+      ---------------------------------------------------------------------
+      -- output @i_clk
+      ---------------------------------------------------------------------
+      -- FPGA board: status leds ('1':ON, 'Z':OFF)
+      o_leds            => o_leds
+      );
+
 
 
 end RTL;
