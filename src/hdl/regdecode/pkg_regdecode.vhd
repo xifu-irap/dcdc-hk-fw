@@ -87,6 +87,8 @@ package pkg_regdecode is
 
   -- debug_ctrl register
   ---------------------------------------------------------------------
+  -- user-defined: default value of the ADC_CTRL register
+  constant pkg_DEBUG_CTRL_DEFAULT           : integer := 0;
   -- user-defined: debug_pulse (bit index)
   constant pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H : integer := 0;
   -- user-defined: rst_status (bit index)
@@ -106,7 +108,7 @@ package pkg_regdecode is
   -- ADC_CTRL register
   ---------------------------------------------------------------------
   -- user-defined: default value of the ADC_CTRL register
-  constant pkg_ADC_CTRL_DEFAULT             : integer := x"0";
+  constant pkg_ADC_CTRL_DEFAULT             : integer := 0;
   -- user-defined: adc_spi_start (bit index)
   constant pkg_ADC_CTRL_ADC_SPI_START_IDX_H : integer := 0;
 

@@ -404,8 +404,8 @@ begin
 
 
   ---------------------------------------------------------------------
--- adc_ctrl register
----------------------------------------------------------------------
+  -- adc_ctrl register
+  ---------------------------------------------------------------------
   inst_regdecode_reg_with_default_value_adc_ctrl : entity work.regdecode_reg_with_default_value
     generic map(
       g_DATA_DEFAULT => pkg_ADC_CTRL_DEFAULT,
@@ -437,35 +437,27 @@ begin
   -- debug_ctrl register
   --   cross clock domain: @i_clk -> @i_out_clk
   ---------------------------------------------------------------------
-  inst_regdecode_register_to_user_debug_ctrl : entity work.regdecode_register_to_user
+   inst_regdecode_reg_with_default_value_debug_ctrl : entity work.regdecode_reg_with_default_value
     generic map(
-      g_DATA_WIDTH     => usb_wirein_debug_ctrl'length,
-      g_FIFO_DEPTH_OUT => pkg_DEBUG_CTRL_FIFO_DEPTH
+      g_DATA_DEFAULT => pkg_DEBUG_CTRL_DEFAULT,
+      g_DATA_WIDTH   => usb_wirein_adc_ctrl'length
       )
     port map(
+      -- input clock
+      i_clk        => usb_clk,
+      -- input reset
+      i_rst        => usb_rst,
       ---------------------------------------------------------------------
-      -- from/to the usb:  @i_clk
+      -- input register
       ---------------------------------------------------------------------
-      i_clk         => usb_clk,
-      i_rst         => usb_rst,
-      i_rst_status  => usb_rst_status,
-      i_debug_pulse => usb_debug_pulse,
-
-      -- input
-      i_data    => usb_wirein_debug_ctrl,
+      i_data       => usb_wirein_debug_ctrl,
       ---------------------------------------------------------------------
-      -- to the user: @i_out_clk
+      -- output
       ---------------------------------------------------------------------
-      i_out_clk => i_out_clk,
-
+      -- data valid
+      o_data_valid => reg_debug_ctrl_valid,
       -- data
-      o_fifo_data_valid => reg_debug_ctrl_valid,
-      o_fifo_data       => reg_debug_ctrl,
-      ---------------------------------------------------------------------
-      -- errors/status @ i_clk
-      ---------------------------------------------------------------------
-      o_errors          => debug_ctrl_errors,
-      o_status          => debug_ctrl_status
+      o_data       => reg_debug_ctrl
       );
 
   o_reg_debug_ctrl_valid <= reg_debug_ctrl_valid;
