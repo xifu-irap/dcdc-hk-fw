@@ -18,13 +18,20 @@
 # track only the *.xpr files
 !/project/vivado00/*.xpr
 
-# Track essential Xilinx IP files
+# untracked Opal Kelly IP files
 /ip/opal_kelly/Front_panel_XEM7310-A75/simu
 /ip/opal_kelly/Front_panel_XEM7310-A75/syn
 
 
 # untracked temporary files
 /constraints/*/*_tmp.xdc
+
+# Track essential Xilinx IP files
+/ip/xilinx/coregen/*/*
+!/ip/xilinx/coregen/*/*.xdc
+!/ip/xilinx/coregen/*/*.xci
+!/ip/xilinx/coregen/*/*.mif
+!/ip/xilinx/coregen/*/*_stub.vhdl
 
 
 
