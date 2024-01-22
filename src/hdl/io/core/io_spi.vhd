@@ -33,7 +33,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.pkg_system_tmtc.all;
+use work.pkg_system_dcdc.all;
 
 library unisim;
 
