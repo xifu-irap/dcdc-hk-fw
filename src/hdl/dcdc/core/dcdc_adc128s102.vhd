@@ -205,6 +205,15 @@ architecture RTL of dcdc_adc128s102 is
   -- ADC0 value
   signal adc0_r2      : std_logic_vector(o_adc0'range);
 
+  ---------------------------------------------------------------------
+  -- error latching
+  ---------------------------------------------------------------------
+  -- define the width of the temporary errors signals
+  constant c_NB_ERRORS : integer := 1;
+  -- temporary input errors
+  signal error_tmp     : std_logic_vector(c_NB_ERRORS - 1 downto 0);
+  -- temporary output errors
+  signal error_tmp_bis : std_logic_vector(c_NB_ERRORS - 1 downto 0);
 
 begin
 
@@ -569,5 +578,33 @@ begin
   o_adc2      <= adc2_r2;
   o_adc1      <= adc1_r2;
   o_adc0      <= adc0_r2;
+
+
+  ---------------------------------------------------------------------
+-- errors/status
+---------------------------------------------------------------------
+  error_tmp(0) <= error_r1; -- error: new received spi tx command during the tx transmission
+  gen_errors_latch : for i in error_tmp'range generate
+    inst_one_error_latch : entity work.one_error_latch
+      port map(
+        i_clk         => i_clk,
+        i_rst         => i_rst_status,
+        i_debug_pulse => i_debug_pulse,
+        i_error       => error_tmp(i),
+        o_error       => error_tmp_bis(i)
+        );
+  end generate gen_errors_latch;
+
+  o_errors(15 downto 1) <= (others => '0');
+  o_errors(0)           <= error_tmp_bis(0);
+
+  o_status(7 downto 1) <= (others => '0');
+  o_status(0)          <= ready_r1;
+
+  ---------------------------------------------------------------------
+  -- for simulation only
+  ---------------------------------------------------------------------
+  assert not (error_tmp_bis(0) = '1') report "[dcdc_adc128s102] => new received spi tx command during the tx transmission" severity error;
+
 
 end architecture RTL;
