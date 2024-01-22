@@ -390,8 +390,9 @@ begin
     data_tmp0(1) <= tx_sclk_r1;
     data_tmp0(0) <= tx_data_r1(tx_data_r1'high);
 
-    inst_pipeliner_tx : entity work.pipeliner
+    inst_pipeliner_tx : entity work.pipeliner_with_init
       generic map(
+        g_INIT       => '0',
         g_NB_PIPES   => g_MOSI_DELAY,
         g_DATA_WIDTH => data_tmp0'length
         )
@@ -415,7 +416,7 @@ begin
     signal data_tmp1 : std_logic_vector(0 downto 0);
   begin
     data_tmp0(0) <= tx_cs_n_r1;
-    inst_pipeliner_with_init : entity work.pipeliner_with_init
+    inst_pipeliner_with_init_tx_cs_n : entity work.pipeliner_with_init
       generic map(
         g_INIT       => '1',
         -- number of consecutives registers. Possibles values: [0, integer max value[
@@ -456,8 +457,9 @@ begin
     data_tmp0(1) <= tx_finish_rx;
     data_tmp0(0) <= rx_data_valid_rx;
 
-    inst_pipeliner_rx : entity work.pipeliner
+    inst_pipeliner_rx : entity work.pipeliner_with_init
       generic map(
+        g_INIT       => '0',
         g_NB_PIPES   => g_MISO_DELAY,
         g_DATA_WIDTH => data_tmp0'length
         )
