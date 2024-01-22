@@ -442,12 +442,12 @@ begin
 
   inst_spi_master : entity work.spi_master
     generic map(
-      g_CPOL                 => pkg_SPI_CPOL,        -- clock polarity
-      g_CPHA                 => pkg_SPI_CPHA,        -- clock phase
-      g_SYSTEM_FREQUENCY_HZ  => pkg_SPI_SYSTEM_FREQUENCY_HZ,  -- input system clock frequency  (expressed in Hz). The range is ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value]
-      g_SPI_FREQUENCY_MAX_HZ => pkg_SPI_SPI_FREQUENCY_MAX_HZ,  -- output max spi clock frequency (expressed in Hz)
-      g_MOSI_DELAY           => pkg_SPI_MOSI_DELAY,  -- Number of clock period for mosi signal delay from state machine to the output
-      g_MISO_DELAY           => pkg_SPI_MISO_DELAY,  -- Number of clock period for miso signal delay from spi pin input to spi master input
+      g_CPOL                 => pkg_ADC_SPI_CPOL,        -- clock polarity
+      g_CPHA                 => pkg_ADC_SPI_CPHA,        -- clock phase
+      g_SYSTEM_FREQUENCY_HZ  => pkg_ADC_SPI_SYSTEM_FREQUENCY_HZ,  -- input system clock frequency  (expressed in Hz). The range is ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value]
+      g_SPI_FREQUENCY_MAX_HZ => pkg_ADC_SPI_SPI_FREQUENCY_MAX_HZ,  -- output max spi clock frequency (expressed in Hz)
+      g_MOSI_DELAY           => pkg_ADC_SPI_MOSI_DELAY,  -- Number of clock period for mosi signal delay from state machine to the output
+      g_MISO_DELAY           => pkg_ADC_SPI_MISO_DELAY,  -- Number of clock period for miso signal delay from spi pin input to spi master input
       g_DATA_WIDTH           => g_DATA_WIDTH         -- Data bus size
       )
     port map(
