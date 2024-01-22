@@ -1,9 +1,9 @@
 -- -------------------------------------------------------------------------------------------------------------
---                            Copyright (C) 2023-2030 Ken-ji de la Rosa, IRAP Toulouse.
+--                            Copyright (C) 2023-2030 Ken-ji de la ROSA, IRAP Toulouse.
 -- -------------------------------------------------------------------------------------------------------------
 --                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
---                            tmtc-fw is free software: you can redistribute it and/or modify
+--                            dcdc-hk-fw is free software: you can redistribute it and/or modify
 --                            it under the terms of the GNU General Public License as published by
 --                            the Free Software Foundation, either version 3 of the License, or
 --                            (at your option) any later version.
