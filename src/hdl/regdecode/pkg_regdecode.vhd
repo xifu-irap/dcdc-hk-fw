@@ -97,7 +97,7 @@ package pkg_regdecode is
   -- POWER_CTRL register
   ---------------------------------------------------------------------
   -- user-defined: default value of the POWER_CTRL register
-  constant pkg_POWER_CTRL_DEFAULT     : integer := x"F";
+  constant pkg_POWER_CTRL_DEFAULT     : integer := 15;-- 0xF
   -- user-defined: index high
   constant pkg_POWER_CTRL_POWER_IDX_H : integer := 3;
   -- user-defined: index low

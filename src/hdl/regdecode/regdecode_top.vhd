@@ -112,7 +112,6 @@ end entity regdecode_top;
 
 architecture RTL of regdecode_top is
 
-
   ---------------------------------------------------------------------
   -- usb_opal_kelly
   ---------------------------------------------------------------------
@@ -177,9 +176,9 @@ architecture RTL of regdecode_top is
   -- rst @usb_clk
   signal usb_rst         : std_logic;
   -- rst_status @usb_clk
-  signal usb_rst_status  : std_logic;
+  --signal usb_rst_status  : std_logic;
   -- debug_pulse @usb_clk
-  signal usb_debug_pulse : std_logic;
+  --signal usb_debug_pulse : std_logic;
 
   -- sel_errors value
   signal sel_errors : std_logic_vector(pkg_ERROR_SEL_WIDTH - 1 downto 0);
@@ -207,26 +206,6 @@ architecture RTL of regdecode_top is
   signal reg_debug_ctrl_valid : std_logic;
   -- debug_ctrl register
   signal reg_debug_ctrl       : std_logic_vector(o_reg_debug_ctrl'range);
-  -- debug_ctrl errors
-  signal debug_ctrl_errors    : std_logic_vector(15 downto 0);
-  -- debug_ctrl status
-  signal debug_ctrl_status    : std_logic_vector(7 downto 0);
-
-  ---------------------------------------------------------------------
-  -- build errors/status
-  ---------------------------------------------------------------------
-  -- errors2
-  signal usb_wire_errors2 : std_logic_vector(31 downto 0);
-  -- errors1
-  signal usb_wire_errors1 : std_logic_vector(31 downto 0);
-  -- errors0
-  signal usb_wire_errors0 : std_logic_vector(31 downto 0);
-  -- status2
-  signal usb_wire_status2 : std_logic_vector(31 downto 0);
-  -- status1
-  signal usb_wire_status1 : std_logic_vector(31 downto 0);
-  -- status0
-  signal usb_wire_status0 : std_logic_vector(31 downto 0);
 
   ---------------------------------------------------------------------
   -- regdecode_wire_errors
@@ -295,8 +274,8 @@ begin
       );
 
   -- extract bits
-  usb_rst_status  <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
-  usb_debug_pulse <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
+  --usb_rst_status  <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
+  --usb_debug_pulse <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
   usb_rst         <= usb_wirein_ctrl(pkg_CTRL_RST_IDX_H);
   sel_errors      <= usb_wirein_sel_errors(pkg_ERROR_SEL_IDX_H downto pkg_ERROR_SEL_IDX_L);
   ---------------------------------------------------------------------
@@ -516,10 +495,9 @@ begin
         probe1(31 downto 0)    => i_reg_adc0,
 
         -- probe2
-        probe2(127 downto 96) => usb_wireout_adc_status,
-        probe2(95 downto 64)  => usb_wire_errors2,
-        probe2(63 downto 32)  => usb_wire_errors1,
-        probe2(31 downto 0)   => usb_wire_errors0,
+        probe2(95 downto 64)  => usb_wireout_adc_status,
+        probe2(63 downto 32)  => i_reg_wire_errors0,
+        probe2(31 downto 0)   => i_reg_wire_status0,
 
         probe3(1) => adc_ctrl_valid,
         probe3(0) => power_ctrl_valid
