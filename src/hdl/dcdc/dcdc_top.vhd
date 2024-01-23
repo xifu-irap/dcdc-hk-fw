@@ -31,7 +31,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.pkg_spi.all;
 
 entity dcdc_top is
   generic (
