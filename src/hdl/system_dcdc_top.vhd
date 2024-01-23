@@ -312,7 +312,7 @@ begin
   inst_dcdc_top : entity work.dcdc_top
     generic map(
       -- enable the DEBUG by ILA
-      g_DEBUG => pkg_DCDC_TOP_DEBUG
+      g_DEBUG => pkg_DCDC_ADC128S102_DEBUG
       )
     port map(
       -- clock
