@@ -96,14 +96,18 @@ architecture RTL of system_dcdc_top is
 
   -- ctrl register (writting)
   signal reg_ctrl           : std_logic_vector(31 downto 0);
+
   -- power_ctrl register (writting)
   signal reg_power_ctrl     : std_logic_vector(31 downto 0);
+
   -- adc_ctrl valid
   signal reg_adc_ctrl_valid : std_logic;
   -- adc_ctrl register (reading)
   signal reg_adc_ctrl       : std_logic_vector(31 downto 0);
+
   -- adc_status register (reading)
   signal reg_adc_status     : std_logic_vector(31 downto 0);
+
   -- adc0 register (reading)
   signal reg_adc0           : std_logic_vector(31 downto 0);
   -- adc1 register (reading)
@@ -120,6 +124,7 @@ architecture RTL of system_dcdc_top is
   signal reg_adc6           : std_logic_vector(31 downto 0);
   -- adc7 register (reading)
   signal reg_adc7           : std_logic_vector(31 downto 0);
+
   -- debug_ctrl data valid
   -- signal reg_debug_ctrl_valid : std_logic;
   -- debug_ctrl register value
@@ -129,6 +134,7 @@ architecture RTL of system_dcdc_top is
   -- signal reg_wire_errors1 : std_logic_vector(31 downto 0);
   -- status register: errors0
   signal reg_wire_errors0 : std_logic_vector(31 downto 0);
+
   -- status register: status1
   -- signal reg_wire_status1 : std_logic_vector(31 downto 0);
   -- status register: status0
@@ -140,18 +146,21 @@ architecture RTL of system_dcdc_top is
   signal rst_status      : std_logic;
   -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
   signal debug_pulse     : std_logic;
+
   -- adc_start valid
   signal adc_start_valid : std_logic;
   -- adc_start (start ADCs' acquisition)
   signal adc_start       : std_logic;
+
   -- power the signals
   signal power_on_off    : std_logic_vector(o_power_on_off'range);
 
   ---------------------------------------------------------------------
   -- adc_top
   ---------------------------------------------------------------------
-  -- Status of the ADCs' acquisition engine.
+  -- status of the ADCs' acquisition engine.
   signal adc_ready : std_logic;
+
   -- adcs' value valid
   signal adc_valid : std_logic;
   -- adc7 value
@@ -188,9 +197,12 @@ architecture RTL of system_dcdc_top is
 
 begin
 
---hardware_id <= i_hardware_id;
+  --hardware_id <= i_hardware_id;
   hardware_id <= (others => '0');       -- TODO
 
+  ---------------------------------------------------------------------
+  -- regdecode_top
+  ---------------------------------------------------------------------
   inst_regdecode_top : entity work.regdecode_top
     generic map(
       g_DEBUG => pkg_REGDECODE_TOP_DEBUG
@@ -198,23 +210,25 @@ begin
     port map(
       --  Opal Kelly inouts --
       -- usb interface signal
-      i_okUH        => i_okUH,
+      i_okUH  => i_okUH,
       -- usb interface signal
-      o_okHU        => o_okHU,
+      o_okHU  => o_okHU,
       -- usb interface signal
-      b_okUHU       => b_okUHU,
+      b_okUHU => b_okUHU,
       -- usb interface signal
-      b_okAA        => b_okAA,
+      b_okAA  => b_okAA,
+
       ---------------------------------------------------------------------
       -- From IO
       ---------------------------------------------------------------------
       -- hardware id register (reading)
       i_hardware_id => hardware_id,
+
       ---------------------------------------------------------------------
       -- to the user @o_usb_clk
       ---------------------------------------------------------------------
       -- usb clock
-      o_usb_clk     => usb_clk,
+      o_usb_clk => usb_clk,
 
       -- wire
       -- ctrl register (writting)
@@ -294,21 +308,21 @@ begin
   -- errors0
   reg_wire_errors0(31 downto 16) <= (others => '0');
   reg_wire_errors0(15 downto 0)  <= adc_errors;
+
   -- status0
   reg_wire_status0(31 downto 24) <= (others => '0');
   reg_wire_status0(23 downto 16) <= (others => '0');
   reg_wire_status0(15 downto 8)  <= (others => '0');
   reg_wire_status0(7 downto 0)   <= adc_status;
 
----------------------------------------------------------------------
--- Power
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- Power
+  ---------------------------------------------------------------------
   o_power_on_off <= power_on_off;
 
-
----------------------------------------------------------------------
--- dcdc_top
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- dcdc_top
+  ---------------------------------------------------------------------
   inst_dcdc_top : entity work.dcdc_top
     generic map(
       -- enable the DEBUG by ILA
@@ -369,7 +383,6 @@ begin
   ---------------------------------------------------------------------
   -- io_top
   ---------------------------------------------------------------------
-
   inst_io_top : entity work.io_top
     port map(
       ---------------------------------------------------------------------
@@ -386,6 +399,7 @@ begin
       o_spi_sclk    => o_adc_spi_sclk,
       -- SPI chip select
       o_spi_cs_n    => o_adc_spi_cs_n,
+
       ---------------------------------------------------------------------
       -- to user: spi interface @i_sys_spi_clk
       ---------------------------------------------------------------------
@@ -400,18 +414,19 @@ begin
       i_ui_spi_cs_n => adc_spi_cs_n
       );
 
----------------------------------------------------------------------
--- leds
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- leds
+  ---------------------------------------------------------------------
   inst_leds_top : entity work.leds_top
     port map(
       ---------------------------------------------------------------------
       -- input @i_clk
       ---------------------------------------------------------------------
       -- clock
-      i_clk             => usb_clk,
+      i_clk => usb_clk,
       -- reset  @i_clk
-      i_rst             => rst,
+      i_rst => rst,
+
       ---------------------------------------------------------------------
       -- from science @i_clk
       ---------------------------------------------------------------------
@@ -419,13 +434,13 @@ begin
       i_adc_start_valid => adc_start_valid,
       -- start ADCs' acquisition
       i_adc_start       => adc_start,
+
       ---------------------------------------------------------------------
       -- output @i_clk
       ---------------------------------------------------------------------
       -- FPGA board: status leds ('1':ON, 'Z':OFF)
-      o_leds            => o_leds
+      o_leds => o_leds
       );
-
 
 
 end RTL;
