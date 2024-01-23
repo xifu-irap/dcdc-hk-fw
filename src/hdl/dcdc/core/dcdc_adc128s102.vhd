@@ -149,8 +149,6 @@ architecture RTL of dcdc_adc128s102 is
   -- delayed fsm ready
   signal ready_r1   : std_logic;
 
-  -- error
-  signal error_next : std_logic;
   -- delayed error
   signal error_r1   : std_logic;
 
@@ -236,7 +234,6 @@ begin
     tx_data_valid_next <= '0';
     tx_addr_next       <= tx_addr_r1;
     rx_sel_next        <= rx_sel_r1;
-    error_next         <= '0';
     ready_next         <= ready_r1;
 
     case sm_state_r1 is
@@ -427,6 +424,7 @@ begin
       end if;
       tx_data_valid_r1 <= tx_data_valid_next;
       tx_addr_r1       <= tx_addr_next;
+      rx_sel_r1        <= rx_sel_next;
       ready_r1         <= ready_next;
 
       -- generate error: no command during tx transmission
