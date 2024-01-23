@@ -608,5 +608,47 @@ begin
   ---------------------------------------------------------------------
   assert not (error_tmp_bis(0) = '1') report "[dcdc_adc128s102] => new received spi tx command during the tx transmission" severity error;
 
+  ---------------------------------------------------------------------
+  -- debugging: ILAs, etc.
+  ---------------------------------------------------------------------
+  gen_debug : if g_DEBUG generate
+
+  begin
+
+    inst_ila_dcdc_adc128s102 : entity work.ila_dcdc_adc128s102
+      port map (
+        clk => i_clk,
+
+        probe0(6)              => adc_valid_r2,
+        probe0(5)              => rx_data_valid,
+        probe0(4)              => tx_data_valid_r1,
+        probe0(3)              => tx_ready,
+        probe0(2)              => tx_finish,
+        probe0(1)              => ready_r1,
+        probe0(0)              => start,
+        -- probe1
+        probe1(34 downto 32)   => std_logic_vector(rx_sel_r1),
+        probe1(31 downto 16)   => rx_data,
+        probe1(15 downto 0)    => tx_data_tmp,
+
+        -- probe2
+        probe2(127 downto 112)  => adc7_r2,
+        probe2(111 downto 96)   => adc6_r2,
+        probe2(95 downto 80)    => adc5_r2,
+        probe2(79 downto 64)    => adc4_r2,
+        probe2(63 downto 48)    => adc3_r2,
+        probe2(47 downto 32)    => adc2_r2,
+        probe2(31 downto 16)    => adc1_r2,
+        probe2(15 downto 0)     => adc0_r2,
+
+        -- probe3
+        probe3(3)     => spi_cs_n,
+        probe3(2)     => spi_sclk,
+        probe3(1)     => spi_mosi,
+        probe3(0)     => i_spi_miso
+        );
+
+
+  end generate gen_debug;
 
 end architecture RTL;
