@@ -472,7 +472,7 @@ begin
   usb_wireout_status <= wire_status;
 
   ---------------------------------------------------------------------
-  -- debugging
+  -- debugging: ILAs, etc.
   ---------------------------------------------------------------------
   gen_debug : if g_DEBUG generate
 
