@@ -24,7 +24,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
---    This module manages the IOs
+--    This module is the top level for the IOs.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ entity io_top is
     o_spi_mosi    : out std_logic;
     -- Shared SPI clock line
     o_spi_sclk    : out std_logic;
-     -- SPI chip select
+    -- SPI chip select
     o_spi_cs_n    : out std_logic;
 
     ---------------------------------------------------------------------
@@ -69,9 +69,7 @@ end entity io_top;
 architecture RTL of io_top is
 
 
-
 begin
-
 
   ---------------------------------------------------------------------
   -- spi

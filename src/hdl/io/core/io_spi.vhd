@@ -26,8 +26,6 @@
 --
 --    Manage IO for the spi
 --
---
---
 -- -------------------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -72,20 +70,20 @@ end entity io_spi;
 
 architecture RTL of io_spi is
 
----------------------------------------------------------------------
--- add an optional input pipe
----------------------------------------------------------------------
--- temporary input pipe
+  ---------------------------------------------------------------------
+  -- add an optional input pipe
+  ---------------------------------------------------------------------
+  -- temporary input pipe
   signal data_pipe_tmp0 : std_logic_vector(0 downto 0);
--- temporary output pipe
+  -- temporary output pipe
   signal data_pipe_tmp1 : std_logic_vector(0 downto 0);
 
--- temporary resync pipe
+  -- temporary resync pipe
   signal data_pipe_resync_tmp2 : std_logic_vector(0 downto 0);
 
----------------------------------------------------------------------
--- add an optional output pipe
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- add an optional output pipe
+  ---------------------------------------------------------------------
   -- index0: low
   constant c_IDX0_L : integer := 0;
   --index0: high
@@ -97,17 +95,17 @@ architecture RTL of io_spi is
   constant c_IDX1_H : integer := c_IDX1_L + 1 - 1;
 
 
--- temporary input pipe
+  -- temporary input pipe
   signal data_pipe_tmp2 : std_logic_vector(c_IDX1_H downto 0);
--- temporary output pipe
+  -- temporary output pipe
   signal data_pipe_tmp3 : std_logic_vector(c_IDX1_H downto 0);
 
 
 begin
 
----------------------------------------------------------------------
--- add an optional input pipe
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- add an optional input pipe
+  ---------------------------------------------------------------------
   data_pipe_tmp0(0) <= i_spi_miso;
 
   inst_pipeliner_optional_input_miso : entity work.pipeliner_with_init
@@ -148,7 +146,7 @@ begin
       o_data       => data_pipe_resync_tmp2
       );
 
-
+  -- output
   o_ui_spi_miso <= data_pipe_resync_tmp2(0);
 
   ---------------------------------------------------------------------
@@ -207,6 +205,8 @@ begin
         I => clk_fwd_out,
         O => clk_to_pins
         );
+
+    -- output
     o_spi_sclk <= clk_to_pins;
   end generate gen_user_to_pads_clk;
 
@@ -229,6 +229,7 @@ begin
       o_data => data_pipe_tmp3
       );
 
+  -- output
   o_spi_mosi <= data_pipe_tmp3(c_IDX1_H);
   o_spi_cs_n <= data_pipe_tmp3(c_IDX0_H);
 
