@@ -71,8 +71,8 @@ package pkg_system_dcdc is
 
 
   -------------------------------------------------------------------
-  -- AMC7823
-  --   .see: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html
+  -- ADC128S102
+  --   .see: datasheet
   -------------------------------------------------------------------
   -- user-defined : SPI clock polarity
   constant pkg_ADC_SPI_CPOL                 : std_logic := '0';
@@ -81,7 +81,7 @@ package pkg_system_dcdc is
   -- auto-computed : input clock frequency of the module (expressed in Hz). (possible values: ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value])
   constant pkg_ADC_SPI_SYSTEM_FREQUENCY_HZ  : positive  := pkg_USB_SYSTEM_FREQUENCY_HZ;
   -- user-defined : spi output clock frequency to generate (expressed in Hz)
-  constant pkg_ADC_SPI_SPI_FREQUENCY_MAX_HZ : positive  := 6_000_000; -- 12 MHz max
+  constant pkg_ADC_SPI_SPI_FREQUENCY_MAX_HZ : positive  := 12_000_000; -- 8 to 18 MHz max
   -- user-defined : Number of clock period for mosi signal between the state machine output to the output ports (spi_master)
   -- (possible values [0;max_integer_value[)
   constant pkg_ADC_SPI_MOSI_DELAY           : natural   := 0;
