@@ -74,7 +74,7 @@ architecture RTL of regdecode_reg_with_default_value is
 -- State machine
 ---------------------------------------------------------------------
 -- fsm type declaration
-  type t_state is (E_RST, E_CHANGE);
+  type t_state is (E_RST, E_WAIT_DATA_CHANGE);
   -- state
   signal sm_state_next : t_state;
   -- state (registered)
@@ -106,7 +106,7 @@ begin
 ---------------------------------------------------------------------
 -- 1. On Reset, set the output data to a default value
 -- 2. On input value change, copy the input data value to the output
-  p_decode_state : process (sm_state_r1) is
+  p_decode_state : process (data_pipe_r1, data_r1, i_data, sm_state_r1) is
   begin
     data_valid_next <= '0';
     data_next       <= data_r1;
