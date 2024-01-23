@@ -63,6 +63,8 @@ verific -vhdl ./src/hdl/io/core/io_spi.vhd
 verific -vhdl ./src/hdl/io/io_top.vhd
 
 #leds
+verific -vhdl ./src/hdl/leds/core/led_blink.vhd
+verific -vhdl ./src/hdl/leds/core/led_blink_on_start.vhd
 verific -vhdl ./src/hdl/leds/leds_top.vhd
 
 
