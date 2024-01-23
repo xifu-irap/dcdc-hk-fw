@@ -24,7 +24,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
---    This module manages the leds
+--    This module is the top_level for the leds' management.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -65,12 +65,15 @@ architecture RTL of leds_top is
   ---------------------------------------------------------------------
   -- led_blink
   ---------------------------------------------------------------------
+  -- periodic led blink
   signal led_blink : std_logic;
 
   ---------------------------------------------------------------------
   -- led_blink_on_start
   ---------------------------------------------------------------------
+  -- start command
   signal start        : std_logic;
+  -- aperiodic led blink on start command.
   signal led_on_start : std_logic;
 
 begin
@@ -133,6 +136,8 @@ begin
 
   ---------------------------------------------------------------------
   -- output
+  --  The FPGA leds board must respected the following behaviour:
+  --   . status leds ('1':ON, 'Z':OFF)
   ---------------------------------------------------------------------
   o_leds(0)          <= '0';            -- ON: led_fw
   o_leds(1)          <= 'Z';  -- OFF: N/A: no pll_lock signal available

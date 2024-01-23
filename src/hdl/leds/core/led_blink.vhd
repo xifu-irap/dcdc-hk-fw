@@ -24,7 +24,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
---    This generate a pulse with a ratio of 50%.
+--    This module generates a periodic pulse width with a ratio of 50%.
 --      . The high level duration (expressed in clock period) is defined by the g_NB_CYCLES_LED_ON value
 --
 -- -------------------------------------------------------------------------------------------------------------
@@ -67,10 +67,10 @@ architecture RTL of led_blink is
   ---------------------------------------------------------------------
   -- counter
   ---------------------------------------------------------------------
-  -- led: count clock cycle
-  signal cnt_r1        : unsigned(c_CNT_WIDTH - 1 downto 0) := (others => '0');
+  -- led: count the number of clock cycles
+  signal cnt_r1 : unsigned(c_CNT_WIDTH - 1 downto 0) := (others => '0');
   -- led: change state
-  signal trig          : std_logic;
+  signal trig   : std_logic;
 
   ---------------------------------------------------------------------
   -- optional output delay
@@ -84,7 +84,6 @@ architecture RTL of led_blink is
   signal led_rx : std_logic;
 
 begin
-
 
 
   ---------------------------------------------------------------------
@@ -128,7 +127,6 @@ begin
   -- output
   ---------------------------------------------------------------------
   o_led <= led_rx;
-
 
 
 end architecture RTL;

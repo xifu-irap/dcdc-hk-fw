@@ -24,7 +24,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
---    This module generates a positive pulse when an input start command is received.
+--    This module generates a positive pulse only when an input start command is received.
 --      . The positive pulse duration (expressed in clock period) is defined by the g_NB_CYCLES_LED_ON value
 --
 -- -------------------------------------------------------------------------------------------------------------
@@ -107,20 +107,21 @@ begin
   -- fsm: On new start command, generate a pulse.
   ---------------------------------------------------------------------
   -- The steps are:
-  --   1. reset the led on counter
+  --   1. reset the counter (for the led ON)
   --   2. wait a new start command
   --   3. generate a positive pulse during g_NB_CYCLES_LED_ON clock cycles
+  --   4. repeate 2. to 3.
   p_decode_state : process (cnt_r1, i_start, sm_state_r1) is
   begin
     pulse_next <= '0';
-    cnt_next <= cnt_r1;
+    cnt_next   <= cnt_r1;
     case sm_state_r1 is
       when E_RST =>
         cnt_next      <= (others => '0');
         sm_state_next <= E_RST;
 
-      when E_WAIT => -- wait a new start command
-        cnt_next      <= (others => '0');
+      when E_WAIT =>                    -- wait a new start command
+        cnt_next <= (others => '0');
 
         if i_start = '1' then
           sm_state_next <= E_RUN;
@@ -128,9 +129,9 @@ begin
           sm_state_next <= E_WAIT;
         end if;
 
-      when E_RUN => -- generate a high level pulse during g_NB_CYCLES_LED_ON clock cycles
+      when E_RUN =>  -- generate a high level pulse during g_NB_CYCLES_LED_ON clock cycles
 
-        cnt_next <= cnt_r1 + 1;
+        cnt_next   <= cnt_r1 + 1;
         pulse_next <= '1';
 
         if cnt_r1 = to_unsigned(g_NB_CYCLES_LED_ON - 1, cnt_r1'length) then
@@ -144,6 +145,7 @@ begin
     end case;
   end process p_decode_state;
 
+  -- registered FSM signals
   p_state : process (i_clk) is
   begin
     if rising_edge(i_clk) then
@@ -152,7 +154,7 @@ begin
       else
         sm_state_r1 <= sm_state_next;
       end if;
-      cnt_r1 <= cnt_next;
+      cnt_r1   <= cnt_next;
       pulse_r1 <= pulse_next;
     end if;
   end process p_state;
@@ -186,7 +188,6 @@ begin
   -- output
   ---------------------------------------------------------------------
   o_led <= pulse_rx;
-
 
 
 end architecture RTL;
