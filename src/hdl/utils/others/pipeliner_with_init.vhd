@@ -26,7 +26,8 @@
 --
 --   This module adds 0 or several consecutive registers on the data path.
 --
---   Note: This module defines an initial values for the pipe
+--   Note:
+--     . This module defines an initial values for the pipe
 --
 -- -------------------------------------------------------------------------------------------------------------
 

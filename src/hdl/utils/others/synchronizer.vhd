@@ -38,7 +38,8 @@
 --  Note:
 --    . This code is based on the code example of the Xilinx language template
 --
---  IMPORTANT: At the output, when the input data is a bus, the bus bits may not keep synchronization between each other.
+--  IMPORTANT:
+--     . At the output, when the input data is a bus, the bus bits may not keep synchronization between each other.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -140,9 +141,9 @@ begin
     data_tmp <= sreg_pipe_r1(sreg_pipe_r1'high);
   end generate multiple_pipeline;
 
----------------------------------------------------------------------
--- output
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- output
+  ---------------------------------------------------------------------
   o_data <= data_tmp;
 
 end architecture RTL;
