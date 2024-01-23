@@ -302,29 +302,29 @@ set_property IOSTANDARD LVCMOS33 [get_ports {}]
 set_property PACKAGE_PIN AB1 [get_ports {}]
 set_property IOSTANDARD LVCMOS33 [get_ports {}]
 # MC1-66
-set_property PACKAGE_PIN AA14 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN AA14 [get_ports {i_adc_spi_miso}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_adc_spi_miso}]
 # MC1-67
-set_property PACKAGE_PIN AB16 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN AB16 [get_ports {o_adc_spi_mosi}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_adc_spi_mosi}]
 # MC1-68
-set_property PACKAGE_PIN AA13 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN AA13 [get_ports {o_adc_spi_sclk}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_adc_spi_sclk}]
 # MC1-69
-set_property PACKAGE_PIN AB17 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN AB17 [get_ports {o_adc_spi_cs_n}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_adc_spi_cs_n}]
 # MC1-70
-set_property PACKAGE_PIN AB13 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN AB13 [get_ports {o_power_on_off[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_power_on_off[0]}]
 # MC1-71
-set_property PACKAGE_PIN AA15 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN AA15 [get_ports {o_power_on_off[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_power_on_off[1]}]
 # MC1-72
-set_property PACKAGE_PIN W15 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN W15 [get_ports {o_power_on_off[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_power_on_off[2]}]
 # MC1-73
-set_property PACKAGE_PIN AB15 [get_ports {}]
-set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN AB15 [get_ports {o_power_on_off[3}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_power_on_off[3}]
 # MC1-74
 set_property PACKAGE_PIN W16 [get_ports {}]
 set_property IOSTANDARD LVCMOS33 [get_ports {}]
