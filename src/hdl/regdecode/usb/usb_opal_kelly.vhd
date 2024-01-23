@@ -37,21 +37,22 @@ entity usb_opal_kelly is
   port(
     --  Opal Kelly inouts --
     -- usb interface signal
-    i_okUH                   : in    std_logic_vector(4 downto 0);
+    i_okUH  : in    std_logic_vector(4 downto 0);
     -- usb interface signal
-    o_okHU                   : out   std_logic_vector(2 downto 0);
+    o_okHU  : out   std_logic_vector(2 downto 0);
     -- usb interface signal
-    b_okUHU                  : inout std_logic_vector(31 downto 0);
+    b_okUHU : inout std_logic_vector(31 downto 0);
     -- usb interface signal
-    b_okAA                   : inout std_logic;
+    b_okAA  : inout std_logic;
+
     ---------------------------------------------------------------------
     -- from the user @o_usb_clk
     ---------------------------------------------------------------------
     -- wire_out
     -- ctrl register (reading)
-    i_usb_wireout_ctrl       : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_ctrl       : in std_logic_vector(31 downto 0);
     -- power_ctrl register (reading)
-    i_usb_wireout_power_ctrl : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_power_ctrl : in std_logic_vector(31 downto 0);
 
     -- ADC
     ---------------------------------------------------------------------
@@ -132,7 +133,10 @@ architecture RTL of usb_opal_kelly is
   -- usb interface signal
   signal okEHx : std_logic_vector(c_WIRE_PIPE_TRIG_NUMBER_OUT * 65 - 1 downto 0);
 
+  -- type definition for the used wire out, pipe out, pipe in and trigger out
   type t_array65 is array (0 to c_WIRE_PIPE_TRIG_NUMBER_OUT - 1) of std_logic_vector(64 downto 0);
+
+  -- array of vector
   signal okEHx_array : t_array65;
 
   -- wires in
@@ -248,7 +252,6 @@ begin
   ep36_wire <= i_usb_wireout_adc6;
   ep37_wire <= i_usb_wireout_adc7;
 
-
   -- to wire_out: debug
   ep38_wire <= i_usb_wireout_debug_ctrl;
   ep39_wire <= i_usb_wireout_sel_errors;
@@ -258,7 +261,6 @@ begin
   ep3D_wire <= i_usb_wireout_hardware_id;
   ep3E_wire <= i_usb_wireout_firmware_name;
   ep3F_wire <= i_usb_wireout_firmware_id;
-
 
   ----------------------------------------------------
   --    Opal Kelly Wire in
@@ -298,7 +300,6 @@ begin
       ep_addr    => x"19",              -- Endpoint address
       ep_dataout => ep19_wire           -- Endpoint data in 32 bits
       );
-
 
   ----------------------------------------------------
   --    Opal Kelly Wire out
@@ -461,16 +462,11 @@ begin
       ep_datain => ep3F_wire            -- Endpoint data out 32 bits
       );
 
-
-
-
-
   ---------------------------------------------------------------------
   -- output
   ---------------------------------------------------------------------
   -- from okhost
   o_usb_clk <= okClk;
-
 
   -- from wire in
   o_usb_wirein_ctrl       <= ep00_wire;

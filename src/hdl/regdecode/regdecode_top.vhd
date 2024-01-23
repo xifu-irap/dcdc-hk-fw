@@ -24,6 +24,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
+--    This module is the top_level of the regdecode
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -172,9 +173,9 @@ architecture RTL of regdecode_top is
 
 
   -- usb clock
-  signal usb_clk         : std_logic;
+  signal usb_clk : std_logic;
   -- rst @usb_clk
-  signal usb_rst         : std_logic;
+  signal usb_rst : std_logic;
   -- rst_status @usb_clk
   --signal usb_rst_status  : std_logic;
   -- debug_pulse @usb_clk
@@ -221,6 +222,9 @@ begin
   usb_wireout_firmware_id   <= pkg_FIRMWARE_ID;
   usb_wireout_firmware_name <= pkg_FIRMWARE_NAME;
 
+  ---------------------------------------------------------------------
+  -- usb_opal_kelly
+  ---------------------------------------------------------------------
   inst_usb_opal_kelly : entity work.usb_opal_kelly
     port map(
       --  Opal Kelly inouts --
@@ -274,28 +278,29 @@ begin
       );
 
   -- extract bits
+  ---------------------------------------------------------------------
   --usb_rst_status  <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   --usb_debug_pulse <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
-  usb_rst         <= usb_wirein_ctrl(pkg_CTRL_RST_IDX_H);
-  sel_errors      <= usb_wirein_sel_errors(pkg_ERROR_SEL_IDX_H downto pkg_ERROR_SEL_IDX_L);
+  usb_rst    <= usb_wirein_ctrl(pkg_CTRL_RST_IDX_H);
+  sel_errors <= usb_wirein_sel_errors(pkg_ERROR_SEL_IDX_H downto pkg_ERROR_SEL_IDX_L);
+
   ---------------------------------------------------------------------
   -- output @usb_clk
   ---------------------------------------------------------------------
-
   o_reg_ctrl <= usb_wirein_ctrl;
+  o_usb_clk  <= usb_clk;
 
-
-
-  o_usb_clk <= usb_clk;
-
----------------------------------------------------------------------
--- internal loopback
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- internal loopback
+  ---------------------------------------------------------------------
   inst_pipeliner_with_init_optional_pipe_ctrl : entity work.pipeliner_with_init
     generic map(
+      -- register init value
       g_INIT       => '0',
-      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_DATA_WIDTH => usb_wirein_ctrl'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,
+      -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => usb_wirein_ctrl'length
       )
     port map(
       i_clk  => usb_clk,
@@ -305,9 +310,12 @@ begin
 
   inst_pipeliner_with_init_optional_pipe_tc_hk_conf : entity work.pipeliner_with_init
     generic map(
+      -- register init value
       g_INIT       => '0',
-      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_DATA_WIDTH => usb_wirein_power_ctrl'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,
+      -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => usb_wirein_power_ctrl'length
       )
     port map(
       i_clk  => usb_clk,
@@ -317,9 +325,12 @@ begin
 
   inst_pipeliner_with_init_optional_pipe_icu_conf : entity work.pipeliner_with_init
     generic map(
+      -- register init value
       g_INIT       => '0',
-      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_DATA_WIDTH => usb_wirein_adc_ctrl'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,
+      -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => usb_wirein_adc_ctrl'length
       )
     port map(
       i_clk  => usb_clk,
@@ -329,9 +340,12 @@ begin
 
   inst_pipeliner_with_init_optional_pipe_debug_ctrl : entity work.pipeliner_with_init
     generic map(
+      -- register init value
       g_INIT       => '0',
-      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_DATA_WIDTH => usb_wirein_debug_ctrl'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,
+      -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => usb_wirein_debug_ctrl'length
       )
     port map(
       i_clk  => usb_clk,
@@ -341,9 +355,12 @@ begin
 
   inst_pipeliner_with_init_optional_pipe_sel_errors : entity work.pipeliner_with_init
     generic map(
+      -- register init value
       g_INIT       => '0',
-      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_DATA_WIDTH => usb_wirein_sel_errors'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,
+      -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => usb_wirein_sel_errors'length
       )
     port map(
       i_clk  => usb_clk,
@@ -353,23 +370,27 @@ begin
 
 
 
----------------------------------------------------------------------
--- power_ctrl register
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- power_ctrl register
+  ---------------------------------------------------------------------
   inst_regdecode_reg_with_default_value_power_ctrl : entity work.regdecode_reg_with_default_value
     generic map(
+      -- data default value (on the Reset)
       g_DATA_DEFAULT => pkg_POWER_CTRL_DEFAULT,
+      -- input/output data width
       g_DATA_WIDTH   => usb_wirein_power_ctrl'length
       )
     port map(
       -- input clock
-      i_clk        => usb_clk,
+      i_clk => usb_clk,
       -- input reset
-      i_rst        => usb_rst,
+      i_rst => usb_rst,
+
       ---------------------------------------------------------------------
       -- input register
       ---------------------------------------------------------------------
-      i_data       => usb_wirein_power_ctrl,
+      i_data => usb_wirein_power_ctrl,
+
       ---------------------------------------------------------------------
       -- output
       ---------------------------------------------------------------------
@@ -379,6 +400,7 @@ begin
       o_data       => power_ctrl
       );
 
+  -- output
   o_reg_power_ctrl <= power_ctrl;
 
 
@@ -387,18 +409,22 @@ begin
   ---------------------------------------------------------------------
   inst_regdecode_reg_with_default_value_adc_ctrl : entity work.regdecode_reg_with_default_value
     generic map(
+      -- data default value (on the Reset)
       g_DATA_DEFAULT => pkg_ADC_CTRL_DEFAULT,
+      -- input/output data width
       g_DATA_WIDTH   => usb_wirein_adc_ctrl'length
       )
     port map(
       -- input clock
-      i_clk        => usb_clk,
+      i_clk => usb_clk,
       -- input reset
-      i_rst        => usb_rst,
+      i_rst => usb_rst,
+
       ---------------------------------------------------------------------
       -- input register
       ---------------------------------------------------------------------
-      i_data       => usb_wirein_adc_ctrl,
+      i_data => usb_wirein_adc_ctrl,
+
       ---------------------------------------------------------------------
       -- output
       ---------------------------------------------------------------------
@@ -408,28 +434,32 @@ begin
       o_data       => adc_ctrl
       );
 
+  -- output
   o_reg_adc_ctrl_valid <= adc_ctrl_valid;
   o_reg_adc_ctrl       <= adc_ctrl;
 
 
   ---------------------------------------------------------------------
   -- debug_ctrl register
-  --   cross clock domain: @i_clk -> @i_out_clk
   ---------------------------------------------------------------------
-   inst_regdecode_reg_with_default_value_debug_ctrl : entity work.regdecode_reg_with_default_value
+  inst_regdecode_reg_with_default_value_debug_ctrl : entity work.regdecode_reg_with_default_value
     generic map(
+      -- data default value (on the Reset)
       g_DATA_DEFAULT => pkg_DEBUG_CTRL_DEFAULT,
+      -- input/output data width
       g_DATA_WIDTH   => usb_wirein_adc_ctrl'length
       )
     port map(
       -- input clock
-      i_clk        => usb_clk,
+      i_clk => usb_clk,
       -- input reset
-      i_rst        => usb_rst,
+      i_rst => usb_rst,
+
       ---------------------------------------------------------------------
       -- input register
       ---------------------------------------------------------------------
-      i_data       => usb_wirein_debug_ctrl,
+      i_data => usb_wirein_debug_ctrl,
+
       ---------------------------------------------------------------------
       -- output
       ---------------------------------------------------------------------
@@ -439,9 +469,9 @@ begin
       o_data       => reg_debug_ctrl
       );
 
+  -- output
   o_reg_debug_ctrl_valid <= reg_debug_ctrl_valid;
   o_reg_debug_ctrl       <= reg_debug_ctrl;
-
 
 
   ---------------------------------------------------------------------
@@ -449,23 +479,28 @@ begin
   ---------------------------------------------------------------------
   inst_regdecode_wire_errors : entity work.regdecode_wire_errors
     generic map(
-      g_ERROR_SEL_WIDTH => sel_errors'length  -- define the width of the error selection
+      -- define the width of the error selection
+      g_ERROR_SEL_WIDTH => sel_errors'length
       )
     port map(
       ---------------------------------------------------------------------
       -- input @i_clk
       ---------------------------------------------------------------------
-      i_clk             => usb_clk,     -- clock
-      i_error_sel       => sel_errors,  -- select the errors/status to output
+      -- clock
+      i_clk             => usb_clk,
+      -- error/status selection
+      i_error_sel       => sel_errors,
       -- errors
-      i_usb_reg_errors0 => i_reg_wire_errors0,  -- errors value
+      i_usb_reg_errors0 => i_reg_wire_errors0,
       -- status
-      i_usb_reg_status0 => i_reg_wire_status0,  -- status value
+      i_usb_reg_status0 => i_reg_wire_status0,
       ---------------------------------------------------------------------
       -- output @ i_clk
       ---------------------------------------------------------------------
-      o_wire_errors     => wire_errors,       -- output errors
-      o_wire_status     => wire_status  -- output status
+      -- output errors
+      o_wire_errors     => wire_errors,
+      -- output status
+      o_wire_status     => wire_status
       );
 
   usb_wireout_errors <= wire_errors;
@@ -495,16 +530,14 @@ begin
         probe1(31 downto 0)    => i_reg_adc0,
 
         -- probe2
-        probe2(95 downto 64)  => usb_wireout_adc_status,
-        probe2(63 downto 32)  => i_reg_wire_errors0,
-        probe2(31 downto 0)   => i_reg_wire_status0,
+        probe2(95 downto 64) => usb_wireout_adc_status,
+        probe2(63 downto 32) => i_reg_wire_errors0,
+        probe2(31 downto 0)  => i_reg_wire_status0,
 
         probe3(1) => adc_ctrl_valid,
         probe3(0) => power_ctrl_valid
         );
 
-
   end generate gen_debug;
-
 
 end architecture RTL;

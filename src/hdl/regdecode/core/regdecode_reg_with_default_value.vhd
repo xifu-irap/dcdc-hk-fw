@@ -24,6 +24,9 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
+--    This module does the following steps:
+--      1. After the reset, set the output data to a default value
+--      2. On Input data change, copy the input data to the output data.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -34,7 +37,9 @@ use ieee.numeric_std.all;
 
 entity regdecode_reg_with_default_value is
   generic (
+    -- data default value (on the Reset)
     g_DATA_DEFAULT : integer := 0;
+    -- input/output data width
     g_DATA_WIDTH   : integer := 32
     );
   port (
@@ -62,18 +67,18 @@ end entity regdecode_reg_with_default_value;
 
 architecture RTL of regdecode_reg_with_default_value is
 
--- default data value
+  -- default data value
   constant c_DATA_DEFAULT : std_logic_vector(i_data'range) := std_logic_vector(to_unsigned(g_DATA_DEFAULT, i_data'length));
----------------------------------------------------------------------
--- pipe
----------------------------------------------------------------------
--- delayed data
+  ---------------------------------------------------------------------
+  -- pipe
+  ---------------------------------------------------------------------
+  -- delayed data
   signal data_pipe_r1     : std_logic_vector(i_data'range);
 
----------------------------------------------------------------------
--- State machine
----------------------------------------------------------------------
--- fsm type declaration
+  ---------------------------------------------------------------------
+  -- State machine
+  ---------------------------------------------------------------------
+  -- fsm type declaration
   type t_state is (E_RST, E_WAIT_DATA_CHANGE);
   -- state
   signal sm_state_next : t_state;
@@ -93,7 +98,7 @@ architecture RTL of regdecode_reg_with_default_value is
 
 begin
 
--- delayed the input data in order to detect change
+  -- delayed the input data in order to detect a change
   p_pipe : process (i_clk) is
   begin
     if rising_edge(i_clk) then
@@ -101,16 +106,20 @@ begin
     end if;
   end process p_pipe;
 
----------------------------------------------------------------------
--- State machine
----------------------------------------------------------------------
--- 1. On Reset, set the output data to a default value
--- 2. On input value change, copy the input data value to the output
+  ---------------------------------------------------------------------
+  -- State machine
+  ---------------------------------------------------------------------
+  -- 1. On Reset, set the output data to a default value
+  -- 2. On input value change, copy the input data value to the output
   p_decode_state : process (data_pipe_r1, data_r1, i_data, sm_state_r1) is
   begin
+
+    -- default values
     data_valid_next <= '0';
     data_next       <= data_r1;
+
     case sm_state_r1 is
+
       when E_RST =>                     -- load defaut value
         data_next     <= c_DATA_DEFAULT;
         sm_state_next <= E_WAIT_DATA_CHANGE;
@@ -123,12 +132,13 @@ begin
         else
           sm_state_next <= E_WAIT_DATA_CHANGE;
         end if;
+
       when others =>
         sm_state_next <= E_RST;
     end case;
   end process p_decode_state;
 
--- FSM: registred signals
+  -- FSM: registred signals
   p_state : process (i_clk) is
   begin
     if rising_edge(i_clk) then
@@ -144,9 +154,9 @@ begin
     end if;
   end process p_state;
 
----------------------------------------------------------------------
--- output
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- output
+  ---------------------------------------------------------------------
   o_data_valid <= data_valid_r1;
   o_data       <= data_r1;
 
