@@ -62,35 +62,83 @@ end entity leds_top;
 
 architecture RTL of leds_top is
 
+  ---------------------------------------------------------------------
+  -- led_blink
+  ---------------------------------------------------------------------
+  signal led_blink : std_logic;
 
-  -- led: count clock cycle
-  signal cnt_r1 : unsigned(26 downto 0) := (others => '0');
-  -- led: change state
-  signal trig   : std_logic;
+  ---------------------------------------------------------------------
+  -- led_blink_on_start
+  ---------------------------------------------------------------------
+  signal start        : std_logic;
+  signal led_on_start : std_logic;
 
 begin
 
 
 
   ---------------------------------------------------------------------
-  -- detect @clk alive
+  -- led blink
   ---------------------------------------------------------------------
-  p_blink : process (i_clk) is
-  begin
-    if rising_edge(i_clk) then
-      cnt_r1 <= cnt_r1 + 1;
-    end if;
-  end process p_blink;
+  -- detect the @i_clk is alive
+  inst_led_blink : entity work.led_blink
+    generic map(
+      -- LED ON: number of cycles (should be a power of 2)
+      g_NB_CYCLES_LED_ON => 2**26,
+      -- optional output latency (range >= 0)
+      g_OUTPUT_LATENCY   => 1
+      )
+    port map(
+      ---------------------------------------------------------------------
+      -- input @i_clk
+      ---------------------------------------------------------------------
+      -- clock
+      i_clk => i_clk,
+      ---------------------------------------------------------------------
+      -- output @i_clk
+      ---------------------------------------------------------------------
+      -- FPGA board: status led
+      o_led => led_blink
+      );
 
-  trig <= cnt_r1(cnt_r1'high);
+  ---------------------------------------------------------------------
+  -- led_blink_on_start
+  ---------------------------------------------------------------------
+  start <= '1' when i_adc_start = '1' and i_adc_start_valid = '1' else '0';
+
+  inst_led_blink_on_start : entity work.led_blink_on_start
+    generic map(
+      -- LED ON: number of cycles (must be >0)
+      g_NB_CYCLES_LED_ON => 2**26,
+      -- optional output latency (range >= 0)
+      g_OUTPUT_LATENCY   => 1
+      )
+    port map(
+      ---------------------------------------------------------------------
+      -- input @i_clk
+      ---------------------------------------------------------------------
+      -- clock
+      i_clk   => i_clk,
+      -- reset
+      i_rst   => i_rst,
+      -- start
+      i_start => start,
+      ---------------------------------------------------------------------
+      -- output @i_clk
+      ---------------------------------------------------------------------
+      -- FPGA board: status led
+      o_led   => led_on_start
+      );
 
 
   ---------------------------------------------------------------------
   -- output
   ---------------------------------------------------------------------
-  o_leds(0) <= '0';                     -- ON: led_fw
-  o_leds(1) <= 'Z';                     -- OFF: N/A: led_pll_lock
-  o_leds(2) <= '0' when trig = '1' else 'Z';
+  o_leds(0)          <= '0';            -- ON: led_fw
+  o_leds(1)          <= 'Z';  -- OFF: N/A: no pll_lock signal available
+  o_leds(2)          <= '0' when led_blink = '1'    else 'Z';
+  o_leds(3)          <= '0' when led_on_start = '1' else 'Z';
+  o_leds(7 downto 4) <= (others => 'Z');
 
 
 
