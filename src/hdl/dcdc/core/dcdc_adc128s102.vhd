@@ -24,7 +24,11 @@
 -- -------------------------------------------------------------------------------------------------------------
 --   @details
 --
---   This is the top level of the dcdc function
+--   This module sequentially reads all inputs of the adc128s102 SPI device (ADC0 -> ADC7) each time a new start command is received.
+--   Each read input (adc128s102) are stored in a dedicated register.
+--
+--   Note:
+--     . An error is generated if a new start command is received during the processing of the previous reading.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -50,14 +54,23 @@ entity dcdc_adc128s102 is
     -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
     i_debug_pulse : in std_logic;
 
+    ---------------------------------------------------------------------
+    -- inputs
+    ---------------------------------------------------------------------
     -- Valid start ADCs' acquisition
     i_adc_start_valid : in std_logic;
     -- start ADCs' acquisition
     i_adc_start       : in std_logic;
 
+    ---------------------------------------------------------------------
+    -- FSM status
+    ---------------------------------------------------------------------
     -- '1': tx_ready to start an acquisition, '0': busy
     o_ready : out std_logic;
 
+    ---------------------------------------------------------------------
+    -- ADC outputs
+    ---------------------------------------------------------------------
     -- ADC values valid
     o_adc_valid : out std_logic;
     -- ADC7 value
@@ -92,37 +105,42 @@ entity dcdc_adc128s102 is
     ---------------------------------------------------------------------
     -- Status/errors
     ---------------------------------------------------------------------
+    -- adc errors
     o_errors : out std_logic_vector(15 downto 0);
+    -- adc status
     o_status : out std_logic_vector(7 downto 0)
+
     );
 end entity dcdc_adc128s102;
 
 architecture RTL of dcdc_adc128s102 is
--- define the width of the address field.
-  constant c_ADDR_WIDTH : integer                             := 3;
--- define ADDR7 value
+
+  -- define the width of the address field.
+  constant c_ADDR_WIDTH : integer := 3;
+
+  -- define ADDR7 value
   constant c_ADDR7      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(7, c_ADDR_WIDTH);
--- define ADDR6 value
+  -- define ADDR6 value
   constant c_ADDR6      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(6, c_ADDR_WIDTH);
--- define ADDR5 value
+  -- define ADDR5 value
   constant c_ADDR5      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(5, c_ADDR_WIDTH);
--- define ADDR4 value
+  -- define ADDR4 value
   constant c_ADDR4      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(4, c_ADDR_WIDTH);
--- define ADDR3 value
+  -- define ADDR3 value
   constant c_ADDR3      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(3, c_ADDR_WIDTH);
--- define ADDR2 value
+  -- define ADDR2 value
   constant c_ADDR2      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(2, c_ADDR_WIDTH);
--- define ADDR1 value
+  -- define ADDR1 value
   constant c_ADDR1      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(1, c_ADDR_WIDTH);
--- define ADDR0 value
+  -- define ADDR0 value
   constant c_ADDR0      : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(0, c_ADDR_WIDTH);
 
----------------------------------------------------------------------
--- state machine
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- state machine
+  ---------------------------------------------------------------------
   -- detect an start acquisition
   signal start         : std_logic;
--- fsm type declaration
+  -- fsm type declaration
   type t_state is (E_RST, E_INIT_LOAD_ADDR, E_INIT_TX_END, E_WAIT, E_RD_ADC0, E_RD_ADC1, E_RD_ADC2, E_RD_ADC3, E_RD_ADC4, E_RD_ADC5, E_RD_ADC6, E_RD_ADC7, E_WAIT_TX_END);
   -- state
   signal sm_state_next : t_state;
@@ -223,10 +241,13 @@ begin
   --   . ADC0 -> ADC1 -> ... -> ADC7
   ---------------------------------------------------------------------
   -- The steps are:
-  --    1. On reset, for the next read access, force the address of the spi device at @0x0
+  --    1. On reset, force the address of the spi device at @0x0 in order to get the adc0 on the next spi read access.
   --    2. wait a new command
   --    3. sequencially read the following ADCs: ADC0 -> ADC1 -> ... -> ADC7
   --    4. Repeat 2. and 3.
+  --
+  --    Note: While a conversion is in progress, the address of the next input for conversion is clocked into a control register (see datasheet)
+  --     . Example: to get the adci value (rx_sel), the corresponding address (tx_addr) must be set on the previous spi read access.
   p_decode_state : process (ready_r1, rx_sel_r1, sm_state_r1, start,
                             tx_addr_r1, tx_finish, tx_ready) is
   begin
@@ -380,29 +401,23 @@ begin
 
       when E_WAIT_TX_END =>
         if tx_finish = '1' then
+          -- At the end of the tx transmission, select the next state
           case tx_addr_r1 is
-            --when "000" => -- 0
-            when c_ADDR0 =>             -- 0
+            when c_ADDR0 => -- 0
               sm_state_next <= E_WAIT;
-            --when "001" => -- 1
-            when c_ADDR1 =>             -- 1
+            when c_ADDR1 => -- 1
               sm_state_next <= E_RD_ADC1;
-            --when "010" => -- 2
-            when c_ADDR2 =>             -- 2
+            when c_ADDR2 => -- 2
               sm_state_next <= E_RD_ADC2;
-            --when "011" => -- 3
-            when c_ADDR3 =>             -- 3
+            when c_ADDR3 => -- 3
               sm_state_next <= E_RD_ADC3;
-            --when "100" => -- 4
-            when c_ADDR4 =>             -- 4
+            when c_ADDR4 => -- 4
               sm_state_next <= E_RD_ADC4;
-            --when "101" => -- 5
-            when c_ADDR5 =>             -- 5
+            when c_ADDR5 => -- 5
               sm_state_next <= E_RD_ADC5;
-            --when "110" => -- 6
-            when c_ADDR6 =>             -- 6
+            when c_ADDR6 => -- 6
               sm_state_next <= E_RD_ADC6;
-            when others =>              -- 7
+            when others =>  -- 7
               sm_state_next <= E_RD_ADC7;
           end case;
         else
@@ -414,6 +429,7 @@ begin
     end case;
   end process p_decode_state;
 
+  -- registered state machine signals
   p_state : process (i_clk) is
   begin
     if rising_edge(i_clk) then
@@ -427,7 +443,7 @@ begin
       rx_sel_r1        <= rx_sel_next;
       ready_r1         <= ready_next;
 
-      -- generate error: no command during tx transmission
+      -- generate error if a new start command is received during the tx transmission.
       if ready_r1 = '0' and start = '1' then
         error_r1 <= '1';
       else
@@ -505,48 +521,49 @@ begin
 ---------------------------------------------------------------------
 -- Select the ADCs
 ---------------------------------------------------------------------
+  -- select the dedicated register.
   p_select_ADC_register : process (i_clk) is
   begin
     if rising_edge(i_clk) then
         -- default value
       adc_valid_r2 <= '0';
       case rx_sel_r1 is
-        when "000" =>                   -- 0
+        when "000" => -- 0
         if rx_data_valid = '1' then
           adc0_r2 <= rx_data;
         end if;
 
-        when "001" =>                   -- 1
+        when "001" => -- 1
         if rx_data_valid = '1' then
           adc1_r2 <= rx_data;
         end if;
 
-        when "010" =>                   -- 2
+        when "010" => -- 2
         if rx_data_valid = '1' then
           adc2_r2 <= rx_data;
         end if;
 
-        when "011" =>                   -- 3
+        when "011" => -- 3
         if rx_data_valid = '1' then
           adc3_r2 <= rx_data;
         end if;
 
-        when "100" =>                   -- 4
+        when "100" => -- 4
         if rx_data_valid = '1' then
           adc4_r2 <= rx_data;
         end if;
 
-        when "101" =>                   -- 5
+        when "101" => -- 5
         if rx_data_valid = '1' then
           adc5_r2 <= rx_data;
         end if;
 
-        when "110" =>                   -- 6
+        when "110" => -- 6
         if rx_data_valid = '1' then
           adc6_r2 <= rx_data;
         end if;
 
-        when others =>                  -- 7
+        when others => -- 7
         -- generate data valid on the last read ADC (ADC7)
         adc_valid_r2 <= rx_data_valid;
         if rx_data_valid = '1' then
@@ -567,7 +584,7 @@ begin
   o_spi_cs_n <= spi_cs_n;
   o_spi_mosi <= spi_mosi;
 
-  --
+  -- adc
   ---------------------------------------------------------------------
   o_adc_valid <= adc_valid_r2;
   o_adc7      <= adc7_r2;
@@ -581,10 +598,12 @@ begin
 
 
   ---------------------------------------------------------------------
--- errors/status
----------------------------------------------------------------------
+  -- errors/status
+  ---------------------------------------------------------------------
   error_tmp(0) <= error_r1; -- error: new received spi tx command during the tx transmission
+
   gen_errors_latch : for i in error_tmp'range generate
+
     inst_one_error_latch : entity work.one_error_latch
       port map(
         i_clk         => i_clk,

@@ -99,7 +99,6 @@ end entity dcdc_top;
 
 architecture RTL of dcdc_top is
 
-
   ---------------------------------------------------------------------
   -- inst_dcdc_adc128s102
   ---------------------------------------------------------------------
@@ -137,11 +136,11 @@ architecture RTL of dcdc_top is
   -- adc status
   signal adc_status : std_logic_vector(7 downto 0);
 
-
-
-
 begin
 
+  ---------------------------------------------------------------------
+  -- dcdc_adc128s102
+  ---------------------------------------------------------------------
   inst_dcdc_adc128s102 : entity work.dcdc_adc128s102
     generic map(
       -- enable the DEBUG by ILA
@@ -156,12 +155,24 @@ begin
       i_rst_status      => i_rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
       i_debug_pulse     => i_debug_pulse,
+
+      ---------------------------------------------------------------------
+      -- inputs
+      ---------------------------------------------------------------------
       -- Valid start ADCs' acquisition
       i_adc_start_valid => i_adc_start_valid,
       -- start ADCs' acquisition
       i_adc_start       => i_adc_start,
+
+      ---------------------------------------------------------------------
+      -- FSM status
+      ---------------------------------------------------------------------
       -- '1': tx_ready to start an acquisition, '0': busy
       o_ready           => adc_ready,
+
+      ---------------------------------------------------------------------
+      -- ADC outputs
+      ---------------------------------------------------------------------
       -- ADC values valid
       o_adc_valid       => adc_valid,
       -- ADC7 value
@@ -180,6 +191,7 @@ begin
       o_adc1            => adc1,
       -- ADC0 value
       o_adc0            => adc0,
+
       ---------------------------------------------------------------------
       -- spi interface
       ---------------------------------------------------------------------
@@ -198,11 +210,13 @@ begin
       o_status          => adc_status
       );
 
----------------------------------------------------------------------
--- output
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- output
+  ---------------------------------------------------------------------
+  -- FSM state
   o_adc_ready <= adc_ready;
 
+  -- adc
   o_adc_valid <= adc_valid;
   o_adc7      <= adc7;
   o_adc6      <= adc6;
@@ -213,10 +227,12 @@ begin
   o_adc1      <= adc1;
   o_adc0      <= adc0;
 
+  -- spi
   o_adc_spi_mosi <= adc_spi_mosi;
   o_adc_spi_sclk <= adc_spi_sclk;
   o_adc_spi_cs_n <= adc_spi_cs_n;
 
+  -- errors/status
   o_adc_errors <= adc_errors;
   o_adc_status <= adc_status;
 

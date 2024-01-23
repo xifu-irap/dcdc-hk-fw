@@ -23,7 +23,8 @@
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
 -- -------------------------------------------------------------------------------------------------------------
 --   @details
---   This module generates the following signals:
+--   This module generates the SPI frequency (lower frequency) from a system frequency.
+--   In particular, the following signals are generated:
 --     . the SPI clock (optionnally inverted)
 --     . pulse to tag when a data can be sampled
 --     . pulse to tag when a data can be shifted
@@ -58,7 +59,7 @@ entity spi_master_clock_gen is
 
       );
   port (
-     -- Clock
+    -- Clock
     i_clk : in std_logic;
     -- Reset
     i_rst : in std_logic;
@@ -68,7 +69,7 @@ entity spi_master_clock_gen is
     ---------------------------------------------------------------------
     -- output clock
     o_sclk              : out std_logic;
-     -- output pulse when the data can be sampled
+    -- output pulse when the data can be sampled
     o_pulse_data_sample : out std_logic;
     -- output pulse when the data can be shifted
     o_pulse_data_shift  : out std_logic
@@ -111,9 +112,10 @@ architecture RTL of spi_master_clock_gen is
 
 begin
 
----------------------------------------------------------------------
--- pulse generator
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- pulse generator
+  ---------------------------------------------------------------------
+  -- generate pulses
   p_pulse : process (i_clk) is
   begin
     if rising_edge(i_clk) then

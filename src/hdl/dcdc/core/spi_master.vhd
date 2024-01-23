@@ -25,10 +25,10 @@
 --    @details
 --
 --    This module does the following tasks:
---      . generate a spi clock from the system clock
+--      . generate a spi clock (lower frequency) from the system clock
 --      . perform a spi communication:
---          . data serialization for the writting/reading
---          . data de-serialization for the reading
+--          . tx data serialization for the writting/reading mode
+--          . rx data de-serialization for the reading
 --
 --   Note: (see: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html)
 --    SPI_MODE |CPOL|CPHA| clock polarity (idle state)| clock data sampling | clock data shift out
@@ -110,9 +110,9 @@ architecture RTL of spi_master is
   -- max counter value
   constant c_CNT_MAX_VALUE : integer := i_tx_data'length - 1;  -- -1 start from 0,
 
----------------------------------------------------------------------
--- clock generator
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- clock generator
+  ---------------------------------------------------------------------
   -- spi clock
   signal sclk_tmp              : std_logic;
   -- pulse when the spi data needs to be shifted
@@ -120,13 +120,13 @@ architecture RTL of spi_master is
   -- pulse when the spi data needs to be sampled
   signal pulse_data_sample_tmp : std_logic;
 
----------------------------------------------------------------------
--- write state machine
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- write state machine
+  ---------------------------------------------------------------------
   -- fsm type declaration
   type t_wr_state is (E_RST, E_WAIT, E_SET_CS0, E_SET_CS1, E_SHIFT_DATA, E_UNSET_CS);
 
-   -- state
+  -- state
   signal sm_wr_state_next : t_wr_state;
   -- state (registered)
   signal sm_wr_state_r1   : t_wr_state := E_RST;
@@ -156,7 +156,7 @@ architecture RTL of spi_master is
   -- ready (registered)
   signal ready_r1   : std_logic := '0';
 
-   -- pulse finish
+  -- pulse finish
   signal finish_next : std_logic;
   -- pulse finish (registered)
   signal finish_r1   : std_logic := '0';
@@ -180,9 +180,10 @@ architecture RTL of spi_master is
   signal rd_en_next       : std_logic;
   -- spi mode (registred)
   signal rd_en_r1         : std_logic := '0';
----------------------------------------------------------------------
--- optional: tx pipeline
----------------------------------------------------------------------
+
+  ---------------------------------------------------------------------
+  -- optional: tx pipeline
+  ---------------------------------------------------------------------
   -- delayed: spi mode: read enable
   signal rx_rd_en_rx      : std_logic;
   -- delayed: read data valid
@@ -196,10 +197,10 @@ architecture RTL of spi_master is
   -- delayed: tx data
   signal tx_data_rx       : std_logic := '0';
 
----------------------------------------------------------------------
--- optional: rx pipeline
----------------------------------------------------------------------
--- delayed: rx finish (from tx version)
+  ---------------------------------------------------------------------
+  -- optional: rx pipeline
+  ---------------------------------------------------------------------
+  -- delayed: rx finish (from tx version)
   signal rx_finish_ry     : std_logic;
   -- delayed: rx data_valid (from tx version)
   signal rx_data_valid_ry : std_logic;
@@ -215,6 +216,7 @@ architecture RTL of spi_master is
 
 begin
 
+  -- generate spi frequency as well as flag signals.
   inst_spi_master_clock_gen : entity work.spi_master_clock_gen
     generic map(
       g_CPOL                 => g_CPOL,
@@ -233,11 +235,11 @@ begin
       o_pulse_data_shift  => pulse_data_shift_tmp
       );
 
----------------------------------------------------------------------
--- Tx: write data
---   According the different SPI mode defined by the (g_CPOL,g_CPHA)
---   it generates the SPI protocol (chip select, data serialization,...)
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- Tx: write data
+  --   According the different SPI mode defined by the (g_CPOL,g_CPHA)
+  --   it generates the SPI protocol (chip select, data serialization,...)
+  ---------------------------------------------------------------------
   p_wr_decode_state : process (i_tx_data, i_tx_data_valid, i_tx_msb_first,
                                i_wr_rd, pulse_data_sample_tmp,
                                pulse_data_shift_tmp, rd_en_r1, sclk_tmp,
@@ -349,6 +351,7 @@ begin
   ---------------------------------------------------------------------
   -- State process : register signals
   ---------------------------------------------------------------------
+  -- registered state machine signals
   p_wr_state : process (i_clk) is
   begin
     if rising_edge(i_clk) then
