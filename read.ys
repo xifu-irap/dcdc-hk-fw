@@ -34,6 +34,7 @@ verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7
 # Xilinx IP
 #    Top level module (black box for the Linty tool)
 verific -vhdl -lib ./ip/xilinx/coregen/ila_regdecode_top/ila_regdecode_top_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_dcdc_adc128s102/ila_dcdc_adc128s102_stub.vhdl
 
 
 # VHDL
@@ -42,7 +43,6 @@ verific -vhdl -lib ./ip/xilinx/coregen/ila_regdecode_top/ila_regdecode_top_stub.
 # package
 verific -vhdl ./src/hdl/pkg_utils.vhd
 verific -vhdl ./src/hdl/pkg_regdecode.vhd
-verific -vhdl ./src/hdl/dcdc/core/pkg_spi.vhd
 verific -vhdl ./src/hdl/pkg_system_dcdc.vhd
 verific -vhdl ./src/hdl/pkg_system_dcdc_debug.vhd
 
