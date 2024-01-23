@@ -30,8 +30,9 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
-use work.pkg_spi.all;
+use work.pkg_system_dcdc.all;
 
 entity dcdc_adc128s102 is
   generic (
@@ -172,7 +173,7 @@ architecture RTL of dcdc_adc128s102 is
   -- received data valid
   signal rx_data_valid : std_logic;
   -- received data (device spi register value)
-  signal rx_data       : std_logic_vector(g_DATA_WIDTH -1 downto 0);
+  signal rx_data       : std_logic_vector(15 downto 0);
 
   -- SPI MISO
   signal spi_miso : std_logic;
@@ -228,7 +229,8 @@ begin
   --    2. wait a new command
   --    3. sequencially read the following ADCs: ADC0 -> ADC1 -> ... -> ADC7
   --    4. Repeat 2. and 3.
-  p_decode_state : process (sm_state_r1) is
+  p_decode_state : process (ready_r1, rx_sel_r1, sm_state_r1, start,
+                            tx_addr_r1, tx_finish, tx_ready) is
   begin
     -- default value
     tx_data_valid_next <= '0';
@@ -457,7 +459,7 @@ begin
       g_SPI_FREQUENCY_MAX_HZ => pkg_ADC_SPI_SPI_FREQUENCY_MAX_HZ,  -- output max spi clock frequency (expressed in Hz)
       g_MOSI_DELAY           => pkg_ADC_SPI_MOSI_DELAY,  -- Number of clock period for mosi signal delay from state machine to the output
       g_MISO_DELAY           => pkg_ADC_SPI_MISO_DELAY,  -- Number of clock period for miso signal delay from spi pin input to spi master input
-      g_DATA_WIDTH           => g_DATA_WIDTH         -- Data bus size
+      g_DATA_WIDTH           => tx_data_tmp'length         -- Data bus size
       )
     port map(
       -- Clock
@@ -475,7 +477,7 @@ begin
       -- Start transmit ('0' = Inactive, '1' = Active)
       i_tx_data_valid => tx_data_valid_r1,
       -- Data to transmit (stall on MSB)
-      i_tx_data       => tx_addr_r1,
+      i_tx_data       => tx_data_tmp,
 
       -- Transmit link busy ('0' = Busy, '1' = Not Busy)
       o_ready  => tx_ready,
@@ -508,9 +510,9 @@ begin
   p_select_ADC_register : process (i_clk) is
   begin
     if rising_edge(i_clk) then
-      case rx_sel_r1 is
         -- default value
-        adc_valid_r2 <= '0';
+      adc_valid_r2 <= '0';
+      case rx_sel_r1 is
         when "000" =>                   -- 0
         if rx_data_valid = '1' then
           adc0_r2 <= rx_data;
