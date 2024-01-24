@@ -170,6 +170,11 @@ architecture RTL of dcdc_adc128s102 is
   -- delayed error
   signal error_r1   : std_logic;
 
+  -- load rx data in the register
+  signal load_en_next: std_logic;
+  -- delayed load rx data in the register
+  signal load_en_r1: std_logic;
+
   -- tx_data
   signal tx_data_tmp : std_logic_vector(15 downto 0);
 
@@ -203,6 +208,9 @@ architecture RTL of dcdc_adc128s102 is
   ---------------------------------------------------------------------
   -- Select the ADCs
   ---------------------------------------------------------------------
+  -- received data valid (combined with an enable from the state machine)
+  signal rx_data_valid_tmp : std_logic;
+
   -- ADC values valid
   signal adc_valid_r2 : std_logic;
   -- ADC7 value
@@ -249,16 +257,18 @@ begin
   --    Note: While a conversion is in progress, the address of the next input for conversion is clocked into a control register (see datasheet)
   --     . Example: to get the adci value (rx_sel), the corresponding address (tx_addr) must be set on the previous spi read access.
   p_decode_state : process (ready_r1, rx_sel_r1, sm_state_r1, start,
-                            tx_addr_r1, tx_finish, tx_ready) is
+                            tx_addr_r1, tx_finish, tx_ready, load_en_r1) is
   begin
     -- default value
     tx_data_valid_next <= '0';
     tx_addr_next       <= tx_addr_r1;
     rx_sel_next        <= rx_sel_r1;
     ready_next         <= ready_r1;
+    load_en_next       <= load_en_r1;
 
     case sm_state_r1 is
       when E_RST =>
+        load_en_next  <= '0';
         ready_next    <= '0';
         sm_state_next <= E_INIT_LOAD_ADDR;
 
@@ -280,6 +290,7 @@ begin
 
       when E_WAIT =>                    -- wait a new command
         if start = '1' then
+          load_en_next  <= '1';
           ready_next    <= '0';
           sm_state_next <= E_RD_ADC0;
         else
@@ -442,6 +453,7 @@ begin
       tx_addr_r1       <= tx_addr_next;
       rx_sel_r1        <= rx_sel_next;
       ready_r1         <= ready_next;
+      load_en_r1       <= load_en_next;
 
       -- generate error if a new start command is received during the tx transmission.
       if ready_r1 = '0' and start = '1' then
@@ -518,9 +530,12 @@ begin
       o_mosi => spi_mosi
       );
 
----------------------------------------------------------------------
--- Select the ADCs
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
+  -- Select the ADCs
+  ---------------------------------------------------------------------
+  -- don't load rx register during the init phase after a startup
+  rx_data_valid_tmp <= '1' when rx_data_valid = '1' and load_en_r1 = '1' else '0';
+
   -- select the dedicated register.
   p_select_ADC_register : process (i_clk) is
   begin
@@ -529,44 +544,44 @@ begin
       adc_valid_r2 <= '0';
       case rx_sel_r1 is
         when "000" => -- 0
-        if rx_data_valid = '1' then
+        if rx_data_valid_tmp = '1' then
           adc0_r2 <= rx_data;
         end if;
 
         when "001" => -- 1
-        if rx_data_valid = '1' then
+        if rx_data_valid_tmp = '1' then
           adc1_r2 <= rx_data;
         end if;
 
         when "010" => -- 2
-        if rx_data_valid = '1' then
+        if rx_data_valid_tmp = '1' then
           adc2_r2 <= rx_data;
         end if;
 
         when "011" => -- 3
-        if rx_data_valid = '1' then
+        if rx_data_valid_tmp = '1' then
           adc3_r2 <= rx_data;
         end if;
 
         when "100" => -- 4
-        if rx_data_valid = '1' then
+        if rx_data_valid_tmp = '1' then
           adc4_r2 <= rx_data;
         end if;
 
         when "101" => -- 5
-        if rx_data_valid = '1' then
+        if rx_data_valid_tmp = '1' then
           adc5_r2 <= rx_data;
         end if;
 
         when "110" => -- 6
-        if rx_data_valid = '1' then
+        if rx_data_valid_tmp = '1' then
           adc6_r2 <= rx_data;
         end if;
 
         when others => -- 7
         -- generate data valid on the last read ADC (ADC7)
-        adc_valid_r2 <= rx_data_valid;
-        if rx_data_valid = '1' then
+        adc_valid_r2 <= rx_data_valid_tmp;
+        if rx_data_valid_tmp = '1' then
           adc7_r2 <= rx_data;
         end if;
 
