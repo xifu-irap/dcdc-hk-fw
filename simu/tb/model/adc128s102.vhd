@@ -91,8 +91,8 @@ architecture vhdl_behavioral of adc128s102 is
   signal CSNeg_ipd : std_ulogic := 'U';
   signal DIN_ipd   : std_ulogic := 'U';
 
-  signal pom_reg : std_logic_vector((hiBit-1) downto 0) :=
-    (others => '0');
+  signal pom_reg : std_logic_vector((hiBit-1) downto 0) := (others => '0');
+
   signal ctrl_reg : std_logic_vector(7 downto 0) := (others => '0');
 
   signal in_channel : std_logic_vector(2 downto 0) := (others => '0');
