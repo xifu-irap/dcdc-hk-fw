@@ -25,8 +25,8 @@ use IEEE.std_logic_1164.all;
 use IEEE.VITAL_timing.all;
 use IEEE.VITAL_primitives.all;
 
-library work;
-use work.gen_utils.all;
+library FMF;
+use FMF.gen_utils.all;
 
 -------------------------------------------------------------------------------
 -- ENTITY DECLARATION
