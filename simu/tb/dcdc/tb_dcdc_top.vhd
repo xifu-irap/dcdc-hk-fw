@@ -70,24 +70,39 @@ architecture RTL of tb_dcdc_top is
   signal o_adc1            : std_logic_vector(15 downto 0);
   -- ADC0 value
   signal o_adc0            : std_logic_vector(15 downto 0);
+
   ---------------------------------------------------------------------
   -- spi interface
   ---------------------------------------------------------------------
   -- SPI MISO
-  signal i_adc_spi_miso    : std_logic;
+  signal adc_spi_miso : std_logic;
   -- SPI MOSI
-  signal o_adc_spi_mosi    : std_logic;
+  signal adc_spi_mosi : std_logic;
   -- SPI clock
-  signal o_adc_spi_sclk    : std_logic;
+  signal adc_spi_sclk : std_logic;
   -- SPI chip select
-  signal o_adc_spi_cs_n    : std_logic;
+  signal adc_spi_cs_n : std_logic;
+
   ---------------------------------------------------------------------
   -- Status/errors
   ---------------------------------------------------------------------
   -- adc errors
-  signal o_adc_errors      : std_logic_vector(15 downto 0);
+  signal o_adc_errors : std_logic_vector(15 downto 0);
   -- adc status
-  signal o_adc_status      : std_logic_vector(7 downto 0);
+  signal o_adc_status : std_logic_vector(7 downto 0);
+
+
+  ---------------------------------------------------------------------
+  -- io interface
+  ---------------------------------------------------------------------
+  -- SPI MISO
+  signal spi_miso : std_logic;
+  -- SPI MOSI
+  signal spi_mosi : std_logic;
+  -- SPI clock
+  signal spi_sclk : std_logic;
+  -- SPI chip select
+  signal spi_cs_n : std_logic;
 
 
   ---------------------------------------------------------------------
@@ -183,13 +198,13 @@ begin
       -- spi interface
       ---------------------------------------------------------------------
       -- SPI MISO
-      i_adc_spi_miso    => i_adc_spi_miso,
+      i_adc_spi_miso    => adc_spi_miso,
       -- SPI MOSI
-      o_adc_spi_mosi    => o_adc_spi_mosi,
+      o_adc_spi_mosi    => adc_spi_mosi,
       -- SPI clock
-      o_adc_spi_sclk    => o_adc_spi_sclk,
+      o_adc_spi_sclk    => adc_spi_sclk,
       -- SPI chip select
-      o_adc_spi_cs_n    => o_adc_spi_cs_n,
+      o_adc_spi_cs_n    => adc_spi_cs_n,
       ---------------------------------------------------------------------
       -- Status/errors
       ---------------------------------------------------------------------
@@ -197,6 +212,40 @@ begin
       o_adc_errors      => o_adc_errors,
       -- adc status
       o_adc_status      => o_adc_status
+      );
+
+
+---------------------------------------------------------------------
+-- io
+---------------------------------------------------------------------
+  inst_io_top : entity work.io_top
+    port map(
+      ---------------------------------------------------------------------
+      -- from/to FPGA io: spi @i_sys_spi_clk
+      ---------------------------------------------------------------------
+      -- system spi clock
+      i_sys_spi_clk => i_clk,
+      -- SPI --
+      -- Shared SPI MISO
+      i_spi_miso    => spi_miso,
+      -- Shared SPI MOSI
+      o_spi_mosi    => spi_mosi,
+      -- Shared SPI clock line
+      o_spi_sclk    => spi_sclk,
+      -- SPI chip select
+      o_spi_cs_n    => spi_cs_n,
+      ---------------------------------------------------------------------
+      -- to user: spi interface @i_sys_spi_clk
+      ---------------------------------------------------------------------
+      -- SPI --
+      -- Shared SPI MISO
+      o_ui_spi_miso => adc_spi_miso,
+      -- Shared SPI MOSI
+      i_ui_spi_mosi => adc_spi_mosi,
+      -- Shared SPI clock line
+      i_ui_spi_sclk => adc_spi_sclk,
+      -- SPI chip select
+      i_ui_spi_cs_n => adc_spi_cs_n
       );
 
 
@@ -231,9 +280,9 @@ begin
 --TimingModel => TimingModel
 --)
     port map(
-      SCLK  => o_adc_spi_sclk,
-      CSNeg => o_adc_spi_cs_n,
-      DIN   => o_adc_spi_mosi,
+      SCLK  => spi_sclk,
+      CSNeg => spi_cs_n,
+      DIN   => spi_mosi,
       VA    => 5.0,
       IN0   => 0.1,
       IN1   => 1.0,
@@ -243,7 +292,7 @@ begin
       IN5   => 5.0,
       IN6   => 1.2,
       IN7   => 2.5,
-      DOUT  => i_adc_spi_miso
+      DOUT  => spi_miso
       );
 
 
