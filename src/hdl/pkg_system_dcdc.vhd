@@ -80,7 +80,7 @@ package pkg_system_dcdc is
   -- user-defined : SPI clock polarity (see: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html)
   constant pkg_ADC_SPI_CPOL                 : std_logic := '1';
   -- user-defined : SPI clock phase (see: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html)
-  constant pkg_ADC_SPI_CPHA                 : std_logic := '1';
+  constant pkg_ADC_SPI_CPHA                 : std_logic := '0';
   -- auto-computed : input clock frequency of the module (expressed in Hz). (possible values: ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value])
   constant pkg_ADC_SPI_SYSTEM_FREQUENCY_HZ  : positive  := pkg_USB_SYSTEM_FREQUENCY_HZ;
   -- user-defined : spi output clock frequency to generate (expressed in Hz)
