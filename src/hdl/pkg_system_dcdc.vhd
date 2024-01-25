@@ -70,7 +70,13 @@ package pkg_system_dcdc is
   -------------------------------------------------------------------
   -- ADC128S102
   --   .see: datasheet
+  --    SPI_MODE |CPOL|CPHA| clock polarity (idle state)| clock data sampling | clock data shift out
+  --    0        |  0 | 0  | 0                          | rising_edge         | falling_edge
+  --    1        |  0 | 1  | 0                          | falling_edge        | rising_edge
+  --    2        |  1 | 0  | 1                          | rising_edge         | falling_edge
+  --    3        |  1 | 1  | 1                          | falling_edge        | rising_edge
   -------------------------------------------------------------------
+
   -- user-defined : SPI clock polarity (see: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html)
   constant pkg_ADC_SPI_CPOL                 : std_logic := '1';
   -- user-defined : SPI clock phase (see: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html)
