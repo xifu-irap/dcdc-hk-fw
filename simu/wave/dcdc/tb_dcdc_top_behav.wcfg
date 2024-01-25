@@ -13,9 +13,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,608.320 ns"></ZoomEndTime>
-      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="17,500.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="19,108.320 ns"></ZoomEndTime>
+      <Cursor1Time time="2,613.920 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="272"></NameColumnWidth>
@@ -170,6 +170,7 @@
       <wvobject fp_name="group70" type="group">
          <obj_property name="label">in</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/i_adc_start_valid" type="logic">
             <obj_property name="ElementShortName">i_adc_start_valid</obj_property>
             <obj_property name="ObjectShortName">i_adc_start_valid</obj_property>
@@ -182,6 +183,7 @@
       <wvobject fp_name="group71" type="group">
          <obj_property name="label">step1</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/sm_state_r1" type="other">
             <obj_property name="ElementShortName">sm_state_r1</obj_property>
             <obj_property name="ObjectShortName">sm_state_r1</obj_property>
@@ -288,34 +290,42 @@
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc7_r2" type="array">
             <obj_property name="ElementShortName">adc7_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc7_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc6_r2" type="array">
             <obj_property name="ElementShortName">adc6_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc6_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc5_r2" type="array">
             <obj_property name="ElementShortName">adc5_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc5_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc4_r2" type="array">
             <obj_property name="ElementShortName">adc4_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc4_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc3_r2" type="array">
             <obj_property name="ElementShortName">adc3_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc3_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc2_r2" type="array">
             <obj_property name="ElementShortName">adc2_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc2_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc1_r2" type="array">
             <obj_property name="ElementShortName">adc1_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc1_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_dcdc_top/inst_dcdc_top/inst_dcdc_adc128s102/adc0_r2" type="array">
             <obj_property name="ElementShortName">adc0_r2[15:0]</obj_property>
             <obj_property name="ObjectShortName">adc0_r2[15:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group65" type="group">
