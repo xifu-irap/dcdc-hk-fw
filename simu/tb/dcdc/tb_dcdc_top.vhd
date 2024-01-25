@@ -251,6 +251,14 @@ begin
 
 ---------------------------------------------------------------------
 -- ADC SPI device
+--   . From an ADC numerical value, get the corresponding analog tension (U):
+--      . Formula:
+--         . U = adc_value * VA /(2**adc_res)
+--          with:
+--           . U (in Volts): computed tension from an unsigned adc_value
+--           . adc_value: unsigned ADC numerical value
+--           . VA (in Volts): analog supply
+--           . adc_res: ADC resolution (12 bits)
 ---------------------------------------------------------------------
   inst_adc128s102 : entity work.adc128s102
 --generic map(
