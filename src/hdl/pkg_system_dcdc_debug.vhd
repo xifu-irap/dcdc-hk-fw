@@ -47,6 +47,12 @@ package pkg_system_dcdc_debug is
   -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
   constant pkg_DCDC_ADC128S102_DEBUG : boolean := true;
 
+  ---------------------------------------------------------------------
+  -- POWER_TOP
+  ---------------------------------------------------------------------
+  -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
+  constant pkg_POWER_RHRPMICL1A_DEBUG : boolean := true;
+
 
 end pkg_system_dcdc_debug;
 

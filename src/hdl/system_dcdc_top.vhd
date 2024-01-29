@@ -35,6 +35,7 @@ use ieee.numeric_std.all;
 
 use work.pkg_regdecode.all;
 use work.pkg_system_dcdc_debug.all;
+use work.pkg_system_dcdc.all;
 
 entity system_dcdc_top is
   port (
@@ -71,8 +72,10 @@ entity system_dcdc_top is
     ---------------------------------------------------------------------
     -- power card
     ---------------------------------------------------------------------
-    -- control boards' power
-    o_power_on_off : out std_logic_vector(3 downto 0);
+    -- bitwise power on
+    o_power_on  : out std_logic_vector(3 downto 0);
+    -- bitwise power off
+    o_power_off : out std_logic_vector(3 downto 0);
 
     ---------------------------------------------------------------------
     -- LEDS
@@ -95,10 +98,13 @@ architecture RTL of system_dcdc_top is
   signal usb_clk : std_logic;
 
   -- ctrl register (writting)
-  signal reg_ctrl           : std_logic_vector(31 downto 0);
+  signal reg_ctrl : std_logic_vector(31 downto 0);
+
+  -- power_ctrl valid
+  signal reg_power_ctrl_valid : std_logic;
 
   -- power_ctrl register (writting)
-  signal reg_power_ctrl     : std_logic_vector(31 downto 0);
+  signal reg_power_ctrl : std_logic_vector(31 downto 0);
 
   -- adc_ctrl valid
   signal reg_adc_ctrl_valid : std_logic;
@@ -106,29 +112,29 @@ architecture RTL of system_dcdc_top is
   signal reg_adc_ctrl       : std_logic_vector(31 downto 0);
 
   -- adc_status register (reading)
-  signal reg_adc_status     : std_logic_vector(31 downto 0);
+  signal reg_adc_status : std_logic_vector(31 downto 0);
 
   -- adc0 register (reading)
-  signal reg_adc0           : std_logic_vector(31 downto 0);
+  signal reg_adc0 : std_logic_vector(31 downto 0);
   -- adc1 register (reading)
-  signal reg_adc1           : std_logic_vector(31 downto 0);
+  signal reg_adc1 : std_logic_vector(31 downto 0);
   -- adc2 register (reading)
-  signal reg_adc2           : std_logic_vector(31 downto 0);
+  signal reg_adc2 : std_logic_vector(31 downto 0);
   -- adc3 register (reading)
-  signal reg_adc3           : std_logic_vector(31 downto 0);
+  signal reg_adc3 : std_logic_vector(31 downto 0);
   -- adc4 register (reading)
-  signal reg_adc4           : std_logic_vector(31 downto 0);
+  signal reg_adc4 : std_logic_vector(31 downto 0);
   -- adc5 register (reading)
-  signal reg_adc5           : std_logic_vector(31 downto 0);
+  signal reg_adc5 : std_logic_vector(31 downto 0);
   -- adc6 register (reading)
-  signal reg_adc6           : std_logic_vector(31 downto 0);
+  signal reg_adc6 : std_logic_vector(31 downto 0);
   -- adc7 register (reading)
-  signal reg_adc7           : std_logic_vector(31 downto 0);
+  signal reg_adc7 : std_logic_vector(31 downto 0);
 
   -- debug_ctrl data valid
   -- signal reg_debug_ctrl_valid : std_logic;
   -- debug_ctrl register value
-  signal reg_debug_ctrl     : std_logic_vector(31 downto 0);
+  signal reg_debug_ctrl : std_logic_vector(31 downto 0);
 
   -- status register: errors1
   -- signal reg_wire_errors1 : std_logic_vector(31 downto 0);
@@ -141,19 +147,21 @@ architecture RTL of system_dcdc_top is
   signal reg_wire_status0 : std_logic_vector(31 downto 0);
 
   -- software reset @usb_clk
-  signal rst             : std_logic;
+  signal rst         : std_logic;
   -- reset error flag(s)
-  signal rst_status      : std_logic;
+  signal rst_status  : std_logic;
   -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
-  signal debug_pulse     : std_logic;
+  signal debug_pulse : std_logic;
 
   -- adc_start valid
   signal adc_start_valid : std_logic;
   -- adc_start (start ADCs' acquisition)
   signal adc_start       : std_logic;
 
+  -- power_on_off valid
+  signal power_on_off_valid : std_logic;
   -- power the signals
-  signal power_on_off    : std_logic_vector(o_power_on_off'range);
+  signal power_on_off       : std_logic_vector(o_power_on'range);
 
   ---------------------------------------------------------------------
   -- adc_top
@@ -194,6 +202,19 @@ architecture RTL of system_dcdc_top is
   -- adc status register: status0
   signal adc_status : std_logic_vector(7 downto 0);
 
+  ---------------------------------------------------------------------
+  -- power_top
+  ---------------------------------------------------------------------
+  -- power ready (FSM)
+  signal power_ready  : std_logic;
+  -- bitwise power_on pulse
+  signal power_on     : std_logic_vector(o_power_on'range);
+  -- bitwise power_off pulse
+  signal power_off    : std_logic_vector(o_power_off'range);
+  -- power status register: errors0
+  signal power_errors : std_logic_vector(15 downto 0);
+  -- power status register: status0
+  signal power_status : std_logic_vector(7 downto 0);
 
 begin
 
@@ -232,9 +253,11 @@ begin
 
       -- wire
       -- ctrl register (writting)
-      o_reg_ctrl       => reg_ctrl,
+      o_reg_ctrl             => reg_ctrl,
+      -- power_ctrl valid
+      o_reg_power_ctrl_valid => reg_power_ctrl_valid,
       -- power_ctrl register (writting)
-      o_reg_power_ctrl => reg_power_ctrl,
+      o_reg_power_ctrl       => reg_power_ctrl,
 
       -- ADC @o_usb_clk
       ---------------------------------------------------------------------
@@ -280,15 +303,16 @@ begin
   -- extract bits from register
   ---------------------------------------------------------------------
   -- ctrl register
-  rst             <= reg_ctrl(pkg_CTRL_RST_IDX_H);
+  rst                <= reg_ctrl(pkg_CTRL_RST_IDX_H);
   -- debug_ctrl register
-  rst_status      <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
-  debug_pulse     <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
+  rst_status         <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
+  debug_pulse        <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
   -- adc_ctrl register
-  adc_start_valid <= reg_adc_ctrl_valid;
-  adc_start       <= reg_adc_ctrl(pkg_ADC_CTRL_ADC_SPI_START_IDX_H);
+  adc_start_valid    <= reg_adc_ctrl_valid;
+  adc_start          <= reg_adc_ctrl(pkg_ADC_CTRL_ADC_SPI_START_IDX_H);
   -- power_ctrl register
-  power_on_off    <= reg_power_ctrl(pkg_POWER_CTRL_POWER_IDX_H downto pkg_POWER_CTRL_POWER_IDX_L);
+  power_on_off_valid <= reg_power_ctrl_valid;
+  power_on_off       <= reg_power_ctrl(pkg_POWER_CTRL_POWER_IDX_H downto pkg_POWER_CTRL_POWER_IDX_L);
 
   -- to register
   ---------------------------------------------------------------------
@@ -306,19 +330,15 @@ begin
   reg_adc0 <= std_logic_vector(resize(unsigned(adc0), reg_adc1'length));
 
   -- errors0
-  reg_wire_errors0(31 downto 16) <= (others => '0');
+  reg_wire_errors0(31 downto 16) <= power_errors;
   reg_wire_errors0(15 downto 0)  <= adc_errors;
 
   -- status0
   reg_wire_status0(31 downto 24) <= (others => '0');
-  reg_wire_status0(23 downto 16) <= (others => '0');
+  reg_wire_status0(23 downto 16) <= power_status;
   reg_wire_status0(15 downto 8)  <= (others => '0');
   reg_wire_status0(7 downto 0)   <= adc_status;
 
-  ---------------------------------------------------------------------
-  -- Power
-  ---------------------------------------------------------------------
-  o_power_on_off <= power_on_off;
 
   ---------------------------------------------------------------------
   -- dcdc_top
@@ -330,13 +350,13 @@ begin
       )
     port map(
       -- clock
-      i_clk             => usb_clk,
+      i_clk         => usb_clk,
       -- reset
-      i_rst             => rst,
+      i_rst         => rst,
       -- reset error flag(s)
-      i_rst_status      => rst_status,
+      i_rst_status  => rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
-      i_debug_pulse     => debug_pulse,
+      i_debug_pulse => debug_pulse,
 
       ---------------------------------------------------------------------
       -- inputs
@@ -350,41 +370,41 @@ begin
       -- outputs
       ---------------------------------------------------------------------
       -- '1': ready to start an acquisition, '0': busy
-      o_adc_ready       => adc_ready,
+      o_adc_ready    => adc_ready,
       -- ADC values valid
-      o_adc_valid       => adc_valid,
+      o_adc_valid    => adc_valid,
       -- ADC7 value
-      o_adc7            => adc7,
+      o_adc7         => adc7,
       -- ADC6 value
-      o_adc6            => adc6,
+      o_adc6         => adc6,
       -- ADC5 value
-      o_adc5            => adc5,
+      o_adc5         => adc5,
       -- ADC4 value
-      o_adc4            => adc4,
+      o_adc4         => adc4,
       -- ADC3 value
-      o_adc3            => adc3,
+      o_adc3         => adc3,
       -- ADC2 value
-      o_adc2            => adc2,
+      o_adc2         => adc2,
       -- ADC1 value
-      o_adc1            => adc1,
+      o_adc1         => adc1,
       -- ADC0 value
-      o_adc0            => adc0,
+      o_adc0         => adc0,
       ---------------------------------------------------------------------
       -- spi interface
       ---------------------------------------------------------------------
       -- SPI MISO
-      i_adc_spi_miso    => adc_spi_miso,
+      i_adc_spi_miso => adc_spi_miso,
       -- SPI MOSI
-      o_adc_spi_mosi    => adc_spi_mosi,
+      o_adc_spi_mosi => adc_spi_mosi,
       -- SPI clock
-      o_adc_spi_sclk    => adc_spi_sclk,
+      o_adc_spi_sclk => adc_spi_sclk,
       -- SPI chip select
-      o_adc_spi_cs_n    => adc_spi_cs_n,
+      o_adc_spi_cs_n => adc_spi_cs_n,
       ---------------------------------------------------------------------
       -- Status/errors
       ---------------------------------------------------------------------
-      o_adc_errors      => adc_errors,
-      o_adc_status      => adc_status
+      o_adc_errors   => adc_errors,
+      o_adc_status   => adc_status
       );
 
 
@@ -422,6 +442,61 @@ begin
       i_ui_spi_cs_n => adc_spi_cs_n
       );
 
+  ---------------------------------------------------------------------
+  -- power_top
+  ---------------------------------------------------------------------
+  inst_power_top : entity work.power_top
+    generic map(
+      -- enable the DEBUG by ILA
+      g_DEBUG       => pkg_POWER_RHRPMICL1A_DEBUG,
+      -- width of the input/output power value
+      g_POWER_WIDTH => power_on_off'length,
+      -- duration of the TC pulse (number of samples). Range: [1;max integer[
+      g_PULSE_NB_SAMPLES => pkg_POWER_TC_PULSE_NB_SAMPLES
+      )
+    port map(
+      -- clock
+      i_clk         => usb_clk,
+      -- reset
+      i_rst         => rst,
+      -- reset error flag(s)
+      i_rst_status  => rst_status,
+      -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
+      i_debug_pulse => debug_pulse,
+      ---------------------------------------------------------------------
+      -- inputs
+      ---------------------------------------------------------------------
+      -- power_valid (for power_on and power_off)
+      i_power_valid => power_on_off_valid,
+      -- bitwise power ('1': power_on, '0':power off)
+      i_power       => power_on_off,
+      ---------------------------------------------------------------------
+      -- outputs
+      ---------------------------------------------------------------------
+      -- '1': ready to configure the power, '0': busy
+      o_ready       => power_ready,     -- TODO: to connect
+      -- start of frame (pulse)
+      o_power_sof   => open,
+      -- end of frame (pulse)
+      o_power_eof   => open,
+      -- output power valid
+      o_power_valid => open,
+      -- bitwise power_on pulse
+      o_power_on    => power_on,
+      -- bitwise power_off pulse
+      o_power_off   => power_off,
+      ---------------------------------------------------------------------
+      -- Status/errors
+      ---------------------------------------------------------------------
+      --  errors
+      o_errors      => power_errors,
+      -- status
+      o_status      => power_status
+      );
+
+  -- output
+  o_power_on  <= power_on;
+  o_power_off <= power_off;
   ---------------------------------------------------------------------
   -- leds
   ---------------------------------------------------------------------
