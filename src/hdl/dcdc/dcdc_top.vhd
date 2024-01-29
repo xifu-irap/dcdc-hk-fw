@@ -48,11 +48,17 @@ entity dcdc_top is
     -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
     i_debug_pulse : in std_logic;
 
+    ---------------------------------------------------------------------
+    -- inputs
+    ---------------------------------------------------------------------
     -- Valid start ADCs' acquisition
     i_adc_start_valid : in std_logic;
     -- start ADCs' acquisition
     i_adc_start       : in std_logic;
 
+    ---------------------------------------------------------------------
+    -- outputs
+    ---------------------------------------------------------------------
     -- '1': tx_ready to start an acquisition, '0': busy
     o_adc_ready : out std_logic;
 

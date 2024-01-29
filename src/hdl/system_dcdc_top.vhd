@@ -337,10 +337,18 @@ begin
       i_rst_status      => rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
       i_debug_pulse     => debug_pulse,
+
+      ---------------------------------------------------------------------
+      -- inputs
+      ---------------------------------------------------------------------
       -- Valid start ADCs' acquisition
       i_adc_start_valid => adc_start_valid,
       -- start ADCs' acquisition
       i_adc_start       => adc_start,
+
+      ---------------------------------------------------------------------
+      -- outputs
+      ---------------------------------------------------------------------
       -- '1': ready to start an acquisition, '0': busy
       o_adc_ready       => adc_ready,
       -- ADC values valid
