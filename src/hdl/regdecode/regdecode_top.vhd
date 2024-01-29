@@ -64,9 +64,11 @@ entity regdecode_top is
 
     -- wire
     -- ctrl register (writting)
-    o_reg_ctrl       : out std_logic_vector(31 downto 0);
+    o_reg_ctrl             : out std_logic_vector(31 downto 0);
+    -- power_ctrl valid
+    o_reg_power_ctrl_valid : out std_logic;
     -- power_ctrl register (writting)
-    o_reg_power_ctrl : out std_logic_vector(31 downto 0);
+    o_reg_power_ctrl       : out std_logic_vector(31 downto 0);
 
     -- ADC @o_usb_clk
     ---------------------------------------------------------------------
@@ -401,7 +403,8 @@ begin
       );
 
   -- output
-  o_reg_power_ctrl <= power_ctrl;
+  o_reg_power_ctrl_valid <= power_ctrl_valid;
+  o_reg_power_ctrl       <= power_ctrl;
 
 
   ---------------------------------------------------------------------
