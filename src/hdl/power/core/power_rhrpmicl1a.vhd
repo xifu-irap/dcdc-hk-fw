@@ -37,7 +37,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.math_read.all;
+use ieee.math_real.all;
 
 entity power_rhrpmicl1a is
   generic (
@@ -111,7 +111,6 @@ architecture RTL of power_rhrpmicl1a is
   -- BIT OFF
   constant c_BIT_OFF : std_logic := '1';
 
-
   ---------------------------------------------------------------------
   -- state machine
   ---------------------------------------------------------------------
@@ -127,7 +126,6 @@ architecture RTL of power_rhrpmicl1a is
   -- delayed start of frame (pulse)
   signal sof_r1   : std_logic;
 
-
   -- end of frame (pulse)
   signal eof_next : std_logic;
   -- delayed end of frame (pulse)
@@ -139,10 +137,9 @@ architecture RTL of power_rhrpmicl1a is
   signal data_valid_r1   : std_logic;
 
   -- power
-  signal power_next : std_logic_vector(i_power_valid'range);
-
+  signal power_next : std_logic_vector(i_power'range);
   -- delayed power
-  signal power_r1 : std_logic_vector(i_power_valid'range);
+  signal power_r1 : std_logic_vector(i_power'range);
 
   -- counter of pulse sample
   signal cnt_next : unsigned(c_ADDR_WIDTH - 1 downto 0);
@@ -162,8 +159,9 @@ architecture RTL of power_rhrpmicl1a is
   ---------------------------------------------------------------------
   -- Select the ADCs
   ---------------------------------------------------------------------
-
+  -- delayed start of frame (pulse)
   signal sof_r2        : std_logic;
+  -- delayed end of frame (pulse)
   signal eof_r2        : std_logic;
   -- data_valid
   signal data_valid_r2 : std_logic;
@@ -352,11 +350,22 @@ begin
       port map (
         clk => i_clk,
 
+        -- probe0
+        probe0(8) => data_valid_r2,
+        probe0(7) => sof_r2,
+        probe0(6) => eof_r2,
+        probe0(5) => error_r1,
+        probe0(4) => sof_r1,
+        probe0(3) => eof_r1,
+        probe0(2) => data_valid_r1,
+        probe0(1) => ready_r1,
         probe0(0) => i_power_valid,
 
-        probe0(2) => data_valid_r1,
-        probe0(1) => ready_r1
-
+        -- probe1
+        probe1(15 downto 12) => power_off_r2,
+        probe1(11 downto 8)  => power_on_r2,
+        probe1(7 downto 4)   => power_r1,
+        probe1(3 downto 0)   => i_power
 
         );
 
