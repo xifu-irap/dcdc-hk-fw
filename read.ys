@@ -74,6 +74,10 @@ verific -vhdl ./src/hdl/dcdc/core/spi_master_clock.vhd
 verific -vhdl ./src/hdl/dcdc/core/dcdc_adc128s102.vhd
 verific -vhdl ./src/hdl/dcdc/dcdc_top.vhd
 
+# power
+verific -vhdl ./src/hdl/power/core/power_rhrpmicl1a.vhd
+verific -vhdl ./src/hdl/power/power_top.vhd
+
 
 # system_dcdc (top_level)
 verific -vhdl ./src/hdl/system_dcdc_top.vhd
