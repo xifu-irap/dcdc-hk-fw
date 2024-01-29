@@ -31,12 +31,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-
 entity power_top is
   generic (
     -- enable the DEBUG by ILA
     g_DEBUG       : boolean := false;
-    g_POWER_WIDTH : integer := 4
+    -- width of the input/output power value
+    g_POWER_WIDTH : integer := 4;
+     -- duration of the TC pulse (number of samples). Range: [1;max integer[
+     g_PULSE_NB_SAMPLES : integer := 100
     );
   port(
     -- clock
@@ -93,7 +95,7 @@ architecture RTL of power_top is
   signal power_ready : std_logic;
 
   -- start of frame (pulse)
-  signal power_eof   : std_logic;
+  signal power_sof   : std_logic;
   -- end of frame (pulse)
   signal power_eof   : std_logic;
   -- power_valid
@@ -117,7 +119,11 @@ begin
   inst_power_rhrpmicl1a : entity work.power_rhrpmicl1a
     generic map(
       -- enable the DEBUG by ILA
-      g_DEBUG => g_DEBUG
+      g_DEBUG            => g_DEBUG,
+      -- width of the input/output power value
+      g_POWER_WIDTH      => g_POWER_WIDTH,
+      -- duration of the pulse (number of samples). Range: [1;max integer[
+      g_PULSE_NB_SAMPLES => g_PULSE_NB_SAMPLES
       )
     port map(
       -- clock
@@ -132,15 +138,15 @@ begin
       ---------------------------------------------------------------------
       -- inputs
       ---------------------------------------------------------------------
-      -- Valid start ADCs' acquisition
-      i_adc_start_valid => i_power_valid,
-      -- start ADCs' acquisition
-      i_adc_start       => i_power,
+      -- power valid (for power_on and power_off)
+      i_power_valid => i_power_valid,
+      -- bitwise power ('1': power_on, '0':power off)
+      i_power       => i_power,
 
       ---------------------------------------------------------------------
       -- FSM status
       ---------------------------------------------------------------------
-      -- '1': tx_ready to start an acquisition, '0': busy
+      -- '1': ready to configure the power, '0': busy
       o_ready => power_ready,
 
       ---------------------------------------------------------------------
@@ -158,8 +164,11 @@ begin
       o_power_off   => power_off,
 
       ---------------------------------------------------------------------
-      -- Status/error      ---------------------------------------------------------------------
+      -- Status/error
+      ---------------------------------------------------------------------
+      -- errors
       o_errors => errors,
+      -- status
       o_status => status
       );
 
