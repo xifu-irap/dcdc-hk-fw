@@ -61,27 +61,33 @@ entity system_dcdc_top is
     -- ADC128S102 HK
     ---------------------------------------------------------------------
     -- adc SPI MISO
-    i_adc_spi_miso : in  std_logic;
+    i_dcdc_hk_adc_miso_a : in  std_logic;
     -- adc SPI MOSI
-    o_adc_spi_mosi : out std_logic;
+    o_dcdc_hk_adc_mosi_a : out std_logic;
     -- adc SPI clock
-    o_adc_spi_sclk : out std_logic;
+    o_dcdc_hk_adc_sclk_a : out std_logic;
     -- adc SPI chip select
-    o_adc_spi_cs_n : out std_logic;
+    o_dcdc_hk_adc_cs_n_a : out std_logic;
 
     ---------------------------------------------------------------------
-    -- power card
+    -- power
     ---------------------------------------------------------------------
-    -- bitwise power on
-    o_power_on  : out std_logic_vector(3 downto 0);
-    -- bitwise power off
-    o_power_off : out std_logic_vector(3 downto 0);
+    -- power on
+    o_en_wfee : out std_logic;
+    o_en_ras  : out std_logic;
+    o_en_dmx1 : out std_logic;
+    o_en_dmx0 : out std_logic;
 
+    -- power off
+    o_dis_wfee : out std_logic;
+    o_dis_ras  : out std_logic;
+    o_dis_dmx1 : out std_logic;
+    o_dis_dmx0 : out std_logic;
     ---------------------------------------------------------------------
     -- LEDS
     ---------------------------------------------------------------------
     -- fpga board leds ('0': ON, 'Z': OFF )
-    o_leds : out std_logic_vector(7 downto 0)
+    o_leds     : out std_logic_vector(7 downto 0)
 
     );
 end system_dcdc_top;
@@ -161,7 +167,7 @@ architecture RTL of system_dcdc_top is
   -- power_on_off valid
   signal power_on_off_valid : std_logic;
   -- power the signals
-  signal power_on_off       : std_logic_vector(o_power_on'range);
+  signal power_on_off       : std_logic_vector(3 downto 0);
 
   ---------------------------------------------------------------------
   -- adc_top
@@ -208,9 +214,9 @@ architecture RTL of system_dcdc_top is
   -- power ready (FSM)
   signal power_ready  : std_logic;
   -- bitwise power_on pulse
-  signal power_on     : std_logic_vector(o_power_on'range);
+  signal power_on     : std_logic_vector(3 downto 0);
   -- bitwise power_off pulse
-  signal power_off    : std_logic_vector(o_power_off'range);
+  signal power_off    : std_logic_vector(3 downto 0);
   -- power status register: errors0
   signal power_errors : std_logic_vector(15 downto 0);
   -- power status register: status0
@@ -420,13 +426,13 @@ begin
       i_sys_spi_clk => usb_clk,
       -- SPI --
       -- Shared SPI MISO
-      i_spi_miso    => i_adc_spi_miso,
+      i_spi_miso    => i_dcdc_hk_adc_miso_a,
       -- Shared SPI MOSI
-      o_spi_mosi    => o_adc_spi_mosi,
+      o_spi_mosi    => o_dcdc_hk_adc_mosi_a,
       -- Shared SPI clock line
-      o_spi_sclk    => o_adc_spi_sclk,
+      o_spi_sclk    => o_dcdc_hk_adc_sclk_a,
       -- SPI chip select
-      o_spi_cs_n    => o_adc_spi_cs_n,
+      o_spi_cs_n    => o_dcdc_hk_adc_cs_n_a,
 
       ---------------------------------------------------------------------
       -- to user: spi interface @i_sys_spi_clk
@@ -448,9 +454,9 @@ begin
   inst_power_top : entity work.power_top
     generic map(
       -- enable the DEBUG by ILA
-      g_DEBUG       => pkg_POWER_RHRPMICL1A_DEBUG,
+      g_DEBUG            => pkg_POWER_RHRPMICL1A_DEBUG,
       -- width of the input/output power value
-      g_POWER_WIDTH => power_on_off'length,
+      g_POWER_WIDTH      => power_on_off'length,
       -- duration of the TC pulse (number of samples). Range: [1;max integer[
       g_PULSE_NB_SAMPLES => pkg_POWER_TC_PULSE_NB_SAMPLES
       )
@@ -466,9 +472,9 @@ begin
       ---------------------------------------------------------------------
       -- inputs
       ---------------------------------------------------------------------
-      -- power_valid (for power_on and power_off)
+      -- power_valid (for power on and power off)
       i_power_valid => power_on_off_valid,
-      -- bitwise power ('1': power_on, '0':power off)
+      -- bitwise power ('1': power on, '0':power off)
       i_power       => power_on_off,
       ---------------------------------------------------------------------
       -- outputs
@@ -495,8 +501,18 @@ begin
       );
 
   -- output
-  o_power_on  <= power_on;
-  o_power_off <= power_off;
+  -- power on
+  o_en_wfee <= power_on(3);
+  o_en_ras  <= power_on(2);
+  o_en_dmx1 <= power_on(1);
+  o_en_dmx0 <= power_on(0);
+
+  -- power off
+  o_dis_wfee <= power_off(3);
+  o_dis_ras  <= power_off(2);
+  o_dis_dmx1 <= power_off(1);
+  o_dis_dmx0 <= power_off(0);
+
   ---------------------------------------------------------------------
   -- leds
   ---------------------------------------------------------------------
