@@ -118,7 +118,7 @@ begin
     case sm_state_r1 is
       when E_RST =>
         cnt_next      <= (others => '0');
-        sm_state_next <= E_RST;
+        sm_state_next <= E_WAIT;
 
       when E_WAIT =>                    -- wait a new start command
         cnt_next <= (others => '0');
