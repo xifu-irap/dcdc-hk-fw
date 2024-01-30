@@ -1,7 +1,7 @@
 -- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2022.1 (win64) Build 3526262 Mon Apr 18 15:48:16 MDT 2022
--- Date        : Mon Jan 29 15:29:09 2024
+-- Date        : Tue Jan 30 08:16:43 2024
 -- Host        : PC-PAUL running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode synth_stub
 --               d:/dcdc-hk-fw-hardware/dcdc-hk-fw/ip/xilinx/coregen/ila_power_rhrpmicl1a/ila_power_rhrpmicl1a_stub.vhdl
