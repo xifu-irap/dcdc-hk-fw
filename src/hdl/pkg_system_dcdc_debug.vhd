@@ -39,7 +39,7 @@ package pkg_system_dcdc_debug is
   -- REGDECODE_TOP
   ---------------------------------------------------------------------
   -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
-  constant pkg_REGDECODE_TOP_DEBUG : boolean := false;
+  constant pkg_REGDECODE_TOP_DEBUG : boolean := true;
 
   ---------------------------------------------------------------------
   -- DCDC_TOP
