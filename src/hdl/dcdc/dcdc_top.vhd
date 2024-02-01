@@ -53,8 +53,6 @@ entity dcdc_top is
     ---------------------------------------------------------------------
     -- Valid start ADCs' acquisition
     i_adc_start_valid : in std_logic;
-    -- start ADCs' acquisition
-    i_adc_start       : in std_logic;
 
     ---------------------------------------------------------------------
     -- outputs
@@ -167,8 +165,6 @@ begin
       ---------------------------------------------------------------------
       -- Valid start ADCs' acquisition
       i_adc_start_valid => i_adc_start_valid,
-      -- start ADCs' acquisition
-      i_adc_start       => i_adc_start,
 
       ---------------------------------------------------------------------
       -- FSM status

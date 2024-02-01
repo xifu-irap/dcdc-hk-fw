@@ -72,6 +72,13 @@ package pkg_regdecode is
   --      . XXX_IDX_L
   ---------------------------------------------------------------------
 
+  -- Trigin access: POWER and ADC
+  ---------------------------------------------------------------------
+  -- user-defined: index of the power_valid bit
+  constant pkg_TRIG_IN_POWER_VALID_IDX_H : integer := 0;
+  -- user-defined: index of the adc_valid bit
+  constant pkg_TRIG_IN_ADC_VALID_IDX_H : integer := 4;
+
   -- wire in/wire out
   -----------------------------------------------------------------
 
@@ -79,6 +86,7 @@ package pkg_regdecode is
   -----------------------------------------------------------------
   -- user-defined: define the number of tap delay for loopback (wire). The range is [0;max int value[
   constant pkg_WIRE_LOOPBACK_DELAY : integer := 1;
+
 
   -- ctrl register
   ---------------------------------------------------------------------
@@ -94,6 +102,8 @@ package pkg_regdecode is
   -- user-defined: rst_status (bit index)
   constant pkg_DEBUG_CTRL_RST_STATUS_IDX_H  : integer := 1;
 
+
+
   -- POWER_CTRL register
   ---------------------------------------------------------------------
   -- user-defined: default value of the POWER_CTRL register
@@ -104,13 +114,6 @@ package pkg_regdecode is
   constant pkg_POWER_CTRL_POWER_IDX_L : integer := 0;
   -- auto-computed: power_ctrl width
   constant pkg_POWER_CTRL_WIDTH       : integer := work.pkg_utils.pkg_width_from_indexes(i_idx_high => pkg_POWER_CTRL_POWER_IDX_H, i_idx_low => pkg_POWER_CTRL_POWER_IDX_L);
-
-  -- ADC_CTRL register
-  ---------------------------------------------------------------------
-  -- user-defined: default value of the ADC_CTRL register
-  constant pkg_ADC_CTRL_DEFAULT             : integer := 0;
-  -- user-defined: adc_spi_start (bit index)
-  constant pkg_ADC_CTRL_ADC_SPI_START_IDX_H : integer := 0;
 
 
   -- error_sel register

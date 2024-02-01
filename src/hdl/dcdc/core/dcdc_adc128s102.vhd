@@ -59,8 +59,6 @@ entity dcdc_adc128s102 is
     ---------------------------------------------------------------------
     -- Valid start ADCs' acquisition
     i_adc_start_valid : in std_logic;
-    -- start ADCs' acquisition
-    i_adc_start       : in std_logic;
 
     ---------------------------------------------------------------------
     -- FSM status
@@ -138,8 +136,7 @@ architecture RTL of dcdc_adc128s102 is
   ---------------------------------------------------------------------
   -- state machine
   ---------------------------------------------------------------------
-  -- detect an start acquisition
-  signal start         : std_logic;
+
   -- fsm type declaration
   type t_state is (E_RST, E_INIT_LOAD_ADDR, E_INIT_TX_END, E_WAIT, E_RD_ADC0, E_RD_ADC1, E_RD_ADC2, E_RD_ADC3, E_RD_ADC4, E_RD_ADC5, E_RD_ADC6, E_RD_ADC7, E_WAIT_TX_END);
   -- state
@@ -196,8 +193,7 @@ architecture RTL of dcdc_adc128s102 is
   -- received data (device spi register value)
   signal rx_data       : std_logic_vector(15 downto 0);
 
-  -- SPI MISO
-  signal spi_miso : std_logic;
+
   -- SPI MOSI
   signal spi_mosi : std_logic;
   -- SPI clock
@@ -242,8 +238,6 @@ architecture RTL of dcdc_adc128s102 is
 
 begin
 
-  start <= '1' when i_adc_start_valid = '1' and i_adc_start = '1' else '0';
-
   ---------------------------------------------------------------------
   -- ADC128S102 SPI device: For each received command, sequentially read the following ADCs:
   --   . ADC0 -> ADC1 -> ... -> ADC7
@@ -256,7 +250,7 @@ begin
   --
   --    Note: While a conversion is in progress, the address of the next input for conversion is clocked into a control register (see datasheet)
   --     . Example: to get the adci value (rx_sel), the corresponding address (tx_addr) must be set on the previous spi read access.
-  p_decode_state : process (ready_r1, rx_sel_r1, sm_state_r1, start,
+  p_decode_state : process (ready_r1, rx_sel_r1, sm_state_r1, i_adc_start_valid,
                             tx_addr_r1, tx_finish, tx_ready, load_en_r1) is
   begin
     -- default value
@@ -289,7 +283,7 @@ begin
         end if;
 
       when E_WAIT =>                    -- wait a new command
-        if start = '1' then
+        if i_adc_start_valid = '1' then
           load_en_next  <= '1';
           ready_next    <= '0';
           sm_state_next <= E_RD_ADC0;
@@ -456,7 +450,7 @@ begin
       load_en_r1       <= load_en_next;
 
       -- generate error if a new start command is received during the tx transmission.
-      if ready_r1 = '0' and start = '1' then
+      if ready_r1 = '0' and i_adc_start_valid = '1' then
         error_r1 <= '1';
       else
         error_r1 <= '0';
@@ -657,7 +651,7 @@ begin
         probe0(3)              => tx_ready,
         probe0(2)              => tx_finish,
         probe0(1)              => ready_r1,
-        probe0(0)              => start,
+        probe0(0)              => i_adc_start_valid,
         -- probe1
         probe1(34 downto 32)   => std_logic_vector(rx_sel_r1),
         probe1(31 downto 16)   => rx_data,

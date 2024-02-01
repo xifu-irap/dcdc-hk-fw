@@ -106,16 +106,14 @@ architecture RTL of system_dcdc_top is
   -- ctrl register (writting)
   signal reg_ctrl : std_logic_vector(31 downto 0);
 
-  -- power_ctrl valid
-  signal reg_power_ctrl_valid : std_logic;
+  -- power_conf valid
+  signal reg_power_conf_valid : std_logic;
 
-  -- power_ctrl register (writting)
-  signal reg_power_ctrl : std_logic_vector(31 downto 0);
+  -- power_conf register (writting)
+  signal reg_power_conf : std_logic_vector(31 downto 0);
 
-  -- adc_ctrl valid
-  signal reg_adc_ctrl_valid : std_logic;
-  -- adc_ctrl register (reading)
-  signal reg_adc_ctrl       : std_logic_vector(31 downto 0);
+  -- adc_valid
+  signal reg_adc_valid : std_logic;
 
   -- adc_status register (reading)
   signal reg_adc_status : std_logic_vector(31 downto 0);
@@ -161,8 +159,6 @@ architecture RTL of system_dcdc_top is
 
   -- adc_start valid
   signal adc_start_valid : std_logic;
-  -- adc_start (start ADCs' acquisition)
-  signal adc_start       : std_logic;
 
   -- power_on_off valid
   signal power_on_off_valid : std_logic;
@@ -212,7 +208,7 @@ architecture RTL of system_dcdc_top is
   -- power_top
   ---------------------------------------------------------------------
   -- power ready (FSM)
-  signal power_ready  : std_logic;
+  --signal power_ready  : std_logic;
   -- bitwise power_on pulse
   signal power_on     : std_logic_vector(3 downto 0);
   -- bitwise power_off pulse
@@ -260,17 +256,16 @@ begin
       -- wire
       -- ctrl register (writting)
       o_reg_ctrl             => reg_ctrl,
-      -- power_ctrl valid
-      o_reg_power_ctrl_valid => reg_power_ctrl_valid,
-      -- power_ctrl register (writting)
-      o_reg_power_ctrl       => reg_power_ctrl,
+      -- power_conf valid
+      o_reg_power_conf_valid => reg_power_conf_valid,
+      -- power_conf register (writting)
+      o_reg_power_conf       => reg_power_conf,
 
       -- ADC @o_usb_clk
       ---------------------------------------------------------------------
-      -- adc_ctrl valid (reading)
-      o_reg_adc_ctrl_valid => reg_adc_ctrl_valid,
-      -- adc_ctrl register (reading)
-      o_reg_adc_ctrl       => reg_adc_ctrl,
+      -- adc_valid (writting): 1 bit
+      o_reg_adc_valid      => reg_adc_valid,
+
       -- adc_status register (reading)
       i_reg_adc_status     => reg_adc_status,
       -- adc0 register (reading)
@@ -314,11 +309,10 @@ begin
   rst_status         <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   debug_pulse        <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
   -- adc_ctrl register
-  adc_start_valid    <= reg_adc_ctrl_valid;
-  adc_start          <= reg_adc_ctrl(pkg_ADC_CTRL_ADC_SPI_START_IDX_H);
+  adc_start_valid    <= reg_adc_valid;
   -- power_ctrl register
-  power_on_off_valid <= reg_power_ctrl_valid;
-  power_on_off       <= reg_power_ctrl(pkg_POWER_CTRL_POWER_IDX_H downto pkg_POWER_CTRL_POWER_IDX_L);
+  power_on_off_valid <= reg_power_conf_valid;
+  power_on_off       <= reg_power_conf(pkg_POWER_CTRL_POWER_IDX_H downto pkg_POWER_CTRL_POWER_IDX_L);
 
   -- to register
   ---------------------------------------------------------------------
@@ -369,8 +363,6 @@ begin
       ---------------------------------------------------------------------
       -- Valid start ADCs' acquisition
       i_adc_start_valid => adc_start_valid,
-      -- start ADCs' acquisition
-      i_adc_start       => adc_start,
 
       ---------------------------------------------------------------------
       -- outputs
@@ -480,7 +472,7 @@ begin
       -- outputs
       ---------------------------------------------------------------------
       -- '1': ready to configure the power, '0': busy
-      o_ready       => power_ready,     -- TODO: to connect
+      o_ready       => open,
       -- start of frame (pulse)
       o_power_sof   => open,
       -- end of frame (pulse)
@@ -531,8 +523,6 @@ begin
       ---------------------------------------------------------------------
       -- -- Valid start ADCs' acquisition
       i_adc_start_valid => adc_start_valid,
-      -- start ADCs' acquisition
-      i_adc_start       => adc_start,
 
       ---------------------------------------------------------------------
       -- output @i_clk

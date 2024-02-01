@@ -65,17 +65,15 @@ entity regdecode_top is
     -- wire
     -- ctrl register (writting)
     o_reg_ctrl             : out std_logic_vector(31 downto 0);
-    -- power_ctrl valid
-    o_reg_power_ctrl_valid : out std_logic;
-    -- power_ctrl register (writting)
-    o_reg_power_ctrl       : out std_logic_vector(31 downto 0);
+    -- power_conf valid
+    o_reg_power_conf_valid : out std_logic;
+    -- power_conf register (writting)
+    o_reg_power_conf       : out std_logic_vector(31 downto 0);
 
     -- ADC @o_usb_clk
     ---------------------------------------------------------------------
     -- adc_ctrl valid
-    o_reg_adc_ctrl_valid : out std_logic;
-    -- adc_ctrl register (reading)
-    o_reg_adc_ctrl       : out std_logic_vector(31 downto 0);
+    o_reg_adc_valid : out std_logic;
 
     -- adc_status register (reading)
     i_reg_adc_status : in std_logic_vector(31 downto 0);
@@ -122,17 +120,11 @@ architecture RTL of regdecode_top is
   -- Common Register configuration
   ---------------------------------------------------------------------
 
-  -- adc_status register value
-  signal usb_wireout_adc_status : std_logic_vector(31 downto 0);
-
   -- ctrl register value
   signal usb_wireout_ctrl : std_logic_vector(31 downto 0);
 
-  -- adc_ctrl register value
-  signal usb_wireout_adc_ctrl : std_logic_vector(31 downto 0);
-
   -- power_ctrl register value
-  signal usb_wireout_power_ctrl : std_logic_vector(31 downto 0);
+  signal usb_wireout_power_conf : std_logic_vector(31 downto 0);
 
 
   -- firmware_id register value
@@ -157,14 +149,17 @@ architecture RTL of regdecode_top is
   signal usb_wireout_status     : std_logic_vector(31 downto 0);
 
 
+  -- Trig in
+  ---------------------------------------------------------------------
+  -- trig_ctrl access
+  signal usb_trigin_ctrl   : std_logic_vector(31 downto 0);
+
   -- Common Register configuration
   ---------------------------------------------------------------------
   -- ctrl register value
   signal usb_wirein_ctrl       : std_logic_vector(31 downto 0);
   -- power_ctrl register value
-  signal usb_wirein_power_ctrl : std_logic_vector(31 downto 0);
-  -- adc_ctrl register value
-  signal usb_wirein_adc_ctrl   : std_logic_vector(31 downto 0);
+  signal usb_wirein_power_conf : std_logic_vector(31 downto 0);
 
   -- Debugging Registers
   ---------------------------------------------------------------------
@@ -187,20 +182,17 @@ architecture RTL of regdecode_top is
   signal sel_errors : std_logic_vector(pkg_ERROR_SEL_WIDTH - 1 downto 0);
 
   ---------------------------------------------------------------------
-  -- inst_regdecode_reg_with_default_value_power_ctrl
+  -- inst_pipeliner_adc_power
   ---------------------------------------------------------------------
-  -- power_ctrl valid
-  signal power_ctrl_valid : std_logic;
-  -- power_ctrl value
-  signal power_ctrl       : std_logic_vector(o_reg_power_ctrl'range);
+  -- power_conf valid
+  signal power_conf_valid : std_logic;
+  -- power_conf value
+  signal power_conf       : std_logic_vector(o_reg_power_conf'range);
 
-  ---------------------------------------------------------------------
-  -- inst_regdecode_reg_with_default_value_adc_ctrl
-  ---------------------------------------------------------------------
+  -- trig_ctrl
+  signal trigin_ctrl : std_logic_vector(31 downto 0);
   -- adc_ctrl valid
-  signal adc_ctrl_valid : std_logic;
-  -- adc_ctrl value
-  signal adc_ctrl       : std_logic_vector(o_reg_adc_ctrl'range);
+  signal adc_valid : std_logic;
 
   ---------------------------------------------------------------------
   -- debug_ctrl regdecode_register_to_user
@@ -239,9 +231,8 @@ begin
       ---------------------------------------------------------------------
       -- wire_out
       i_usb_wireout_ctrl       => usb_wireout_ctrl,  -- ctrl register (reading)
-      i_usb_wireout_power_ctrl => usb_wireout_power_ctrl,  -- power_ctrl register (reading)
+      i_usb_wireout_power_conf => usb_wireout_power_conf,  -- power_ctrl register (reading)
 
-      i_usb_wireout_adc_ctrl   => usb_wireout_adc_ctrl,  -- adc_ctrl register (reading)
       i_usb_wireout_adc_status => i_reg_adc_status,  -- adc_status register (reading)
       i_usb_wireout_adc0       => i_reg_adc0,        -- adc0 register (reading)
       i_usb_wireout_adc1       => i_reg_adc1,        -- adc1 register (reading)
@@ -271,12 +262,14 @@ begin
 
       -- wire
       o_usb_wirein_ctrl       => usb_wirein_ctrl,  -- ctrl register (writting)
-      o_usb_wirein_power_ctrl => usb_wirein_power_ctrl,  -- power_ctrl register (writting)
-      o_usb_wirein_adc_ctrl   => usb_wirein_adc_ctrl,  -- adc_ctrl register (writting)
+      o_usb_wirein_power_conf => usb_wirein_power_conf,  -- power_ctrl register (writting)
 
       -- debugging
       o_usb_wirein_debug_ctrl => usb_wirein_debug_ctrl,  -- debug_ctrl register (writting)
-      o_usb_wirein_sel_errors => usb_wirein_sel_errors  -- sel_errors register (writting)
+      o_usb_wirein_sel_errors => usb_wirein_sel_errors,  -- sel_errors register (writting)
+
+      -- trigger
+      o_usb_trigin_ctrl        => usb_trigin_ctrl
       );
 
   -- extract bits
@@ -317,28 +310,14 @@ begin
       -- number of consecutives registers. Possibles values: [0, integer max value[
       g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,
       -- width of the input/output data.  Possibles values: [1, integer max value[
-      g_DATA_WIDTH => usb_wirein_power_ctrl'length
+      g_DATA_WIDTH => usb_wirein_power_conf'length
       )
     port map(
       i_clk  => usb_clk,
-      i_data => usb_wirein_power_ctrl,
-      o_data => usb_wireout_power_ctrl
+      i_data => usb_wirein_power_conf,
+      o_data => usb_wireout_power_conf
       );
 
-  inst_pipeliner_with_init_optional_pipe_icu_conf : entity work.pipeliner_with_init
-    generic map(
-      -- register init value
-      g_INIT       => '0',
-      -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,
-      -- width of the input/output data.  Possibles values: [1, integer max value[
-      g_DATA_WIDTH => usb_wirein_adc_ctrl'length
-      )
-    port map(
-      i_clk  => usb_clk,
-      i_data => usb_wirein_adc_ctrl,
-      o_data => usb_wireout_adc_ctrl
-      );
 
   inst_pipeliner_with_init_optional_pipe_debug_ctrl : entity work.pipeliner_with_init
     generic map(
@@ -375,71 +354,48 @@ begin
   ---------------------------------------------------------------------
   -- power_ctrl register
   ---------------------------------------------------------------------
-  inst_regdecode_reg_with_default_value_power_ctrl : entity work.regdecode_reg_with_default_value
+  gen_pipe: if true generate
+    -- temporary input pipe
+    signal data_tmp0 : std_logic_vector(63 downto 0);
+    -- temporary output pipe
+    signal data_tmp1 : std_logic_vector(63 downto 0);
+    begin
+      data_tmp0(63 downto 32) <= usb_trigin_ctrl;
+      data_tmp0(31 downto 0)  <= usb_wirein_power_conf;
+
+    inst_pipeliner_adc_power : entity work.pipeliner_with_init
     generic map(
-      -- data default value (on the Reset)
-      g_DATA_DEFAULT => pkg_POWER_CTRL_DEFAULT,
-      -- input/output data width
-      g_DATA_WIDTH   => usb_wirein_power_ctrl'length
+      -- register init value
+      g_INIT       => '0',
+      -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => 1,
+      -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => data_tmp0'length
       )
     port map(
-      -- input clock
-      i_clk => usb_clk,
-      -- input reset
-      i_rst => usb_rst,
-
-      ---------------------------------------------------------------------
-      -- input register
-      ---------------------------------------------------------------------
-      i_data => usb_wirein_power_ctrl,
-
-      ---------------------------------------------------------------------
-      -- output
-      ---------------------------------------------------------------------
-      -- data valid
-      o_data_valid => power_ctrl_valid,
-      -- data
-      o_data       => power_ctrl
+      i_clk  => usb_clk,
+      i_data => data_tmp0,
+      o_data => data_tmp1
       );
 
-  -- output
-  o_reg_power_ctrl_valid <= power_ctrl_valid;
-  o_reg_power_ctrl       <= power_ctrl;
+  trigin_ctrl <= data_tmp1(63 downto 32);
+  power_conf  <= data_tmp1(31 downto 0);
 
-
-  ---------------------------------------------------------------------
-  -- adc_ctrl register
-  ---------------------------------------------------------------------
-  inst_regdecode_reg_with_default_value_adc_ctrl : entity work.regdecode_reg_with_default_value
-    generic map(
-      -- data default value (on the Reset)
-      g_DATA_DEFAULT => pkg_ADC_CTRL_DEFAULT,
-      -- input/output data width
-      g_DATA_WIDTH   => usb_wirein_adc_ctrl'length
-      )
-    port map(
-      -- input clock
-      i_clk => usb_clk,
-      -- input reset
-      i_rst => usb_rst,
-
-      ---------------------------------------------------------------------
-      -- input register
-      ---------------------------------------------------------------------
-      i_data => usb_wirein_adc_ctrl,
-
-      ---------------------------------------------------------------------
-      -- output
-      ---------------------------------------------------------------------
-      -- data valid
-      o_data_valid => adc_ctrl_valid,
-      -- data
-      o_data       => adc_ctrl
-      );
+  -- extract bits
+  power_conf_valid <= trigin_ctrl(pkg_TRIG_IN_POWER_VALID_IDX_H);
+  adc_valid        <= trigin_ctrl(pkg_TRIG_IN_ADC_VALID_IDX_H);
 
   -- output
-  o_reg_adc_ctrl_valid <= adc_ctrl_valid;
-  o_reg_adc_ctrl       <= adc_ctrl;
+  -- power
+  o_reg_power_conf_valid <= power_conf_valid;
+  o_reg_power_conf       <= power_conf;
+
+  -- adc
+  o_reg_adc_valid <= adc_valid;
+
+  end generate gen_pipe;
+
+
 
 
   ---------------------------------------------------------------------
@@ -450,7 +406,7 @@ begin
       -- data default value (on the Reset)
       g_DATA_DEFAULT => pkg_DEBUG_CTRL_DEFAULT,
       -- input/output data width
-      g_DATA_WIDTH   => usb_wirein_adc_ctrl'length
+      g_DATA_WIDTH   => usb_trigin_ctrl'length
       )
     port map(
       -- input clock
@@ -520,8 +476,8 @@ begin
       port map (
         clk => usb_clk,
 
-        probe0(63 downto 32)   => adc_ctrl,
-        probe0(31 downto 0)    => power_ctrl,
+        probe0(63 downto 32)   => trigin_ctrl,
+        probe0(31 downto 0)    => power_conf,
         -- probe1
         probe1(255 downto 224) => i_reg_adc7,
         probe1(223 downto 192) => i_reg_adc6,
@@ -533,12 +489,12 @@ begin
         probe1(31 downto 0)    => i_reg_adc0,
 
         -- probe2
-        probe2(95 downto 64) => usb_wireout_adc_status,
+        probe2(95 downto 64) => i_reg_adc_status,
         probe2(63 downto 32) => i_reg_wire_errors0,
         probe2(31 downto 0)  => i_reg_wire_status0,
 
-        probe3(1) => adc_ctrl_valid,
-        probe3(0) => power_ctrl_valid
+        probe3(1) => adc_valid,
+        probe3(0) => power_conf_valid
         );
 
   end generate gen_debug;

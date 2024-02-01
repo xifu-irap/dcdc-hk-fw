@@ -48,8 +48,6 @@ entity leds_top is
     ---------------------------------------------------------------------
     -- -- Valid start ADCs' acquisition
     i_adc_start_valid : in std_logic;
-    -- start ADCs' acquisition
-    i_adc_start       : in std_logic;
 
     ---------------------------------------------------------------------
     -- output @i_clk
@@ -71,8 +69,6 @@ architecture RTL of leds_top is
   ---------------------------------------------------------------------
   -- led_blink_on_start
   ---------------------------------------------------------------------
-  -- start command
-  signal start        : std_logic;
   -- aperiodic led blink on start command.
   signal led_on_start : std_logic;
 
@@ -107,7 +103,6 @@ begin
   ---------------------------------------------------------------------
   -- led_blink_on_start
   ---------------------------------------------------------------------
-  start <= '1' when i_adc_start = '1' and i_adc_start_valid = '1' else '0';
 
   inst_led_blink_on_start : entity work.led_blink_on_start
     generic map(
@@ -125,7 +120,7 @@ begin
       -- reset
       i_rst   => i_rst,
       -- start
-      i_start => start,
+      i_start => i_adc_start_valid,
       ---------------------------------------------------------------------
       -- output @i_clk
       ---------------------------------------------------------------------
