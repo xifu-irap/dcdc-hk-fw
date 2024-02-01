@@ -476,7 +476,6 @@ begin
       port map (
         clk => usb_clk,
 
-        probe0(63 downto 32)   => trigin_ctrl,
         probe0(31 downto 0)    => power_conf,
         -- probe1
         probe1(255 downto 224) => i_reg_adc7,
@@ -493,8 +492,9 @@ begin
         probe2(63 downto 32) => i_reg_wire_errors0,
         probe2(31 downto 0)  => i_reg_wire_status0,
 
-        probe3(1) => adc_valid,
-        probe3(0) => power_conf_valid
+        probe3(33) => adc_valid,
+        probe3(32) => power_conf_valid,
+        probe3(31 downto 0) => trigin_ctrl
         );
 
   end generate gen_debug;
