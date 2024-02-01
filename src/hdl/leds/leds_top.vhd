@@ -57,7 +57,7 @@ entity leds_top is
     ---------------------------------------------------------------------
     -- output @i_clk
     ---------------------------------------------------------------------
-    -- FPGA board: status leds ('1':ON, 'Z':OFF)
+    -- FPGA board: status leds ('0':ON, 'Z':OFF)
     o_leds : out std_logic_vector(7 downto 0)
 
     );
@@ -170,7 +170,7 @@ begin
   ---------------------------------------------------------------------
   -- output
   --  The FPGA leds board must respected the following behaviour:
-  --   . status leds ('1':ON, 'Z':OFF)
+  --   . status leds ('0':ON, 'Z':OFF)
   ---------------------------------------------------------------------
   o_leds(0)          <= '0';            -- ON: led_fw
   o_leds(1)          <= '0' when led_blink = '1'    else 'Z';
