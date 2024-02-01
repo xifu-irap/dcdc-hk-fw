@@ -49,6 +49,11 @@ entity leds_top is
     -- -- Valid start ADCs' acquisition
     i_adc_start_valid : in std_logic;
 
+    -- power_valid (for power_on and power_off)
+    i_power_valid : in std_logic;
+    -- bitwise power ('1': power_on, '0':power off)
+    i_power       : in std_logic_vector(3 downto 0);
+
     ---------------------------------------------------------------------
     -- output @i_clk
     ---------------------------------------------------------------------
@@ -67,10 +72,17 @@ architecture RTL of leds_top is
   signal led_blink : std_logic;
 
   ---------------------------------------------------------------------
-  -- led_blink_on_start
+  -- inst_led_blink_on_adc_start
   ---------------------------------------------------------------------
   -- aperiodic led blink on start command.
-  signal led_on_start : std_logic;
+  signal led_adc_start : std_logic;
+
+  ---------------------------------------------------------------------
+  -- inst_led_blink_on_power_start
+  ---------------------------------------------------------------------
+  -- aperiodic led blink on start command.
+  signal led_power_start : std_logic;
+
 
 begin
 
@@ -101,10 +113,9 @@ begin
       );
 
   ---------------------------------------------------------------------
-  -- led_blink_on_start
+  -- ADC: pulse on start adc
   ---------------------------------------------------------------------
-
-  inst_led_blink_on_start : entity work.led_blink_on_start
+  inst_led_blink_on_adc_start : entity work.led_blink_on_start
     generic map(
       -- LED ON: number of cycles (must be >0)
       g_NB_CYCLES_LED_ON => 2**26,
@@ -125,7 +136,34 @@ begin
       -- output @i_clk
       ---------------------------------------------------------------------
       -- FPGA board: status led
-      o_led   => led_on_start
+      o_led   => led_adc_start
+      );
+
+  ---------------------------------------------------------------------
+  -- ADC: pulse on start adc
+  ---------------------------------------------------------------------
+  inst_led_blink_on_power_start : entity work.led_blink_on_start
+    generic map(
+      -- LED ON: number of cycles (must be >0)
+      g_NB_CYCLES_LED_ON => 2**26,
+      -- optional output latency (range >= 0)
+      g_OUTPUT_LATENCY   => 1
+      )
+    port map(
+      ---------------------------------------------------------------------
+      -- input @i_clk
+      ---------------------------------------------------------------------
+      -- clock
+      i_clk   => i_clk,
+      -- reset
+      i_rst   => i_rst,
+      -- start
+      i_start => i_power_valid,
+      ---------------------------------------------------------------------
+      -- output @i_clk
+      ---------------------------------------------------------------------
+      -- FPGA board: status led
+      o_led   => led_power_start
       );
 
 
@@ -135,10 +173,13 @@ begin
   --   . status leds ('1':ON, 'Z':OFF)
   ---------------------------------------------------------------------
   o_leds(0)          <= '0';            -- ON: led_fw
-  o_leds(1)          <= 'Z';  -- OFF: N/A: no pll_lock signal available
-  o_leds(2)          <= '0' when led_blink = '1'    else 'Z';
-  o_leds(3)          <= '0' when led_on_start = '1' else 'Z';
-  o_leds(7 downto 4) <= (others => 'Z');
+  o_leds(1)          <= '0' when led_blink = '1'    else 'Z';
+  o_leds(3)          <= '0' when led_adc_start = '1' else 'Z';
+  o_leds(1)          <= '0' when led_power_start = '1' else 'Z';
+  o_leds(4)          <= '0' when i_power(0) = '1' else 'Z';
+  o_leds(5)          <= '0' when i_power(1) = '1' else 'Z';
+  o_leds(6)          <= '0' when i_power(2) = '1' else 'Z';
+  o_leds(7)          <= '0' when i_power(3) = '1' else 'Z';
 
 
 

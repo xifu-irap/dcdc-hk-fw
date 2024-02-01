@@ -524,6 +524,11 @@ begin
       -- -- Valid start ADCs' acquisition
       i_adc_start_valid => adc_start_valid,
 
+      -- power_valid (for power on and power off)
+      i_power_valid => power_on_off_valid,
+      -- bitwise power ('1': power on, '0':power off)
+      i_power       => power_on_off,
+
       ---------------------------------------------------------------------
       -- output @i_clk
       ---------------------------------------------------------------------
