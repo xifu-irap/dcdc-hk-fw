@@ -55,7 +55,7 @@ entity system_dcdc_top is
     --
     ---------------------------------------------------------------------
     -- hardware id register (reading)
-    --i_hardware_id : in std_logic_vector(7 downto 0);
+    i_hardware_id : in std_logic_vector(7 downto 0);
 
     ---------------------------------------------------------------------
     -- ADC128S102 HK
@@ -87,7 +87,14 @@ entity system_dcdc_top is
     -- LEDS
     ---------------------------------------------------------------------
     -- fpga board leds ('0': ON, 'Z': OFF )
-    o_leds     : out std_logic_vector(7 downto 0)
+    o_leds     : out std_logic_vector(7 downto 0);
+
+    -- facade led
+    ---------------------------------------------------------------------
+    -- firmware led
+    o_led_fw        : out std_logic;
+    -- blink if the clock is alive
+    o_led_clk_alive : out std_logic
 
     );
 end system_dcdc_top;
@@ -97,8 +104,7 @@ architecture RTL of system_dcdc_top is
   -- regdecode_top
   ---------------------------------------------------------------------
   -- hardware id register (reading)
-  -- signal hardware_id : std_logic_vector(i_hardware_id'range);
-  signal hardware_id : std_logic_vector(7 downto 0);
+  signal hardware_id : std_logic_vector(i_hardware_id'range);
 
   -- usb clock
   signal usb_clk : std_logic;
@@ -228,8 +234,7 @@ architecture RTL of system_dcdc_top is
 
 begin
 
-  --hardware_id <= i_hardware_id;
-  hardware_id <= (others => '0');       -- TODO
+  hardware_id <= i_hardware_id;
 
   ---------------------------------------------------------------------
   -- regdecode_top
@@ -567,8 +572,19 @@ begin
       ---------------------------------------------------------------------
       -- output @i_clk
       ---------------------------------------------------------------------
+
+      -- FPGA board leds
+      ---------------------------------------------------------------------
       -- FPGA board: status leds ('1':ON, 'Z':OFF)
-      o_leds => o_leds
+      o_leds => o_leds,
+
+      -- facade led
+      ---------------------------------------------------------------------
+      -- firmware led
+      o_led_fw        => o_led_fw,
+      -- blink if the clock is alive
+      o_led_clk_alive => o_led_clk_alive
+
       );
 
 

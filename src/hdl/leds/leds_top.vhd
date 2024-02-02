@@ -57,19 +57,31 @@ entity leds_top is
     ---------------------------------------------------------------------
     -- output @i_clk
     ---------------------------------------------------------------------
+
+    -- FPGA board leds
+    ---------------------------------------------------------------------
     -- FPGA board: status leds ('0':ON, 'Z':OFF)
-    o_leds : out std_logic_vector(7 downto 0)
+    o_leds : out std_logic_vector(7 downto 0);
+
+    -- facade led
+    ---------------------------------------------------------------------
+    -- firmware led
+    o_led_fw        : out std_logic;
+    -- blink if the clock is alive
+    o_led_clk_alive : out std_logic
 
     );
 end entity leds_top;
 
 architecture RTL of leds_top is
 
+  -- firmware loading = ok
+  constant c_FIRMWARE_OK : std_logic := '1';
   ---------------------------------------------------------------------
   -- led_blink
   ---------------------------------------------------------------------
   -- periodic led blink
-  signal led_blink : std_logic;
+  signal led_blink       : std_logic;
 
   ---------------------------------------------------------------------
   -- inst_led_blink_on_adc_start
@@ -172,15 +184,18 @@ begin
   --  The FPGA leds board must respected the following behaviour:
   --   . status leds ('0':ON, 'Z':OFF)
   ---------------------------------------------------------------------
-  o_leds(0)          <= '0';            -- ON: led_fw
-  o_leds(1)          <= '0' when led_blink = '1'    else 'Z';
-  o_leds(2)          <= '0' when led_adc_start = '1' else 'Z';
-  o_leds(3)          <= '0' when led_power_start = '1' else 'Z';
-  o_leds(4)          <= '0' when i_power(0) = '1' else 'Z';
-  o_leds(5)          <= '0' when i_power(1) = '1' else 'Z';
-  o_leds(6)          <= '0' when i_power(2) = '1' else 'Z';
-  o_leds(7)          <= '0' when i_power(3) = '1' else 'Z';
+  o_leds(0) <= not(c_FIRMWARE_OK);      -- inversed logic
+  o_leds(1) <= '0' when led_blink = '1'       else 'Z';
+  o_leds(2) <= '0' when led_adc_start = '1'   else 'Z';
+  o_leds(3) <= '0' when led_power_start = '1' else 'Z';
+  o_leds(4) <= '0' when i_power(0) = '1'      else 'Z';
+  o_leds(5) <= '0' when i_power(1) = '1'      else 'Z';
+  o_leds(6) <= '0' when i_power(2) = '1'      else 'Z';
+  o_leds(7) <= '0' when i_power(3) = '1'      else 'Z';
 
+  -- facade leds
+  o_led_fw        <= c_FIRMWARE_OK;     -- firmware = ok
+  o_led_clk_alive <= led_blink;
 
 
 end architecture RTL;
