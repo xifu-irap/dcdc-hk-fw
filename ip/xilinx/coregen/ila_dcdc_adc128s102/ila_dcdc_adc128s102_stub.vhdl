@@ -1,7 +1,7 @@
 -- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2022.1 (win64) Build 3526262 Mon Apr 18 15:48:16 MDT 2022
--- Date        : Tue Jan 23 08:12:32 2024
+-- Date        : Fri Feb  2 10:30:48 2024
 -- Host        : PC-PAUL running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode synth_stub
 --               d:/dcdc-hk-fw-hardware/dcdc-hk-fw/ip/xilinx/coregen/ila_dcdc_adc128s102/ila_dcdc_adc128s102_stub.vhdl
