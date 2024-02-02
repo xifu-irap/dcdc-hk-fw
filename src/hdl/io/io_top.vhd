@@ -61,7 +61,28 @@ entity io_top is
     -- Shared SPI clock line
     i_ui_spi_sclk : in  std_logic;
     -- SPI chip select
-    i_ui_spi_cs_n : in  std_logic
+    i_ui_spi_cs_n : in  std_logic;
+
+    ---------------------------------------------------------------------
+    -- power
+    ---------------------------------------------------------------------
+    -- power_clock
+    i_power_clk : in  std_logic;
+    ---------------------------------------------------------------------
+    -- from/to IOs: @i_clk
+    ---------------------------------------------------------------------
+    -- bitwise power_on pulse
+    o_power_on  : out std_logic_vector(g_POWER_WIDTH - 1 downto 0);
+    -- bitwise power_off pulse
+    o_power_off : out std_logic_vector(g_POWER_WIDTH - 1 downto 0);
+
+    ---------------------------------------------------------------------
+    -- from/to user: @i_clk
+    ---------------------------------------------------------------------
+    -- bitwise power_on pulse
+    i_power_on  : in std_logic_vector(g_POWER_WIDTH - 1 downto 0);
+    -- bitwise power_off pulse
+    i_power_off : in std_logic_vector(g_POWER_WIDTH - 1 downto 0)
 
     );
 end entity io_top;
@@ -93,6 +114,33 @@ begin
       i_ui_spi_mosi => i_ui_spi_mosi,
       i_ui_spi_sclk => i_ui_spi_sclk,
       i_ui_spi_cs_n => i_ui_spi_cs_n
+      );
+
+  ---------------------------------------------------------------------
+  -- power
+  ---------------------------------------------------------------------
+  inst_io_power : entity work.io_power
+    generic map(
+      -- width of the input/output power value
+      g_POWER_WIDTH => i_power_on'length
+      )
+    port map(
+      -- clock
+      i_clk       => i_power_clk,
+      ---------------------------------------------------------------------
+      -- from/to IOs: @i_clk
+      ---------------------------------------------------------------------
+      -- bitwise power_on pulse
+      o_power_on  => o_power_on,
+      -- bitwise power_off pulse
+      o_power_off => o_power_off,
+      ---------------------------------------------------------------------
+      -- from/to user: @i_clk
+      ---------------------------------------------------------------------
+      -- bitwise power_on pulse
+      i_power_on  => i_power_on,
+      -- bitwise power_off pulse
+      i_power_off => i_power_off
       );
 
 

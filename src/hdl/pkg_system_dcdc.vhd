@@ -59,6 +59,12 @@ package pkg_system_dcdc is
   -- auto-computed : Number of clock periods for miso signal between the pads side -> user side
   constant pkg_IO_ADC_MISO_DELAY : positive := pkg_IO_SPI_MISO_DELAY;
 
+  ---------------------------------------------------------------------
+  -- io_top/io_power
+  ---------------------------------------------------------------------
+  -- user-defined: number of tap delay for the power signals
+  constant pkg_IO_POWER_DELAY : positive := 1;
+
   -------------------------------------------------------------------
   -- dcdc_top/dcdc_adc128s102
   --   .see: datasheet

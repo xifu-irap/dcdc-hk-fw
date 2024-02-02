@@ -166,7 +166,7 @@ architecture RTL of system_dcdc_top is
   signal power_on_off       : std_logic_vector(3 downto 0);
 
   ---------------------------------------------------------------------
-  -- adc_top
+  -- dcdc_top
   ---------------------------------------------------------------------
   -- status of the ADCs' acquisition engine.
   signal adc_ready : std_logic;
@@ -218,6 +218,14 @@ architecture RTL of system_dcdc_top is
   -- power status register: status0
   signal power_status : std_logic_vector(7 downto 0);
 
+  ---------------------------------------------------------------------
+  -- io_top
+  ---------------------------------------------------------------------
+  -- bitwise power_on pulse
+  signal power_on_rx  : std_logic_vector(3 downto 0);
+  -- bitwise power_off pulse
+  signal power_off_rx : std_logic_vector(3 downto 0);
+
 begin
 
   --hardware_id <= i_hardware_id;
@@ -264,26 +272,26 @@ begin
       -- ADC @o_usb_clk
       ---------------------------------------------------------------------
       -- adc_valid (writting): 1 bit
-      o_reg_adc_valid      => reg_adc_valid,
+      o_reg_adc_valid => reg_adc_valid,
 
       -- adc_status register (reading)
-      i_reg_adc_status     => reg_adc_status,
+      i_reg_adc_status => reg_adc_status,
       -- adc0 register (reading)
-      i_reg_adc0           => reg_adc0,
+      i_reg_adc0       => reg_adc0,
       -- adc1 register (reading)
-      i_reg_adc1           => reg_adc1,
+      i_reg_adc1       => reg_adc1,
       -- adc2 register (reading)
-      i_reg_adc2           => reg_adc2,
+      i_reg_adc2       => reg_adc2,
       -- adc3 register (reading)
-      i_reg_adc3           => reg_adc3,
+      i_reg_adc3       => reg_adc3,
       -- adc4 register (reading)
-      i_reg_adc4           => reg_adc4,
+      i_reg_adc4       => reg_adc4,
       -- adc5 register (reading)
-      i_reg_adc5           => reg_adc5,
+      i_reg_adc5       => reg_adc5,
       -- adc6 register (reading)
-      i_reg_adc6           => reg_adc6,
+      i_reg_adc6       => reg_adc6,
       -- adc7 register (reading)
-      i_reg_adc7           => reg_adc7,
+      i_reg_adc7       => reg_adc7,
 
       -- debug_ctrl @o_usb_clk
       ---------------------------------------------------------------------
@@ -412,9 +420,9 @@ begin
   inst_power_top : entity work.power_top
     generic map(
       -- enable the DEBUG by ILA
-      g_DEBUG            => pkg_POWER_RHRPMICL1A_DEBUG,
+      g_DEBUG       => pkg_POWER_RHRPMICL1A_DEBUG,
       -- width of the input/output power value
-      g_POWER_WIDTH      => power_on_off'length
+      g_POWER_WIDTH => power_on_off'length
       )
     port map(
       -- clock
@@ -456,18 +464,7 @@ begin
       o_status      => power_status
       );
 
-  -- output
-  -- power on
-  o_en_wfee <= power_on(3);
-  o_en_ras  <= power_on(2);
-  o_en_dmx1 <= power_on(1);
-  o_en_dmx0 <= power_on(0);
 
-  -- power off
-  o_dis_wfee <= power_off(3);
-  o_dis_ras  <= power_off(2);
-  o_dis_dmx1 <= power_off(1);
-  o_dis_dmx0 <= power_off(0);
 
   ---------------------------------------------------------------------
   -- io_top
@@ -500,9 +497,43 @@ begin
       -- Shared SPI clock line
       i_ui_spi_sclk => adc_spi_sclk,
       -- SPI chip select
-      i_ui_spi_cs_n => adc_spi_cs_n
+      i_ui_spi_cs_n => adc_spi_cs_n,
+
+      ---------------------------------------------------------------------
+      -- power
+      ---------------------------------------------------------------------
+      -- power_clock
+      i_power_clk   => usb_clk,
+
+      ---------------------------------------------------------------------
+      -- from/to IOs: @i_clk
+      ---------------------------------------------------------------------
+      -- bitwise power_on pulse
+      o_power_on    => power_on_rx,
+      -- bitwise power_off pulse
+      o_power_off   => power_off_rx,
+
+      ---------------------------------------------------------------------
+      -- from/to user: @i_clk
+      ---------------------------------------------------------------------
+      -- bitwise power_on pulse
+      i_power_on    => power_on,
+      -- bitwise power_off pulse
+      i_power_off   => power_off
       );
 
+  -- output
+  -- power on
+  o_en_wfee <= power_on_rx(3);
+  o_en_ras  <= power_on_rx(2);
+  o_en_dmx1 <= power_on_rx(1);
+  o_en_dmx0 <= power_on_rx(0);
+
+  -- power off
+  o_dis_wfee <= power_off_rx(3);
+  o_dis_ras  <= power_off_rx(2);
+  o_dis_dmx1 <= power_off_rx(1);
+  o_dis_dmx0 <= power_off_rx(0);
   ---------------------------------------------------------------------
   -- leds
   ---------------------------------------------------------------------
