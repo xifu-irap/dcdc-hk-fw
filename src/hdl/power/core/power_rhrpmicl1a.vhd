@@ -46,7 +46,9 @@ entity power_rhrpmicl1a is
     -- width of the input/output power value
     g_POWER_WIDTH      : integer := 4;
     -- duration of the pulse (number of samples). Range: [1;max integer[
-    g_PULSE_NB_SAMPLES : integer := 100
+    g_PULSE_NB_SAMPLES : integer := 100;
+    -- optional output delay
+    g_DELAY_OUT        : integer := 1
     );
   port(
     -- clock
@@ -139,7 +141,7 @@ architecture RTL of power_rhrpmicl1a is
   -- power
   signal power_next : std_logic_vector(i_power'range);
   -- delayed power
-  signal power_r1 : std_logic_vector(i_power'range);
+  signal power_r1   : std_logic_vector(i_power'range);
 
   -- counter of pulse sample
   signal cnt_next : unsigned(c_ADDR_WIDTH - 1 downto 0);
@@ -169,6 +171,20 @@ architecture RTL of power_rhrpmicl1a is
   signal power_on_r2   : std_logic_vector(o_power_on'range);
   -- bitwise power_off
   signal power_off_r2  : std_logic_vector(o_power_off'range);
+
+  ---------------------------------------------------------------------
+  -- optional pipeline
+  ---------------------------------------------------------------------
+  -- delayed start of frame (pulse)
+  signal sof_rx        : std_logic;
+  -- delayed end of frame (pulse)
+  signal eof_rx        : std_logic;
+  -- data_valid
+  signal data_valid_rx : std_logic;
+  -- bitwise power_on
+  signal power_on_rx   : std_logic_vector(o_power_on'range);
+  -- bitwise power_off
+  signal power_off_rx  : std_logic_vector(o_power_off'range);
 
   ---------------------------------------------------------------------
   -- error latching
@@ -303,12 +319,81 @@ begin
     end if;
   end process p_power;
 
+  ---------------------------------------------------------------------
+  -- optional output pipe
+  ---------------------------------------------------------------------
+  gen_pipe : if true generate
+    -- index0 low
+    constant c_IDX0_L : integer := 0;
+    -- index0 high
+    constant c_IDX0_H : integer := c_IDX0_L + power_off_r2'length - 1;
+
+    -- index1 low
+    constant c_IDX1_L : integer := c_IDX0_H + 1;
+    -- index1 high
+    constant c_IDX1_H : integer := c_IDX1_L + power_on_r2'length - 1;
+
+    -- index2 low
+    constant c_IDX2_L : integer := c_IDX1_H + 1;
+    -- index2 high
+    constant c_IDX2_H : integer := c_IDX2_L + 1 - 1;
+
+    -- index3 low
+    constant c_IDX3_L : integer := c_IDX2_H + 1;
+    -- index3 high
+    constant c_IDX3_H : integer := c_IDX3_L + 1 - 1;
+
+    -- index4 low
+    constant c_IDX4_L : integer := c_IDX3_H + 1;
+    -- index4 high
+    constant c_IDX4_H : integer := c_IDX4_L + 1 - 1;
+
+    -- temporary input pipe
+    signal data_tmp0 : std_logic_vector(c_IDX3_H downto 0);
+    -- temporary output pipe
+    signal data_tmp1 : std_logic_vector(c_IDX3_H downto 0);
+
+  begin
+
+    data_tmp0(c_IDX4_H)                 <= sof_r2;
+    data_tmp0(c_IDX3_H)                 <= eof_r2;
+    data_tmp0(c_IDX2_H)                 <= data_valid_r2;
+    data_tmp0(c_IDX1_H downto c_IDX1_L) <= power_on_r2;
+    data_tmp0(c_IDX0_H downto c_IDX0_L) <= power_off_r2;
+
+    inst_pipeliner_with_init_pipe_out : entity work.pipeliner_with_init
+      generic map(
+        -- register init value
+        g_INIT       => c_BIT_OFF,
+        -- number of consecutives registers. Possibles values: [0, integer max value[
+        g_NB_PIPES   => g_DELAY_OUT,
+        -- width of the input/output data.  Possibles values: [1, integer max value[
+        g_DATA_WIDTH => data_tmp0'length
+        )
+      port map(
+        -- clock
+        i_clk  => i_clk,
+        -- input data
+        i_data => data_tmp0,
+        -- output data with/without delay
+        o_data => data_tmp1
+        );
+
+    sof_rx        <= data_tmp1(c_IDX4_H);
+    eof_rx        <= data_tmp1(c_IDX3_H);
+    data_valid_rx <= data_tmp1(c_IDX2_H);
+    power_on_rx   <= data_tmp1(c_IDX1_H downto c_IDX1_L);
+    power_off_rx  <= data_tmp1(c_IDX0_H downto c_IDX0_L);
+
+  end generate gen_pipe;
+
+
   -- outputs
-  o_power_sof   <= sof_r2;
-  o_power_eof   <= eof_r2;
-  o_power_valid <= data_valid_r2;
-  o_power_on    <= power_on_r2;
-  o_power_off   <= power_off_r2;
+  o_power_sof   <= sof_rx;
+  o_power_eof   <= eof_rx;
+  o_power_valid <= data_valid_rx;
+  o_power_on    <= power_on_rx;
+  o_power_off   <= power_off_rx;
 
   ---------------------------------------------------------------------
   -- errors/status
@@ -351,9 +436,9 @@ begin
         clk => i_clk,
 
         -- probe0
-        probe0(8) => data_valid_r2,
-        probe0(7) => sof_r2,
-        probe0(6) => eof_r2,
+        probe0(8) => data_valid_rx,
+        probe0(7) => sof_rx,
+        probe0(6) => eof_rx,
         probe0(5) => error_r1,
         probe0(4) => sof_r1,
         probe0(3) => eof_r1,
@@ -362,8 +447,8 @@ begin
         probe0(0) => i_power_valid,
 
         -- probe1
-        probe1(15 downto 12) => power_off_r2,
-        probe1(11 downto 8)  => power_on_r2,
+        probe1(15 downto 12) => power_off_rx,
+        probe1(11 downto 8)  => power_on_rx,
         probe1(7 downto 4)   => power_r1,
         probe1(3 downto 0)   => i_power
 

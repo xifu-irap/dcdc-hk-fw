@@ -103,6 +103,8 @@ package pkg_system_dcdc is
   --     At least 30 us, typical: 100 us (see datasheet: https://www.st.com/en/space-products/rhrpmicl1a.html)
   --     range: [1; max integer value[
   constant pkg_POWER_TC_PULSE_NB_SAMPLES : integer := 10080; -- ~100 us @usb_clk (100.8 MHz)
+  -- user-defined (optional): number of delay tap
+  constant pkg_POWER_DELAY_OUT : integer := 1; -- range [0; max integer value[
 
 end pkg_system_dcdc;
 
