@@ -407,40 +407,6 @@ begin
 
 
   ---------------------------------------------------------------------
-  -- io_top
-  ---------------------------------------------------------------------
-  inst_io_top : entity work.io_top
-    port map(
-      ---------------------------------------------------------------------
-      -- from/to FPGA io: spi @i_sys_spi_clk
-      ---------------------------------------------------------------------
-      -- system spi clock
-      i_sys_spi_clk => usb_clk,
-      -- SPI --
-      -- Shared SPI MISO
-      i_spi_miso    => i_dcdc_hk_adc_miso_a,
-      -- Shared SPI MOSI
-      o_spi_mosi    => o_dcdc_hk_adc_mosi_a,
-      -- Shared SPI clock line
-      o_spi_sclk    => o_dcdc_hk_adc_sclk_a,
-      -- SPI chip select
-      o_spi_cs_n    => o_dcdc_hk_adc_cs_n_a,
-
-      ---------------------------------------------------------------------
-      -- to user: spi interface @i_sys_spi_clk
-      ---------------------------------------------------------------------
-      -- SPI --
-      -- Shared SPI MISO
-      o_ui_spi_miso => adc_spi_miso,
-      -- Shared SPI MOSI
-      i_ui_spi_mosi => adc_spi_mosi,
-      -- Shared SPI clock line
-      i_ui_spi_sclk => adc_spi_sclk,
-      -- SPI chip select
-      i_ui_spi_cs_n => adc_spi_cs_n
-      );
-
-  ---------------------------------------------------------------------
   -- power_top
   ---------------------------------------------------------------------
   inst_power_top : entity work.power_top
@@ -506,6 +472,40 @@ begin
   o_dis_ras  <= power_off(2);
   o_dis_dmx1 <= power_off(1);
   o_dis_dmx0 <= power_off(0);
+
+  ---------------------------------------------------------------------
+  -- io_top
+  ---------------------------------------------------------------------
+  inst_io_top : entity work.io_top
+    port map(
+      ---------------------------------------------------------------------
+      -- from/to FPGA io: spi @i_sys_spi_clk
+      ---------------------------------------------------------------------
+      -- system spi clock
+      i_sys_spi_clk => usb_clk,
+      -- SPI --
+      -- Shared SPI MISO
+      i_spi_miso    => i_dcdc_hk_adc_miso_a,
+      -- Shared SPI MOSI
+      o_spi_mosi    => o_dcdc_hk_adc_mosi_a,
+      -- Shared SPI clock line
+      o_spi_sclk    => o_dcdc_hk_adc_sclk_a,
+      -- SPI chip select
+      o_spi_cs_n    => o_dcdc_hk_adc_cs_n_a,
+
+      ---------------------------------------------------------------------
+      -- to user: spi interface @i_sys_spi_clk
+      ---------------------------------------------------------------------
+      -- SPI --
+      -- Shared SPI MISO
+      o_ui_spi_miso => adc_spi_miso,
+      -- Shared SPI MOSI
+      i_ui_spi_mosi => adc_spi_mosi,
+      -- Shared SPI clock line
+      i_ui_spi_sclk => adc_spi_sclk,
+      -- SPI chip select
+      i_ui_spi_cs_n => adc_spi_cs_n
+      );
 
   ---------------------------------------------------------------------
   -- leds
