@@ -174,8 +174,8 @@ begin
   ---------------------------------------------------------------------
   o_leds(0)          <= '0';            -- ON: led_fw
   o_leds(1)          <= '0' when led_blink = '1'    else 'Z';
-  o_leds(3)          <= '0' when led_adc_start = '1' else 'Z';
-  o_leds(1)          <= '0' when led_power_start = '1' else 'Z';
+  o_leds(2)          <= '0' when led_adc_start = '1' else 'Z';
+  o_leds(3)          <= '0' when led_power_start = '1' else 'Z';
   o_leds(4)          <= '0' when i_power(0) = '1' else 'Z';
   o_leds(5)          <= '0' when i_power(1) = '1' else 'Z';
   o_leds(6)          <= '0' when i_power(2) = '1' else 'Z';
