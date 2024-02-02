@@ -1,0 +1,37 @@
+# remove vscode,sigasi, pycharm files
+##########################
+/.settings
+.project
+.library_mapping.xml
+/.vscode
+/.idea
+
+# untrack doc files
+/doc
+
+
+#########################################################
+# untracked project files
+#########################################################
+# Untracked all files
+/project/vivado00/*
+# track only the *.xpr files
+!/project/vivado00/*.xpr
+
+# untracked Opal Kelly IP files
+/ip/opal_kelly/Front_panel_XEM7310-A75/simu
+/ip/opal_kelly/Front_panel_XEM7310-A75/syn
+
+
+# untracked temporary files
+/constraints/*/*_tmp.xdc
+
+# Track essential Xilinx IP files
+/ip/xilinx/coregen/*/*
+!/ip/xilinx/coregen/*/*.xdc
+!/ip/xilinx/coregen/*/*.xci
+!/ip/xilinx/coregen/*/*.mif
+!/ip/xilinx/coregen/*/*_stub.vhdl
+
+
+

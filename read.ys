@@ -1,0 +1,84 @@
+#############################################################################
+# Argument definition
+#  "-vhdl": compilation of vhdl file
+#  "-sv": compilation of verilog/system_verilog file
+#  "-lib": process the file as black box
+#############################################################################
+
+#############################################################################
+# Add Vivado library
+#  Those files can be found in the Vivado installation directory (2022.1)
+#############################################################################
+# XPM library: partial
+verific -work xpm -vhdl -lib ./third-party-libraries/ip/vivado/2022.1/data/ip/xpm/xpm_VCOMP.vhd
+
+# UNISIM library: partial
+verific -work unisim -vhdl ./third-party-libraries/ip/vivado/2022.1/data/vhdl/src/unisims/unisim_VCOMP.vhd
+verific -work unisim -vhdl ./third-party-libraries/ip/vivado/2022.1/data/vhdl/src/unisims/unisim_VPKG.vhd
+
+#############################################################################
+# Third party library (from GitHub)
+# Add FrontPanelUSB library from Opal Kelly Vendor (black box for the Linty tool)
+#############################################################################
+#    module component declaration
+verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7310-A75/syn/okLibrary.vhd
+
+##############################################################################
+# The list of source files was generated from Vivado by a TCL command
+#  report_compile_order -used_in synthesis -verbose   -file D:/compilation_order_synthesis.txt
+# Note:
+#   The output file was manually edited in order to be compatible with the Linty tools.
+##############################################################################
+
+
+# Xilinx IP
+#    Top level module (black box for the Linty tool)
+verific -vhdl -lib ./ip/xilinx/coregen/ila_regdecode_top/ila_regdecode_top_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_dcdc_adc128s102/ila_dcdc_adc128s102_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_power_rhrpmicl1a/ila_power_rhrpmicl1a_stub.vhdl
+
+
+# VHDL
+#    Source files
+
+# package
+verific -vhdl ./src/hdl/pkg_utils.vhd
+verific -vhdl ./src/hdl/pkg_regdecode.vhd
+verific -vhdl ./src/hdl/pkg_system_dcdc.vhd
+verific -vhdl ./src/hdl/pkg_system_dcdc_debug.vhd
+
+# utils
+verific -vhdl ./src/hdl/utils/others/pipeliner_with_init.vhd
+verific -vhdl ./src/hdl/utils/others/synchronizer.vhd
+verific -vhdl ./src/hdl/utils/error/one_error_latch.vhd
+
+
+# regdecode
+verific -vhdl ./src/hdl/regdecode/usb/usb_opal_kelly.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_reg_with_default_value.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_wire_errors.vhd
+verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
+
+#IO
+verific -vhdl ./src/hdl/io/core/io_spi.vhd
+verific -vhdl ./src/hdl/io/io_top.vhd
+
+#leds
+verific -vhdl ./src/hdl/leds/core/led_blink.vhd
+verific -vhdl ./src/hdl/leds/core/led_blink_on_start.vhd
+verific -vhdl ./src/hdl/leds/leds_top.vhd
+
+
+# dcdc
+verific -vhdl ./src/hdl/dcdc/core/spi_master_clock_gen.vhd
+verific -vhdl ./src/hdl/dcdc/core/spi_master_clock.vhd
+verific -vhdl ./src/hdl/dcdc/core/dcdc_adc128s102.vhd
+verific -vhdl ./src/hdl/dcdc/dcdc_top.vhd
+
+# power
+verific -vhdl ./src/hdl/power/core/power_rhrpmicl1a.vhd
+verific -vhdl ./src/hdl/power/power_top.vhd
+
+
+# system_dcdc (top_level)
+verific -vhdl ./src/hdl/system_dcdc_top.vhd
