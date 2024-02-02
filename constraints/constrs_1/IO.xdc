@@ -39,15 +39,6 @@
 # 100.8 MHz
 create_clock -period 9.920 -name usb_clk_in [get_ports {i_okUH[0]}];
 
-# 250 MHz
-create_clock -period 4 -name adc_clk_in [get_ports {i_clk_ab_p}];
-create_clock -name virt_adc_clk_in   -period 4;
-
-# 500 MHz (data part)
-create_clock -name virt_dac_clk   -period 2;
-
-# 250 MHz (sys)
-create_clock -name virt_sys_clk   -period 4;
 
 ###############################################################################################################
 # usb
@@ -187,7 +178,7 @@ set tsu          2.5;           # destination device setup time requirement
 set thd          2.5;           # destination device hold time requirement
 set trce_dly_max 0.000;            # maximum board trace delay
 set trce_dly_min 0.000;            # minimum board trace delay
-set output_ports {o_power_on[*] o_power_off[*]};   # list of output ports
+set output_ports {o_en_wfee o_en_ras o_en_dmx1 o_en_dmx0 o_dis_wfee o_dis_ras o_dis_dmx1 o_dis_dmx0};   # list of output ports
 
 # Output Delay Constraints
 set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu] [get_ports $output_ports];
