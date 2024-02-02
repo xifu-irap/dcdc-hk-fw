@@ -156,6 +156,12 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/../../src/hdl/io/core/io_power.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PPRDIR/../../src/hdl/utils/others/synchronizer.vhd">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
