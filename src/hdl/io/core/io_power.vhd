@@ -100,10 +100,10 @@ begin
     generic map(
       g_INIT       => c_BIT_OFF,
       g_NB_PIPES   => pkg_IO_POWER_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_DATA_WIDTH => data_pipe_tmp2'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => data_pipe_tmp0'length  -- width of the input/output data.  Possibles values: [1, integer max value[
       )
     port map(
-      i_clk  => i_sys_spi_clk,
+      i_clk  => i_clk,
       i_data => data_pipe_tmp0,
       o_data => data_pipe_tmp1
       );
