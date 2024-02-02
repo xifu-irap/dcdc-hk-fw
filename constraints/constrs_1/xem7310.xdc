@@ -67,21 +67,21 @@ set_property PACKAGE_PIN N13 [get_ports {b_okAA}]
 set_property IOSTANDARD LVCMOS18 [get_ports {b_okAA}]
 
 
-create_clock -name okUH0 -period 9.920 [get_ports {i_okUH[0]}]; #100.8 MHz
+# create_clock -name okUH0 -period 9.920 [get_ports {i_okUH[0]}]; #100.8 MHz
 
-set_input_delay -add_delay -max -clock [get_clocks {okUH0}]  8.000 [get_ports {i_okUH[*]}]
-set_input_delay -add_delay -min -clock [get_clocks {okUH0}] 10.000 [get_ports {i_okUH[*]}]
-set_multicycle_path -setup -from [get_ports {i_okUH[*]}] 2
+# set_input_delay -add_delay -max -clock [get_clocks {okUH0}]  8.000 [get_ports {i_okUH[*]}]
+# set_input_delay -add_delay -min -clock [get_clocks {okUH0}] 10.000 [get_ports {i_okUH[*]}]
+# set_multicycle_path -setup -from [get_ports {i_okUH[*]}] 2
 
-set_input_delay -add_delay -max -clock [get_clocks {okUH0}]  8.000 [get_ports {b_okUHU[*]}]
-set_input_delay -add_delay -min -clock [get_clocks {okUH0}]  2.000 [get_ports {b_okUHU[*]}]
-set_multicycle_path -setup -from [get_ports {b_okUHU[*]}] 2
+# set_input_delay -add_delay -max -clock [get_clocks {okUH0}]  8.000 [get_ports {b_okUHU[*]}]
+# set_input_delay -add_delay -min -clock [get_clocks {okUH0}]  2.000 [get_ports {b_okUHU[*]}]
+# set_multicycle_path -setup -from [get_ports {b_okUHU[*]}] 2
 
-set_output_delay -add_delay -max -clock [get_clocks {okUH0}]  2.000 [get_ports {o_okHU[*]}]
-set_output_delay -add_delay -min -clock [get_clocks {okUH0}]  -0.500 [get_ports {o_okHU[*]}]
+# set_output_delay -add_delay -max -clock [get_clocks {okUH0}]  2.000 [get_ports {o_okHU[*]}]
+# set_output_delay -add_delay -min -clock [get_clocks {okUH0}]  -0.500 [get_ports {o_okHU[*]}]
 
-set_output_delay -add_delay -max -clock [get_clocks {okUH0}]  2.000 [get_ports {b_okUHU[*]}]
-set_output_delay -add_delay -min -clock [get_clocks {okUH0}]  -0.500 [get_ports {b_okUHU[*]}]
+# set_output_delay -add_delay -max -clock [get_clocks {okUH0}]  2.000 [get_ports {b_okUHU[*]}]
+# set_output_delay -add_delay -min -clock [get_clocks {okUH0}]  -0.500 [get_ports {b_okUHU[*]}]
 
 
 ############################################################################
