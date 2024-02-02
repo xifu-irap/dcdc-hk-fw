@@ -347,9 +347,9 @@ begin
     constant c_IDX4_H : integer := c_IDX4_L + 1 - 1;
 
     -- temporary input pipe
-    signal data_tmp0 : std_logic_vector(c_IDX3_H downto 0);
+    signal data_tmp0 : std_logic_vector(c_IDX4_H downto 0);
     -- temporary output pipe
-    signal data_tmp1 : std_logic_vector(c_IDX3_H downto 0);
+    signal data_tmp1 : std_logic_vector(c_IDX4_H downto 0);
 
   begin
 
