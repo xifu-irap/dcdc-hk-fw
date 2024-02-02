@@ -107,8 +107,8 @@ create_generated_clock -name usb_clk_regQ_on_clk_pin -source $usb_src -divide_by
 # gen_clock_name is the name of forwarded clock here. It should be used below for defining "fwclk".
 
 set fwclk        usb_clk;      # forwarded clock name (generated using create_generated_clock at output clock port)
-set tsu          2.5;           # destination device setup time requirement
-set thd          2.5;           # destination device hold time requirement
+set tsu          1.0;           # destination device setup time requirement
+set thd          1.5;           # destination device hold time requirement
 set trce_dly_max 0.000;            # maximum board trace delay
 set trce_dly_min 0.000;            # minimum board trace delay
 set output_ports {o_dcdc_hk_adc_mosi_a o_dcdc_hk_adc_cs_n_a};   # list of output ports
@@ -174,8 +174,8 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # gen_clock_name is the name of forwarded clock here. It should be used below for defining "fwclk".
 
 set fwclk        usb_clk;      # forwarded clock name (generated using create_generated_clock at output clock port)
-set tsu          2.5;           # destination device setup time requirement
-set thd          2.5;           # destination device hold time requirement
+set tsu          1.0;           # destination device setup time requirement
+set thd          1.5;           # destination device hold time requirement
 set trce_dly_max 0.000;            # maximum board trace delay
 set trce_dly_min 0.000;            # minimum board trace delay
 set output_ports {o_en_wfee o_en_ras o_en_dmx1 o_en_dmx0 o_dis_wfee o_dis_ras o_dis_dmx1 o_dis_dmx0};   # list of output ports
