@@ -33,6 +33,10 @@ use ieee.std_logic_1164.all;
 
 
 entity io_top is
+  generic (
+    -- width of the input/output power value
+    g_POWER_WIDTH : integer := 4
+    );
   port (
 
     ---------------------------------------------------------------------

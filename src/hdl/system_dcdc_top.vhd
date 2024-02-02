@@ -470,6 +470,10 @@ begin
   -- io_top
   ---------------------------------------------------------------------
   inst_io_top : entity work.io_top
+    generic map(
+      -- width of the input/output power value
+      g_POWER_WIDTH => power_on'length
+      )
     port map(
       ---------------------------------------------------------------------
       -- from/to FPGA io: spi @i_sys_spi_clk
