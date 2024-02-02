@@ -75,24 +75,24 @@ entity regdecode_top is
     -- adc_ctrl valid
     o_reg_adc_valid : out std_logic;
 
-    -- adc_status register (reading)
-    i_reg_adc_status : in std_logic_vector(31 downto 0);
+    -- power_adc_status register (reading)
+    i_reg_power_adc_status : in std_logic_vector(31 downto 0);
     -- adc0 register (reading)
-    i_reg_adc0       : in std_logic_vector(31 downto 0);
+    i_reg_adc0             : in std_logic_vector(31 downto 0);
     -- adc1 register (reading)
-    i_reg_adc1       : in std_logic_vector(31 downto 0);
+    i_reg_adc1             : in std_logic_vector(31 downto 0);
     -- adc2 register (reading)
-    i_reg_adc2       : in std_logic_vector(31 downto 0);
+    i_reg_adc2             : in std_logic_vector(31 downto 0);
     -- adc3 register (reading)
-    i_reg_adc3       : in std_logic_vector(31 downto 0);
+    i_reg_adc3             : in std_logic_vector(31 downto 0);
     -- adc4 register (reading)
-    i_reg_adc4       : in std_logic_vector(31 downto 0);
+    i_reg_adc4             : in std_logic_vector(31 downto 0);
     -- adc5 register (reading)
-    i_reg_adc5       : in std_logic_vector(31 downto 0);
+    i_reg_adc5             : in std_logic_vector(31 downto 0);
     -- adc6 register (reading)
-    i_reg_adc6       : in std_logic_vector(31 downto 0);
+    i_reg_adc6             : in std_logic_vector(31 downto 0);
     -- adc7 register (reading)
-    i_reg_adc7       : in std_logic_vector(31 downto 0);
+    i_reg_adc7             : in std_logic_vector(31 downto 0);
 
     -- debug_ctrl @o_usb_clk
     ---------------------------------------------------------------------
@@ -152,7 +152,7 @@ architecture RTL of regdecode_top is
   -- Trig in
   ---------------------------------------------------------------------
   -- trig_ctrl access
-  signal usb_trigin_ctrl   : std_logic_vector(31 downto 0);
+  signal usb_trigin_ctrl : std_logic_vector(31 downto 0);
 
   -- Common Register configuration
   ---------------------------------------------------------------------
@@ -192,7 +192,7 @@ architecture RTL of regdecode_top is
   -- trig_ctrl
   signal trigin_ctrl : std_logic_vector(31 downto 0);
   -- adc_ctrl valid
-  signal adc_valid : std_logic;
+  signal adc_valid   : std_logic;
 
   ---------------------------------------------------------------------
   -- debug_ctrl regdecode_register_to_user
@@ -233,15 +233,15 @@ begin
       i_usb_wireout_ctrl       => usb_wireout_ctrl,  -- ctrl register (reading)
       i_usb_wireout_power_conf => usb_wireout_power_conf,  -- power_ctrl register (reading)
 
-      i_usb_wireout_adc_status => i_reg_adc_status,  -- adc_status register (reading)
-      i_usb_wireout_adc0       => i_reg_adc0,        -- adc0 register (reading)
-      i_usb_wireout_adc1       => i_reg_adc1,        -- adc1 register (reading)
-      i_usb_wireout_adc2       => i_reg_adc2,        -- adc2 register (reading)
-      i_usb_wireout_adc3       => i_reg_adc3,        -- adc3 register (reading)
-      i_usb_wireout_adc4       => i_reg_adc4,        -- adc4 register (reading)
-      i_usb_wireout_adc5       => i_reg_adc5,        -- adc5 register (reading)
-      i_usb_wireout_adc6       => i_reg_adc6,        -- adc6 register (reading)
-      i_usb_wireout_adc7       => i_reg_adc7,        -- adc7 register (reading)
+      i_usb_wireout_power_adc_status => i_reg_power_adc_status,  -- power_adc_status register (reading)
+      i_usb_wireout_adc0             => i_reg_adc0,  -- adc0 register (reading)
+      i_usb_wireout_adc1             => i_reg_adc1,  -- adc1 register (reading)
+      i_usb_wireout_adc2             => i_reg_adc2,  -- adc2 register (reading)
+      i_usb_wireout_adc3             => i_reg_adc3,  -- adc3 register (reading)
+      i_usb_wireout_adc4             => i_reg_adc4,  -- adc4 register (reading)
+      i_usb_wireout_adc5             => i_reg_adc5,  -- adc5 register (reading)
+      i_usb_wireout_adc6             => i_reg_adc6,  -- adc6 register (reading)
+      i_usb_wireout_adc7             => i_reg_adc7,  -- adc7 register (reading)
 
       i_usb_wireout_hardware_id   => usb_wireout_hardware_id,  -- hardware id register (reading)
       i_usb_wireout_firmware_name => usb_wireout_firmware_name,  -- firmware_name register (reading)
@@ -269,7 +269,7 @@ begin
       o_usb_wirein_sel_errors => usb_wirein_sel_errors,  -- sel_errors register (writting)
 
       -- trigger
-      o_usb_trigin_ctrl        => usb_trigin_ctrl
+      o_usb_trigin_ctrl => usb_trigin_ctrl
       );
 
   -- extract bits
@@ -354,44 +354,44 @@ begin
   ---------------------------------------------------------------------
   -- power_ctrl register
   ---------------------------------------------------------------------
-  gen_pipe: if true generate
+  gen_pipe : if true generate
     -- temporary input pipe
     signal data_tmp0 : std_logic_vector(63 downto 0);
     -- temporary output pipe
     signal data_tmp1 : std_logic_vector(63 downto 0);
-    begin
-      data_tmp0(63 downto 32) <= usb_trigin_ctrl;
-      data_tmp0(31 downto 0)  <= usb_wirein_power_conf;
+  begin
+    data_tmp0(63 downto 32) <= usb_trigin_ctrl;
+    data_tmp0(31 downto 0)  <= usb_wirein_power_conf;
 
     inst_pipeliner_adc_power : entity work.pipeliner_with_init
-    generic map(
-      -- register init value
-      g_INIT       => '0',
-      -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_NB_PIPES   => 1,
-      -- width of the input/output data.  Possibles values: [1, integer max value[
-      g_DATA_WIDTH => data_tmp0'length
-      )
-    port map(
-      i_clk  => usb_clk,
-      i_data => data_tmp0,
-      o_data => data_tmp1
-      );
+      generic map(
+        -- register init value
+        g_INIT       => '0',
+        -- number of consecutives registers. Possibles values: [0, integer max value[
+        g_NB_PIPES   => 1,
+        -- width of the input/output data.  Possibles values: [1, integer max value[
+        g_DATA_WIDTH => data_tmp0'length
+        )
+      port map(
+        i_clk  => usb_clk,
+        i_data => data_tmp0,
+        o_data => data_tmp1
+        );
 
-  trigin_ctrl <= data_tmp1(63 downto 32);
-  power_conf  <= data_tmp1(31 downto 0);
+    trigin_ctrl <= data_tmp1(63 downto 32);
+    power_conf  <= data_tmp1(31 downto 0);
 
-  -- extract bits
-  power_conf_valid <= trigin_ctrl(pkg_TRIG_IN_POWER_VALID_IDX_H);
-  adc_valid        <= trigin_ctrl(pkg_TRIG_IN_ADC_VALID_IDX_H);
+    -- extract bits
+    power_conf_valid <= trigin_ctrl(pkg_TRIG_IN_POWER_VALID_IDX_H);
+    adc_valid        <= trigin_ctrl(pkg_TRIG_IN_ADC_VALID_IDX_H);
 
-  -- output
-  -- power
-  o_reg_power_conf_valid <= power_conf_valid;
-  o_reg_power_conf       <= power_conf;
+    -- output
+    -- power
+    o_reg_power_conf_valid <= power_conf_valid;
+    o_reg_power_conf       <= power_conf;
 
-  -- adc
-  o_reg_adc_valid <= adc_valid;
+    -- adc
+    o_reg_adc_valid <= adc_valid;
 
   end generate gen_pipe;
 
@@ -488,12 +488,12 @@ begin
         probe1(31 downto 0)    => i_reg_adc0,
 
         -- probe2
-        probe2(95 downto 64) => i_reg_adc_status,
+        probe2(95 downto 64) => i_reg_power_adc_status,
         probe2(63 downto 32) => i_reg_wire_errors0,
         probe2(31 downto 0)  => i_reg_wire_status0,
 
-        probe3(33) => adc_valid,
-        probe3(32) => power_conf_valid,
+        probe3(33)          => adc_valid,
+        probe3(32)          => power_conf_valid,
         probe3(31 downto 0) => trigin_ctrl
         );
 

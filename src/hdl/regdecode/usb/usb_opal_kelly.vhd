@@ -56,8 +56,8 @@ entity usb_opal_kelly is
 
     -- ADC
     ---------------------------------------------------------------------
-    -- adc_status register (reading)
-    i_usb_wireout_adc_status : in std_logic_vector(31 downto 0);
+    -- power_adc_status register (reading)
+    i_usb_wireout_power_adc_status : in std_logic_vector(31 downto 0);
 
     -- adc0 register (reading)
     i_usb_wireout_adc0 : in std_logic_vector(31 downto 0);
@@ -114,7 +114,7 @@ entity usb_opal_kelly is
 
     -- trigger
     -- trig_ctrl register (writting)
-    o_usb_trigin_ctrl       : out std_logic_vector(31 downto 0)
+    o_usb_trigin_ctrl : out std_logic_vector(31 downto 0)
     );
 end entity usb_opal_kelly;
 
@@ -243,7 +243,7 @@ begin
   ep20_wire <= i_usb_wireout_ctrl;
   ep21_wire <= i_usb_wireout_power_conf;
 
-  ep25_wire <= i_usb_wireout_adc_status;
+  ep25_wire <= i_usb_wireout_power_adc_status;
 
   ep30_wire <= i_usb_wireout_adc0;
   ep31_wire <= i_usb_wireout_adc1;
@@ -478,6 +478,6 @@ begin
   o_usb_wirein_sel_errors <= ep19_wire;
 
   -- from trig in
-  o_usb_trigin_ctrl       <= ep40_trig;
+  o_usb_trigin_ctrl <= ep40_trig;
 
 end architecture RTL;
