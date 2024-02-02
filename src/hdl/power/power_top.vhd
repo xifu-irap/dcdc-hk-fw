@@ -36,11 +36,7 @@ entity power_top is
     -- enable the DEBUG by ILA
     g_DEBUG            : boolean := false;
     -- width of the input/output power value
-    g_POWER_WIDTH      : integer := 4;
-    -- duration of the TC pulse (number of samples). Range: [1;max integer[
-    g_PULSE_NB_SAMPLES : integer := 100;
-    -- optional output delay
-    g_DELAY_OUT        : integer := 1
+    g_POWER_WIDTH      : integer := 4
     );
   port(
     -- clock
@@ -123,11 +119,7 @@ begin
       -- enable the DEBUG by ILA
       g_DEBUG            => g_DEBUG,
       -- width of the input/output power value
-      g_POWER_WIDTH      => g_POWER_WIDTH,
-      -- duration of the pulse (number of samples). Range: [1;max integer[
-      g_PULSE_NB_SAMPLES => g_PULSE_NB_SAMPLES,
-      -- optional output delay
-      g_DELAY_OUT        => g_DELAY_OUT
+      g_POWER_WIDTH      => g_POWER_WIDTH
       )
     port map(
       -- clock

@@ -105,6 +105,8 @@ package pkg_system_dcdc is
   constant pkg_POWER_TC_PULSE_NB_SAMPLES : integer := 10080; -- ~100 us @usb_clk (100.8 MHz)
   -- user-defined (optional): number of delay tap
   constant pkg_POWER_DELAY_OUT : integer := 1; -- range [0; max integer value[
+  -- user-defined: active state of the power bit
+  constant pkg_POWER_BIT_ON : std_logic := '0';
 
 end pkg_system_dcdc;
 

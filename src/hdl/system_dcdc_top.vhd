@@ -414,11 +414,7 @@ begin
       -- enable the DEBUG by ILA
       g_DEBUG            => pkg_POWER_RHRPMICL1A_DEBUG,
       -- width of the input/output power value
-      g_POWER_WIDTH      => power_on_off'length,
-      -- duration of the TC pulse (number of samples). Range: [1;max integer[
-      g_PULSE_NB_SAMPLES => pkg_POWER_TC_PULSE_NB_SAMPLES,
-      -- optional output delay
-      g_DELAY_OUT        => pkg_POWER_DELAY_OUT
+      g_POWER_WIDTH      => power_on_off'length
       )
     port map(
       -- clock

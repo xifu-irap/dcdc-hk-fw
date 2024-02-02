@@ -39,16 +39,14 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
+use work.pkg_system_dcdc.all;
+
 entity power_rhrpmicl1a is
   generic (
     -- enable the DEBUG by ILA
     g_DEBUG            : boolean := false;
     -- width of the input/output power value
-    g_POWER_WIDTH      : integer := 4;
-    -- duration of the pulse (number of samples). Range: [1;max integer[
-    g_PULSE_NB_SAMPLES : integer := 100;
-    -- optional output delay
-    g_DELAY_OUT        : integer := 1
+    g_POWER_WIDTH      : integer := 4
     );
   port(
     -- clock
@@ -103,15 +101,15 @@ end entity power_rhrpmicl1a;
 architecture RTL of power_rhrpmicl1a is
 
   -- define the width of the address field.
-  constant c_ADDR_WIDTH : integer := integer(ceil(log2(real(g_PULSE_NB_SAMPLES))));
+  constant c_ADDR_WIDTH : integer := integer(ceil(log2(real(pkg_POWER_TC_PULSE_NB_SAMPLES))));
 
   -- define the max counter
-  constant c_CNT_MAX : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(g_PULSE_NB_SAMPLES - 1, c_ADDR_WIDTH);
+  constant c_CNT_MAX : unsigned(c_ADDR_WIDTH - 1 downto 0) := to_unsigned(pkg_POWER_TC_PULSE_NB_SAMPLES - 1, c_ADDR_WIDTH);
 
   -- BIT ON
-  constant c_BIT_ON  : std_logic := '0';
+  constant c_BIT_ON  : std_logic := pkg_POWER_BIT_ON;
   -- BIT OFF
-  constant c_BIT_OFF : std_logic := '1';
+  constant c_BIT_OFF : std_logic := not(pkg_POWER_BIT_ON);
 
   ---------------------------------------------------------------------
   -- state machine
@@ -366,7 +364,7 @@ begin
         -- register init value
         g_INIT       => c_BIT_OFF,
         -- number of consecutives registers. Possibles values: [0, integer max value[
-        g_NB_PIPES   => g_DELAY_OUT,
+        g_NB_PIPES   => pkg_POWER_DELAY_OUT,
         -- width of the input/output data.  Possibles values: [1, integer max value[
         g_DATA_WIDTH => data_tmp0'length
         )
