@@ -427,7 +427,20 @@ begin
   ---------------------------------------------------------------------
   gen_debug : if g_DEBUG generate
 
+  signal debug_cnt_pulse_on : unsigned(15 downto 0);
+
   begin
+
+    p_debug_cnt: process (i_clk) is
+    begin
+      if rising_edge(i_clk) then
+        if sof_rx = '1' then
+          debug_cnt_pulse_on <= (others => '0');
+        elsif data_valid_rx = '1' then
+           debug_cnt_pulse_on <= debug_cnt_pulse_on + 1;
+        end if;
+      end if;
+    end process p_debug_cnt;
 
     inst_ila_power_rhrpmicl1a : entity work.ila_power_rhrpmicl1a
       port map (
@@ -448,7 +461,10 @@ begin
         probe1(15 downto 12) => power_off_rx,
         probe1(11 downto 8)  => power_on_rx,
         probe1(7 downto 4)   => power_r1,
-        probe1(3 downto 0)   => i_power
+        probe1(3 downto 0)   => i_power,
+
+        -- probe2
+        probe2(15 downto 0) => std_logic_vector(debug_cnt_pulse_on)
 
         );
 
