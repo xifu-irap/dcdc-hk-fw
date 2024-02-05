@@ -98,7 +98,7 @@ package pkg_system_dcdc is
   -- user-defined : Pulse width (expressed in samples) of the TC commands.
   --     At least 30 us, typical: 100 us (see datasheet: https://www.st.com/en/space-products/rhrpmicl1a.html)
   --     range: [1; max integer value[
-  constant pkg_POWER_TC_PULSE_NB_SAMPLES : integer := 10080; -- ~100 us @usb_clk (100.8 MHz)
+  constant pkg_POWER_TC_PULSE_NB_SAMPLES : integer := 4*10080; -- ~400 us @usb_clk (100.8 MHz)
   -- user-defined (optional): number of delay tap
   constant pkg_POWER_DELAY_OUT : integer := 1; -- range [0; max integer value[
   -- user-defined: active state of the power bit
