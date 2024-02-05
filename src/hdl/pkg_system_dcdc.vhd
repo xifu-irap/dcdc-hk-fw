@@ -80,8 +80,8 @@ package pkg_system_dcdc is
   constant pkg_ADC_SPI_CPHA                 : std_logic := '0';
   -- auto-computed : input clock frequency of the module (expressed in Hz). (possible values: ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value])
   constant pkg_ADC_SPI_SYSTEM_FREQUENCY_HZ  : positive  := pkg_USB_SYSTEM_FREQUENCY_HZ;
-  -- user-defined : spi output clock frequency to generate (expressed in Hz)
-  constant pkg_ADC_SPI_SPI_FREQUENCY_MAX_HZ : positive  := 12_000_000;  -- 8 to 18 MHz max
+  -- user-defined : spi output clock frequency to generate (expressed in Hz) (datasheet: 8 to 18 MHz max)
+  constant pkg_ADC_SPI_SPI_FREQUENCY_MAX_HZ : positive  := 1_000;  -- 1KHz
   -- user-defined : Number of clock period for mosi signal between the state machine output to the output ports (spi_master)
   -- (possible values [0;max_integer_value[)
   constant pkg_ADC_SPI_MOSI_DELAY           : natural   := 0;
