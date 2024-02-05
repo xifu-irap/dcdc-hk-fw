@@ -102,7 +102,7 @@ package pkg_system_dcdc is
   -- user-defined (optional): number of delay tap
   constant pkg_POWER_DELAY_OUT : integer := 1; -- range [0; max integer value[
   -- user-defined: active state of the power bit
-  constant pkg_POWER_BIT_ON : std_logic := '0';
+  constant pkg_POWER_BIT_ON : std_logic := '1';
 
 end pkg_system_dcdc;
 
