@@ -189,9 +189,11 @@ set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd] [get_ports $outp
 # others (input ports): asynchronuous ports
 ##################################################################################
 # hardware_id is constant => no constraints
-# set_false_path -from [get_ports i_hardware_id[*]]
+set_false_path -from [get_ports i_hardware_id[*]]
 # constants value in the steady state => no constraints
 set_false_path -to   [get_ports o_leds[*]];
+set_false_path -to   [get_ports o_led_fw];
+set_false_path -to   [get_ports o_led_clk_alive];
 
 
 ##################################################################################

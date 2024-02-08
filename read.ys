@@ -61,6 +61,7 @@ verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
 
 #IO
 verific -vhdl ./src/hdl/io/core/io_spi.vhd
+verific -vhdl ./src/hdl/io/core/io_power.vhd
 verific -vhdl ./src/hdl/io/io_top.vhd
 
 #leds

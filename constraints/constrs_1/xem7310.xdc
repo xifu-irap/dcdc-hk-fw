@@ -389,41 +389,41 @@ set_property IOSTANDARD LVCMOS33 [get_ports {o_dcdc_hk_adc_sclk_a}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # MC2-15
-# set_property PACKAGE_PIN P5 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN P5 [get_ports {i_hardware_id[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[0]}]
 # MC2-16
 # set_property PACKAGE_PIN P6 [get_ports {}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {}]
 # MC2-17
-# set_property PACKAGE_PIN P4 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN P4 [get_ports {i_hardware_id[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[1]}]
 # MC2-18
 # set_property PACKAGE_PIN N5 [get_ports {}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {}]
 # MC2-19
-# set_property PACKAGE_PIN N4 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN N4 [get_ports {i_hardware_id[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[2]}]
 # MC2-20
-# set_property PACKAGE_PIN P2 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN P2 [get_ports {i_hardware_id[6]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[6]}]
 # MC2-21
-# set_property PACKAGE_PIN N3 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN N3 [get_ports {i_hardware_id[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[3]}]
 # MC2-22
-# set_property PACKAGE_PIN N2 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN N2 [get_ports {i_hardware_id[7]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[7]}]
 # MC2-23
 # set_property PACKAGE_PIN L5 [get_ports {}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {}]
 # MC2-24
-# set_property PACKAGE_PIN R1 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN R1 [get_ports {i_hardware_id[4]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[4]}]
 # MC2-25
 # set_property PACKAGE_PIN L4 [get_ports {}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {}]
 # MC2-26
-# set_property PACKAGE_PIN P1 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN P1 [get_ports {i_hardware_id[5]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {i_hardware_id[5]}]
 # MC2-27
 # set_property PACKAGE_PIN M6 [get_ports {}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {}]
@@ -503,8 +503,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {o_dis_ras}]
 # set_property PACKAGE_PIN F1 [get_ports {}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {}]
 # MC2-53
-# set_property PACKAGE_PIN F3 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN F3 [get_ports {o_led_fw}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_led_fw}]
 # MC2-54
 set_property PACKAGE_PIN E1 [get_ports {o_en_ras}]
 set_property IOSTANDARD LVCMOS33 [get_ports {o_en_ras}]
@@ -515,8 +515,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {o_en_ras}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # MC2-57
-# set_property PACKAGE_PIN E3 [get_ports {}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {}]
+set_property PACKAGE_PIN E3 [get_ports {o_led_clk_alive}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_led_clk_alive}]
 # MC2-58
 # set_property PACKAGE_PIN D1 [get_ports {}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {}]

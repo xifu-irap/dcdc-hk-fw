@@ -55,7 +55,7 @@ entity system_dcdc_top is
     --
     ---------------------------------------------------------------------
     -- hardware id register (reading)
-    --i_hardware_id : in std_logic_vector(7 downto 0);
+    i_hardware_id : in std_logic_vector(7 downto 0);
 
     ---------------------------------------------------------------------
     -- ADC128S102 HK
@@ -87,7 +87,14 @@ entity system_dcdc_top is
     -- LEDS
     ---------------------------------------------------------------------
     -- fpga board leds ('0': ON, 'Z': OFF )
-    o_leds     : out std_logic_vector(7 downto 0)
+    o_leds     : out std_logic_vector(7 downto 0);
+
+    -- facade led
+    ---------------------------------------------------------------------
+    -- firmware led
+    o_led_fw        : out std_logic;
+    -- blink if the clock is alive
+    o_led_clk_alive : out std_logic
 
     );
 end system_dcdc_top;
@@ -97,8 +104,7 @@ architecture RTL of system_dcdc_top is
   -- regdecode_top
   ---------------------------------------------------------------------
   -- hardware id register (reading)
-  -- signal hardware_id : std_logic_vector(i_hardware_id'range);
-  signal hardware_id : std_logic_vector(7 downto 0);
+  signal hardware_id : std_logic_vector(i_hardware_id'range);
 
   -- usb clock
   signal usb_clk : std_logic;
@@ -115,8 +121,8 @@ architecture RTL of system_dcdc_top is
   -- adc_valid
   signal reg_adc_valid : std_logic;
 
-  -- adc_status register (reading)
-  signal reg_adc_status : std_logic_vector(31 downto 0);
+  -- power_adc_status register (reading)
+  signal reg_power_adc_status : std_logic_vector(31 downto 0);
 
   -- adc0 register (reading)
   signal reg_adc0 : std_logic_vector(31 downto 0);
@@ -208,7 +214,7 @@ architecture RTL of system_dcdc_top is
   -- power_top
   ---------------------------------------------------------------------
   -- power ready (FSM)
-  --signal power_ready  : std_logic;
+  signal power_ready  : std_logic;
   -- bitwise power_on pulse
   signal power_on     : std_logic_vector(3 downto 0);
   -- bitwise power_off pulse
@@ -228,8 +234,7 @@ architecture RTL of system_dcdc_top is
 
 begin
 
-  --hardware_id <= i_hardware_id;
-  hardware_id <= (others => '0');       -- TODO
+  hardware_id <= i_hardware_id;
 
   ---------------------------------------------------------------------
   -- regdecode_top
@@ -275,23 +280,23 @@ begin
       o_reg_adc_valid => reg_adc_valid,
 
       -- adc_status register (reading)
-      i_reg_adc_status => reg_adc_status,
+      i_reg_power_adc_status => reg_power_adc_status,
       -- adc0 register (reading)
-      i_reg_adc0       => reg_adc0,
+      i_reg_adc0             => reg_adc0,
       -- adc1 register (reading)
-      i_reg_adc1       => reg_adc1,
+      i_reg_adc1             => reg_adc1,
       -- adc2 register (reading)
-      i_reg_adc2       => reg_adc2,
+      i_reg_adc2             => reg_adc2,
       -- adc3 register (reading)
-      i_reg_adc3       => reg_adc3,
+      i_reg_adc3             => reg_adc3,
       -- adc4 register (reading)
-      i_reg_adc4       => reg_adc4,
+      i_reg_adc4             => reg_adc4,
       -- adc5 register (reading)
-      i_reg_adc5       => reg_adc5,
+      i_reg_adc5             => reg_adc5,
       -- adc6 register (reading)
-      i_reg_adc6       => reg_adc6,
+      i_reg_adc6             => reg_adc6,
       -- adc7 register (reading)
-      i_reg_adc7       => reg_adc7,
+      i_reg_adc7             => reg_adc7,
 
       -- debug_ctrl @o_usb_clk
       ---------------------------------------------------------------------
@@ -324,8 +329,10 @@ begin
 
   -- to register
   ---------------------------------------------------------------------
-  reg_adc_status(31 downto 1) <= (others => '0');
-  reg_adc_status(0)           <= adc_ready;
+  reg_power_adc_status(31 downto 5) <= (others => '0');
+  reg_power_adc_status(4)           <= adc_ready;
+  reg_power_adc_status(3 downto 1)  <= (others => '0');
+  reg_power_adc_status(0)           <= power_ready;
 
   -- by considering positive analog voltage
   reg_adc7 <= std_logic_vector(resize(unsigned(adc7), reg_adc7'length));
@@ -444,7 +451,7 @@ begin
       -- outputs
       ---------------------------------------------------------------------
       -- '1': ready to configure the power, '0': busy
-      o_ready       => open,
+      o_ready       => power_ready,
       -- start of frame (pulse)
       o_power_sof   => open,
       -- end of frame (pulse)
@@ -507,23 +514,23 @@ begin
       -- power
       ---------------------------------------------------------------------
       -- power_clock
-      i_power_clk   => usb_clk,
+      i_power_clk => usb_clk,
 
       ---------------------------------------------------------------------
       -- from/to IOs: @i_clk
       ---------------------------------------------------------------------
       -- bitwise power_on pulse
-      o_power_on    => power_on_rx,
+      o_power_on  => power_on_rx,
       -- bitwise power_off pulse
-      o_power_off   => power_off_rx,
+      o_power_off => power_off_rx,
 
       ---------------------------------------------------------------------
       -- from/to user: @i_clk
       ---------------------------------------------------------------------
       -- bitwise power_on pulse
-      i_power_on    => power_on,
+      i_power_on  => power_on,
       -- bitwise power_off pulse
-      i_power_off   => power_off
+      i_power_off => power_off
       );
 
   -- output
@@ -565,8 +572,19 @@ begin
       ---------------------------------------------------------------------
       -- output @i_clk
       ---------------------------------------------------------------------
+
+      -- FPGA board leds
+      ---------------------------------------------------------------------
       -- FPGA board: status leds ('1':ON, 'Z':OFF)
-      o_leds => o_leds
+      o_leds => o_leds,
+
+      -- facade led
+      ---------------------------------------------------------------------
+      -- firmware led
+      o_led_fw        => o_led_fw,
+      -- blink if the clock is alive
+      o_led_clk_alive => o_led_clk_alive
+
       );
 
 
