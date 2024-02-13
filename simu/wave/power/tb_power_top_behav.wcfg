@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_power_top_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="pkg_system_dcdc" />
+            <top_module name="tb_power_top" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,639.199 ns"></ZoomEndTime>
+      <Cursor1Time time="233.120 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="272"></NameColumnWidth>
+      <ValueColumnWidth column_width="113"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group202" type="group">
+      <obj_property name="label">power_top</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_power_top/inst_power_top/i_clk" type="logic">
+         <obj_property name="ElementShortName">i_clk</obj_property>
+         <obj_property name="ObjectShortName">i_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_power_top/inst_power_top/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="group203" type="group">
+         <obj_property name="label">in</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/tb_power_top/inst_power_top/i_power_valid" type="logic">
+            <obj_property name="ElementShortName">i_power_valid</obj_property>
+            <obj_property name="ObjectShortName">i_power_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_power_top/i_power" type="array">
+            <obj_property name="ElementShortName">i_power[3:0]</obj_property>
+            <obj_property name="ObjectShortName">i_power[3:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group204" type="group">
+         <obj_property name="label">out</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_ready" type="logic">
+            <obj_property name="ElementShortName">o_ready</obj_property>
+            <obj_property name="ObjectShortName">o_ready</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_power_sof" type="logic">
+            <obj_property name="ElementShortName">o_power_sof</obj_property>
+            <obj_property name="ObjectShortName">o_power_sof</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_power_eof" type="logic">
+            <obj_property name="ElementShortName">o_power_eof</obj_property>
+            <obj_property name="ObjectShortName">o_power_eof</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_power_valid" type="logic">
+            <obj_property name="ElementShortName">o_power_valid</obj_property>
+            <obj_property name="ObjectShortName">o_power_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_power_on" type="array">
+            <obj_property name="ElementShortName">o_power_on[3:0]</obj_property>
+            <obj_property name="ObjectShortName">o_power_on[3:0]</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_power_off" type="array">
+            <obj_property name="ElementShortName">o_power_off[3:0]</obj_property>
+            <obj_property name="ObjectShortName">o_power_off[3:0]</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group205" type="group">
+         <obj_property name="label">errors_status</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_errors" type="array">
+            <obj_property name="ElementShortName">o_errors[15:0]</obj_property>
+            <obj_property name="ObjectShortName">o_errors[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_power_top/o_status" type="array">
+            <obj_property name="ElementShortName">o_status[7:0]</obj_property>
+            <obj_property name="ObjectShortName">o_status[7:0]</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group211" type="group">
+      <obj_property name="label">io_top</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_power_top/inst_io_top/i_power_clk" type="logic">
+         <obj_property name="ElementShortName">i_power_clk</obj_property>
+         <obj_property name="ObjectShortName">i_power_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="group212" type="group">
+         <obj_property name="label">in</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/tb_power_top/inst_io_top/i_power_off" type="array">
+            <obj_property name="ElementShortName">i_power_off[3:0]</obj_property>
+            <obj_property name="ObjectShortName">i_power_off[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_io_top/i_power_on" type="array">
+            <obj_property name="ElementShortName">i_power_on[3:0]</obj_property>
+            <obj_property name="ObjectShortName">i_power_on[3:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group213" type="group">
+         <obj_property name="label">out</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/tb_power_top/inst_io_top/o_power_on" type="array">
+            <obj_property name="ElementShortName">o_power_on[3:0]</obj_property>
+            <obj_property name="ObjectShortName">o_power_on[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_power_top/inst_io_top/o_power_off" type="array">
+            <obj_property name="ElementShortName">o_power_off[3:0]</obj_property>
+            <obj_property name="ObjectShortName">o_power_off[3:0]</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+</wave_config>
