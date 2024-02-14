@@ -42,8 +42,8 @@ verific -vhdl -lib ./ip/xilinx/coregen/ila_power_rhrpmicl1a/ila_power_rhrpmicl1a
 #    Source files
 
 # package
-verific -vhdl ./src/hdl/pkg_utils.vhd
-verific -vhdl ./src/hdl/pkg_regdecode.vhd
+verific -vhdl ./src/hdl/utils/pkg_utils.vhd
+verific -vhdl ./src/hdl/regdecode/pkg_regdecode.vhd
 verific -vhdl ./src/hdl/pkg_system_dcdc.vhd
 verific -vhdl ./src/hdl/pkg_system_dcdc_debug.vhd
 
