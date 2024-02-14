@@ -72,7 +72,7 @@ verific -vhdl ./src/hdl/leds/leds_top.vhd
 
 # dcdc
 verific -vhdl ./src/hdl/dcdc/core/spi_master_clock_gen.vhd
-verific -vhdl ./src/hdl/dcdc/core/spi_master_clock.vhd
+verific -vhdl ./src/hdl/dcdc/core/spi_master.vhd
 verific -vhdl ./src/hdl/dcdc/core/dcdc_adc128s102.vhd
 verific -vhdl ./src/hdl/dcdc/dcdc_top.vhd
 
