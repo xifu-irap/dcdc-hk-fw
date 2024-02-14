@@ -24,7 +24,7 @@ jobs:
       - name: Git Checkout Third-Party Libraries
         uses: actions/checkout@v3
         with:
-          ref: dcdc-hk-2.0.0
+          ref: dcdc-hk-1.0.0
           repository: ${{env.EXT_LIB_PATH}}
           fetch-depth: 0
           token: ${{ secrets.THIRD_PARTY_LIBRARIES_TOKEN }}
