@@ -72,17 +72,24 @@ entity system_dcdc_top is
     ---------------------------------------------------------------------
     -- power
     ---------------------------------------------------------------------
-    -- power on
+    -- power on the WFEE device
     o_en_wfee : out std_logic;
+    -- power on the RAS device
     o_en_ras  : out std_logic;
+    -- power on the DMX1 device
     o_en_dmx1 : out std_logic;
+    -- power on the DMX0 device
     o_en_dmx0 : out std_logic;
 
-    -- power off
+    -- power off the WFEE device
     o_dis_wfee : out std_logic;
+    -- power off the RAS device
     o_dis_ras  : out std_logic;
+    -- power off the DMX1 device
     o_dis_dmx1 : out std_logic;
+    -- power off the DMX0 device
     o_dis_dmx0 : out std_logic;
+
     ---------------------------------------------------------------------
     -- LEDS
     ---------------------------------------------------------------------
