@@ -427,10 +427,13 @@ begin
   ---------------------------------------------------------------------
   gen_debug : if g_DEBUG generate
 
+  -- count the duration of the pulse on  (expressed in number of samples)
   signal debug_cnt_pulse_on : unsigned(15 downto 0);
 
   begin
 
+    -- count the duration of the pulse on  (expressed in number of samples)
+    --   . The counter is automatically resetted at the beginning of each command.
     p_debug_cnt: process (i_clk) is
     begin
       if rising_edge(i_clk) then

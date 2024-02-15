@@ -52,14 +52,15 @@ entity regdecode_reg_with_default_value is
     ---------------------------------------------------------------------
     -- input register
     ---------------------------------------------------------------------
+    -- input data
     i_data : in std_logic_vector(g_DATA_WIDTH - 1 downto 0);
 
     ---------------------------------------------------------------------
     -- output
     ---------------------------------------------------------------------
-    -- data valid
+    -- output data valid
     o_data_valid : out std_logic;
-    -- data
+    -- output data
     o_data       : out std_logic_vector(g_DATA_WIDTH - 1 downto 0)
 
     );
